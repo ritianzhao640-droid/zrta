@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MEYieldVault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        pink: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f9a8d4',
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#db2777',
+                        },
+                        mint: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        
+        /* 渐变绿色 */
+        .gradient-green {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #059669 100%);
+        }
+        .gradient-green-text {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* 粉色渐变 */
+        .gradient-pink {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 50%, #be185d 100%);
+        }
+        
+        /* 钱包状态滤镜 */
+        .wallet-disconnected { filter: saturate(0) brightness(1.05); }
+        .wallet-connected { filter: none; }
+        .wallet-transition { transition: filter 0.4s ease; }
+        
+        /* 底部导航 */
+        .bottom-nav-item.active { color: #ec4899; }
+        .bottom-nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: linear-gradient(90deg, #ec4899, #22c55e);
+            border-radius: 2px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+            border: 1px solid rgba(236, 72, 153, 0.08);
+        }
+        
+        /* 按钮样式 */
+        .btn-primary {
+            background: linear-gradient(135deg, #ec4899 0%, #22c55e 100%);
+            color: white;
+            border-radius: 16px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+        
+        .btn-secondary {
+            background: white;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:active { background: #f9fafb; }
+        
+        /* 输入框 */
+        .input-field {
+            background: #fafafa;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 16px;
+            transition: all 0.2s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #ec4899;
+            background: white;
+        }
+        
+        /* 进度条 */
+        .progress-bar {
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+        
+        /* 页面切换 */
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 隐藏滚动条 */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* 脉冲动画 */
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+        }
+        .pulse-dot { animation: pulse-green 2s infinite; }
+        
+        /* 警告提示 */
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+        }
+        
+        /* 机制说明卡片 */
+        .mechanism-card {
+            background: linear-gradient(135deg, #fdf2f8 0%, #f0fdf4 100%);
+            border: 1px solid rgba(236, 72, 153, 0.15);
+            border-radius: 16px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- 顶部状态栏 -->
+    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-50 border-b border-pink-100">
+        <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl gradient-green flex items-center justify-center">
+                    <span id="tokenLogoSymbol" class="text-white font-bold text-xs">--</span>
+                </div>
+                <span id="appTitle" class="font-bold text-lg gradient-green-text">--Vault</span>
+            </div>
+            <button id="walletBtn" onclick="toggleWallet()" class="px-4 py-2 rounded-full text-sm font-medium transition-all border">
+                <span id="walletText">连接钱包</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main id="mainContent" class="wallet-disconnected wallet-transition pt-16 pb-24 px-4">
+        <!-- 金库总览页 -->
+        <div id="page-overview" class="page active space-y-4">
+            <!-- 总质押价值卡片 -->
+            <div class="card p-5 mt-4">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-500 text-sm">总质押价值</span>
+                    <span class="px-2 py-1 bg-mint-100 text-mint-600 text-xs rounded-full font-medium">自动质押</span>
+                </div>
+                <div class="text-3xl font-bold gradient-green-text mb-1">$1,247,892</div>
+                <div class="text-sm text-gray-400">≈ 2,456.78 slisBNB</div>
+                <div class="mt-4 flex gap-3">
+                    <div class="flex-1 bg-pink-50 rounded-xl p-3">
+                        <div class="text-xs text-gray-500 mb-1">待质押 BNB</div>
+                        <div class="text-lg font-semibold text-pink-600" id="pendingBnb">12.45 BNB</div>
+                    </div>
+                    <div class="flex-1 bg-mint-50 rounded-xl p-3">
+                        <div class="text-xs text-gray-500 mb-1">自动质押阈值</div>
+                        <div class="text-lg font-semibold text-mint-600">0.1 BNB</div>
+                    </div>
+                </div>
+                
+                <!-- 触发质押按钮 - 新增 -->
+                <div id="stakeTriggerSection" class="mt-4 p-4 bg-gradient-to-r from-pink-50 to-mint-50 rounded-xl border border-pink-100">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <div class="text-sm font-medium text-gray-800">触发质押</div>
+                            <div class="text-xs text-gray-500">将待质押 BNB 存入 Lista</div>
+                        </div>
+                        <span id="stakeStatus" class="px-2 py-1 bg-amber-100 text-amber-600 text-xs rounded-full">待触发</span>
+                    </div>
+                    <div class="progress-bar mb-3">
+                        <div id="stakeProgress" class="progress-fill gradient-green" style="width: 100%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-400 mb-3">
+                        <span>当前: 12.45 BNB</span>
+                        <span>阈值: 0.1 BNB</span>
+                    </div>
+                    <button id="stakeBtn" onclick="triggerStake()" class="w-full py-3 text-sm font-medium rounded-2xl transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed" disabled>
+                        立即触发质押
+                    </button>
+                </div>
+            </div>
+
+            <!-- 总燃烧量卡片 - 通缩比例 -->
+            <div class="card p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-500 text-sm">总燃烧量</span>
+                    <span class="px-2 py-1 bg-pink-100 text-pink-600 text-xs rounded-full font-medium">链上实时</span>
+                </div>
+                <div class="text-3xl font-bold text-pink-600 mb-1">52,847,293</div>
+                <div class="text-sm text-gray-400">REMIX</div>
+                <div class="mt-3 progress-bar">
+                    <div class="progress-fill gradient-pink" style="width: 52.85%"></div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-400">
+                    <span>已销毁 52.8M</span>
+                    <span>通缩率 52.85%</span>
+                </div>
+            </div>
+
+            <!-- slisBNB 三分分配 -->
+            <div class="card p-5">
+                <h3 class="font-semibold text-gray-800 mb-4">收益分配比例</h3>
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-24 h-24 rounded-full relative" style="background: conic-gradient(#ec4899 0deg 144deg, #22c55e 144deg 288deg, #f59e0b 288deg 360deg);">
+                        <div class="absolute inset-3 bg-white rounded-full flex items-center justify-center">
+                            <span class="text-xs text-gray-400">slisBNB</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-pink-500"></div>
+                            <span class="text-sm text-gray-600 flex-1">营销钱包</span>
+                            <span class="font-semibold text-pink-600">40%</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-mint-500"></div>
+                            <span class="text-sm text-gray-600 flex-1">销毁分红池</span>
+                            <span class="font-semibold text-mint-600">40%</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                            <span class="text-sm text-gray-600 flex-1">持币分红</span>
+                            <span class="font-semibold text-amber-600">20%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 销毁排行榜 -->
+            <div class="card p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-gray-800">燃烧排行榜</h3>
+                    <span class="text-xs text-gray-400">按销毁权重排序</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 p-3 bg-pink-50 rounded-xl border border-pink-100">
+                        <div class="w-8 h-8 rounded-full gradient-pink flex items-center justify-center text-white text-sm font-bold">1</div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">0x7a2f...9e4d</div>
+                            <div class="text-xs text-gray-500">累计销毁 2.5M</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold text-pink-600">25.4%</div>
+                            <div class="text-xs text-gray-400">权重</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-bold">2</div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">0x3b8c...2f1a</div>
+                            <div class="text-xs text-gray-500">累计销毁 1.8M</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold text-gray-700">18.2%</div>
+                            <div class="text-xs text-gray-400">权重</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-bold">3</div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">0x9d4e...7c3b</div>
+                            <div class="text-xs text-gray-500">累计销毁 1.2M</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold text-gray-700">12.1%</div>
+                            <div class="text-xs text-gray-400">权重</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 我的收益页 -->
+        <div id="page-rewards" class="page space-y-4">
+            <div class="card p-5 mt-4">
+                <h3 class="font-semibold text-gray-800 mb-4">可领取奖励</h3>
+                <div class="text-3xl font-bold gradient-green-text mb-4">$1,247.50</div>
+                <button class="btn-primary w-full py-3.5 text-base">一键领取全部</button>
+            </div>
+
+            <!-- 三类奖励卡片 -->
+            <div class="space-y-3">
+                <div class="card p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-800">持币分红</div>
+                            <div class="text-xs text-gray-500">来自 20% 持币分配</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-amber-600" id="holderRewardAmount">--</div>
+                            <div class="text-xs text-gray-400">slisBNB</div>
+                        </div>
+                        <button onclick="claimReward('holder')" class="btn-secondary px-5 py-2 text-sm">领取</button>
+                    </div>
+                </div>
+
+                <div class="card p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-800">销毁分红</div>
+                            <div class="text-xs text-gray-500">按销毁权重分配</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-pink-600" id="burnRewardAmount">--</div>
+                            <div class="text-xs text-gray-400">slisBNB</div>
+                        </div>
+                        <button onclick="claimReward('burn')" class="btn-secondary px-5 py-2 text-sm">领取</button>
+                    </div>
+                </div>
+
+                <div class="card p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-mint-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-mint-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-800">邀请返佣</div>
+                            <div class="text-xs text-gray-500">L1: 10% / L2: 5%</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-mint-600" id="inviteRewardAmount">--</div>
+                            <div class="text-xs text-gray-400">slisBNB</div>
+                        </div>
+                        <button onclick="claimReward('invite')" class="btn-secondary px-5 py-2 text-sm">领取</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 销毁代币页 -->
+        <div id="page-burn" class="page space-y-4">
+            <div class="card p-5 mt-4">
+                <h3 class="font-semibold text-gray-800 mb-4">销毁代币</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm text-gray-500 mb-2 block">销毁数量</label>
+                        <div class="relative">
+                            <input type="number" id="burnAmount" placeholder="0.00" class="input-field w-full px-4 py-4 text-lg font-semibold" oninput="updateBurnPreview()">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">REMIX</span>
+                        </div>
+                        <div class="flex justify-between mt-2 text-xs text-gray-400">
+                            <span>余额: 50,000 REMIX</span>
+                            <button class="text-pink-500 font-medium" onclick="setMaxBurn()">最大</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-gray-500 mb-2 block">邀请人地址（可选）</label>
+                        <input type="text" id="inviterAddressInput" placeholder="0x..." class="input-field w-full px-4 py-3 text-sm">
+                        <p class="text-xs text-gray-400 mt-2">填写邀请人可获得额外返佣奖励</p>
+                    </div>
+
+                    <!-- 实时预览 -->
+                    <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">实际销毁</span>
+                            <span class="font-semibold" id="previewBurn">0 REMIX</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">L1 邀请返佣 (10%)</span>
+                            <span class="font-semibold text-mint-600" id="previewL1">0 REMIX</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">L2 邀请返佣 (5%)</span>
+                            <span class="font-semibold text-pink-600" id="previewL2">0 REMIX</span>
+                        </div>
+                        <div class="border-t border-gray-200 pt-3 flex justify-between">
+                            <span class="text-gray-500">销毁后预估权重提升</span>
+                            <span class="font-semibold gradient-green-text">+0.00%</span>
+                        </div>
+                    </div>
+
+                    <button onclick="executeBurn()" class="btn-primary w-full py-4 text-base">确认销毁</button>
+                </div>
+            </div>
+
+            <!-- 我的销毁统计 -->
+            <div class="card p-5">
+                <h3 class="font-semibold text-gray-800 mb-4">我的销毁统计</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-pink-50 rounded-xl p-4">
+                        <div class="text-xs text-gray-500 mb-1">累计销毁</div>
+                        <div class="text-xl font-bold text-pink-600">500,000</div>
+                        <div class="text-xs text-gray-400">REMIX</div>
+                    </div>
+                    <div class="bg-mint-50 rounded-xl p-4">
+                        <div class="text-xs text-gray-500 mb-1">销毁权重</div>
+                        <div class="text-xl font-bold text-mint-600">5.24%</div>
+                        <div class="text-xs text-gray-400">排名 #12</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 邀请系统页 -->
+        <div id="page-invite" class="page space-y-4">
+            <div class="card p-5 mt-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-gray-800">邀请系统</h3>
+                    <span class="px-3 py-1 bg-mint-100 text-mint-600 text-xs rounded-full font-medium">已激活</span>
+                </div>
+                
+                <!-- 警告提示 - 新增 -->
+                <div class="warning-box p-4 mb-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <div class="text-sm text-amber-800">
+                            <p class="font-medium mb-1">重要提示</p>
+                            <p class="text-xs leading-relaxed">请确认你的上级已激活邀请资格，否则将无奖励发放。一旦成功燃烧将终身绑定上级地址，无法更改。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 激活门槛进度 -->
+                <div class="bg-gray-50 rounded-xl p-4 mb-4">
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-gray-500">邀请激活门槛</span>
+                        <span class="font-medium"><span class="text-pink-600">50万</span> / 100万 REMIX</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill gradient-green" style="width: 50%"></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">累计销毁达到 100万 REMIX 可激活邀请资格</p>
+                </div>
+
+                <!-- 我的邀请码 -->
+                <div class="bg-pink-50 rounded-xl p-4 mb-4">
+                    <div class="text-sm text-gray-500 mb-2">我的邀请链接</div>
+                    <div class="flex gap-2">
+                        <input type="text" id="inviteLinkInput" readonly class="flex-1 bg-white border border-pink-200 rounded-lg px-3 py-2 text-sm">
+                        <button onclick="copyInviteLink()" class="btn-secondary px-4 py-2 text-sm">复制</button>
+                    </div>
+                </div>
+
+                <!-- 邀请统计 -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="text-center p-3 bg-gray-50 rounded-xl">
+                        <div class="text-2xl font-bold text-pink-600">12</div>
+                        <div class="text-xs text-gray-500">L1 邀请</div>
+                    </div>
+                    <div class="text-center p-3 bg-gray-50 rounded-xl">
+                        <div class="text-2xl font-bold text-mint-600">48</div>
+                        <div class="text-xs text-gray-500">L2 邀请</div>
+                    </div>
+                </div>
+
+                <!-- 邀请返佣明细 - 单位修正为 REMIX -->
+                <div class="space-y-3">
+                    <h4 class="font-medium text-gray-700 text-sm">返佣明细</h4>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-xs font-bold">L1</div>
+                            <div>
+                                <div class="text-sm font-medium">直接邀请返佣</div>
+                                <div class="text-xs text-gray-400">10% 销毁金额</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold text-pink-600">+89,230</div>
+                            <div class="text-xs text-gray-400">REMIX</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-mint-100 flex items-center justify-center text-mint-600 text-xs font-bold">L2</div>
+                            <div>
+                                <div class="text-sm font-medium">间接邀请返佣</div>
+                                <div class="text-xs text-gray-400">5% 销毁金额</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold text-mint-600">+20,120</div>
+                            <div class="text-xs text-gray-400">REMIX</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据看板页 -->
+        <div id="page-stats" class="page space-y-4">
+            <div class="card p-5 mt-4">
+                <h3 class="font-semibold text-gray-800 mb-4">全局统计</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-pink-50 rounded-xl p-4">
+                        <div class="text-xs text-gray-500 mb-1">总销毁量</div>
+                        <div class="text-lg font-bold text-pink-600">52.8M</div>
+                        <div class="text-xs text-gray-400">REMIX</div>
+                    </div>
+                    <div class="bg-mint-50 rounded-xl p-4">
+                        <div class="text-xs text-gray-500 mb-1">总奖励发放</div>
+                        <div class="text-lg font-bold text-mint-600">$2.1M</div>
+                        <div class="text-xs text-gray-400">slisBNB</div>
+                    </div>
+                    <div class="bg-amber-50 rounded-xl p-4">
+                        <div class="text-xs text-gray-500 mb-1">参与地址数</div>
+                        <div class="text-lg font-bold text-amber-600">3,847</div>
+                        <div class="text-xs text-gray-400">个钱包</div>
+                    </div>
+                    <div class="bg-purple-50 rounded-xl p-4">
+                        <div class="text-xs text-gray-500 mb-1">平均APY</div>
+                        <div class="text-lg font-bold text-purple-600">24.5%</div>
+                        <div class="text-xs text-gray-400">年化收益</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 营销钱包面板 -->
+            <div class="card p-5">
+                <h3 class="font-semibold text-gray-800 mb-4">营销钱包</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <div class="text-sm text-gray-500">待领取 slisBNB</div>
+                        <div class="text-2xl font-bold text-pink-600">892.45</div>
+                    </div>
+                    <button class="btn-secondary px-5 py-2 text-sm">提取</button>
+                </div>
+                <div class="text-xs text-gray-400">营销钱包地址: 0x71C...9A2E</div>
+            </div>
+
+            <!-- 合约信息 -->
+            <div class="card p-5">
+                <h3 class="font-semibold text-gray-800 mb-4">合约信息</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">MEYieldVault</span>
+                        <span class="font-mono text-gray-700">0x8A3...2F1</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">BurnDistributor</span>
+                        <span class="font-mono text-gray-700">0x3B7...9C4</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Lista StakeManager</span>
+                        <span class="font-mono text-gray-700">0x1ad...951</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">slisBNB Token</span>
+                        <span class="font-mono text-gray-700">0xB0b...5a1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 社区页 -->
+        <div id="page-community" class="page space-y-4">
+            <div class="card p-5 mt-4">
+                <h3 class="font-semibold text-gray-800 mb-4">社区动态</h3>
+                
+                <!-- 营销钱包监控 - 移到最上面 -->
+                <div class="card p-4 mb-5 bg-gradient-to-r from-pink-50 to-mint-50 border border-pink-100">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-medium text-gray-800 text-sm">营销钱包</h4>
+                        <span class="text-xs text-gray-400">多签地址监控</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white/70 rounded-xl p-3">
+                            <div class="text-xs text-gray-500 mb-1">slisBNB 余额</div>
+                            <div class="text-lg font-bold text-pink-600" id="marketingSlisBalance">892.45</div>
+                            <div class="text-xs text-gray-400">≈ $456.23</div>
+                        </div>
+                        <div class="bg-white/70 rounded-xl p-3">
+                            <div class="text-xs text-gray-500 mb-1">BNB 余额</div>
+                            <div class="text-lg font-bold text-mint-600" id="marketingBnbBalance">12.34</div>
+                            <div class="text-xs text-gray-400">≈ $7,234.56</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 社区数据概览 - 数据源说明 -->
+                <div class="grid grid-cols-3 gap-2 mb-5">
+                    <div class="text-center p-3 bg-pink-50 rounded-xl">
+                        <div class="text-lg font-bold text-pink-600">3,847</div>
+                        <div class="text-xs text-gray-500">持币地址</div>
+                    </div>
+                    <div class="text-center p-3 bg-mint-50 rounded-xl">
+                        <div class="text-lg font-bold text-mint-600">1,245</div>
+                        <div class="text-xs text-gray-500">日活地址</div>
+                    </div>
+                    <div class="text-center p-3 bg-amber-50 rounded-xl">
+                        <div class="text-lg font-bold text-amber-600" id="communityTotalBurn">--</div>
+                        <div class="text-xs text-gray-500">总销毁量</div>
+                    </div>
+                </div>
+
+                <!-- 机制说明 -->
+                <div class="mechanism-card p-4 mb-5">
+                    <h4 class="font-medium text-gray-800 text-sm mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        机制说明
+                    </h4>
+                    <div class="space-y-2 text-xs text-gray-600">
+                        <div class="flex items-start gap-2">
+                            <span class="text-pink-500 font-bold">1.</span>
+                            <span><strong>税收自动质押：</strong>税代币产生的 BNB 自动质押到 Lista，获得 slisBNB 收益</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-pink-500 font-bold">2.</span>
+                            <span><strong>收益三分：</strong>slisBNB 按 40% 营销 / 40% 销毁分红池 / 20% 持币分红 分配</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-pink-500 font-bold">3.</span>
+                            <span><strong>销毁返佣：</strong>销毁 <span class="token-symbol">REMIX</span> 时，L1 邀请人得 10%，L2 得 5%，剩余 85% 真正销毁，但销毁者获得 100% 销毁权重</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-pink-500 font-bold">4.</span>
+                            <span><strong>权重分红：</strong>销毁分红池按销毁权重分配给所有销毁参与者</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-pink-500 font-bold">5.</span>
+                            <span><strong>邀请激活：</strong>累计销毁 100万 <span class="token-symbol">REMIX</span> 可激活邀请资格，获得两级返佣</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 官方链接 - 替换为 QQ/TG/Debox -->
+                <div class="space-y-3 mb-5">
+                    <h4 class="font-medium text-gray-700 text-sm">官方链接</h4>
+                    <a href="https://twitter.com/MEYieldVault" target="_blank" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">Twitter / X</div>
+                            <div class="text-xs text-gray-400">@MEYieldVault</div>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                    
+                    <!-- QQ群 -->
+                    <a href="https://qm.qq.com/q/1093938767" target="_blank" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white font-bold text-sm">QQ</div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">QQ 聊天群</div>
+                            <div class="text-xs text-gray-400">1093938767</div>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                    
+                    <a href="https://qm.qq.com/q/1101711861" target="_blank" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div class="w-10 h-10 rounded-xl bg-blue-400 flex items-center justify-center text-white font-bold text-xs">禁言</div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">QQ 禁言群 1</div>
+                            <div class="text-xs text-gray-400">1101711861</div>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                    
+                    <a href="https://qm.qq.com/q/1101713637" target="_blank" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div class="w-10 h-10 rounded-xl bg-blue-400 flex items-center justify-center text-white font-bold text-xs">禁言</div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">QQ 禁言群 2</div>
+                            <div class="text-xs text-gray-400">1101713637</div>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                    
+                    <!-- QQ频道 -->
+                    <a href="https://pd.qq.com/s/b9u2fbcjc?b=9" target="_blank" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">QQ频道</div>
+                            <div class="text-xs text-gray-400">币安长征</div>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                    
+                    <!-- TG频道 -->
+                    <a href="https://t.me/+34bRdVbRgTtlMmY9" target="_blank" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-sky-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">Telegram 频道</div>
+                            <div class="text-xs text-gray-400">t.me/+34bRdVbRgTtlMmY9</div>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                    
+                    <!-- Debox群 -->
+                    <a href="https://m.debox.pro/group?id=oes736pw&code=omqtbx9j" target="_blank" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                        <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">Debox 群</div>
+                            <div class="text-xs text-gray-400">debox.pro</div>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                </div>
+
+                <!-- 最新公告 -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-medium text-gray-700 text-sm">最新公告</h4>
+                        <span class="text-xs text-gray-400">自动触发</span>
+                    </div>
+                    <div id="announcementList" class="space-y-3">
+                        <!-- 公告由 JS 动态加载 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部导航 -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 safe-area-pb">
+        <div class="flex justify-around items-center h-16">
+            <button onclick="showPage('overview')" class="bottom-nav-item active relative flex flex-col items-center gap-1 py-2 px-3 text-gray-400 transition-colors" data-page="overview">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                <span class="text-[10px] font-medium">总览</span>
+            </button>
+            <button onclick="showPage('rewards')" class="bottom-nav-item relative flex flex-col items-center gap-1 py-2 px-3 text-gray-400 transition-colors" data-page="rewards">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[10px] font-medium">收益</span>
+            </button>
+            <button onclick="showPage('burn')" class="bottom-nav-item relative flex flex-col items-center gap-1 py-2 px-3 text-gray-400 transition-colors" data-page="burn">
+                <div class="w-12 h-12 -mt-6 rounded-full gradient-green flex items-center justify-center shadow-lg shadow-green-500/30">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path></svg>
+                </div>
+                <span class="text-[10px] font-medium mt-1">销毁</span>
+            </button>
+            <button onclick="showPage('invite')" class="bottom-nav-item relative flex flex-col items-center gap-1 py-2 px-3 text-gray-400 transition-colors" data-page="invite">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <span class="text-[10px] font-medium">邀请</span>
+            </button>
+            <button onclick="showPage('community')" class="bottom-nav-item relative flex flex-col items-center gap-1 py-2 px-3 text-gray-400 transition-colors" data-page="community">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
+                <span class="text-[10px] font-medium">社区</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // ==================== 合约配置 ====================
+        const CONTRACTS = {
+            // 代币合约 - REMIX
+            TOKEN: {
+                address: "0xb8bf1754c7b102b6845f55d6e2f463b838bc7777",
+                symbol: "REMIX",
+                decimals: 18
+            },
+            // Lens 查询接口
+            LENS: {
+                address: "0x8fD9d57fb12C7548d5fDAdF828c40B418cA0152b",
+                abi: [{"inputs":[{"internalType":"address","name":"vault","type":"address"}],"name":"burnGlobalStats","outputs":[{"internalType":"uint256","name":"totalActualBurnedAmount","type":"uint256"},{"internalType":"uint256","name":"totalBurnWeightValue","type":"uint256"},{"internalType":"uint256","name":"totalInviteRewardDistributedAmount","type":"uint256"},{"internalType":"uint256","name":"totalBurnRewardDistributedAmount","type":"uint256"},{"internalType":"uint256","name":"activationThresholdValue","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"vault","type":"address"}],"name":"globalStats","outputs":[{"internalType":"uint256","name":"vaultBnbBalance","type":"uint256"},{"internalType":"uint256","name":"vaultSlisBalance","type":"uint256"},{"internalType":"uint256","name":"pendingTaxBNBAmount","type":"uint256"},{"internalType":"uint256","name":"totalStakedBNBAmount","type":"uint256"},{"internalType":"uint256","name":"totalSlisReceivedAmount","type":"uint256"},{"internalType":"uint256","name":"pendingMarketingSlisAmount","type":"uint256"},{"internalType":"uint256","name":"pendingHolderSlisAmount","type":"uint256"},{"internalType":"uint256","name":"totalHolderForwardedAmount","type":"uint256"},{"internalType":"uint256","name":"totalActualBurnedAmount","type":"uint256"},{"internalType":"uint256","name":"totalInviteRewardDistributedAmount","type":"uint256"},{"internalType":"uint256","name":"totalBurnRewardDistributedAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"vault","type":"address"},{"internalType":"address","name":"user","type":"address"}],"name":"inviteStats","outputs":[{"internalType":"address","name":"inviter","type":"address"},{"internalType":"bool","name":"hasInviter","type":"bool"},{"internalType":"bool","name":"inviterQualified","type":"bool"},{"internalType":"uint256","name":"inviterBurnedAmount","type":"uint256"},{"internalType":"bool","name":"selfQualified","type":"bool"},{"internalType":"uint256","name":"activationThresholdValue","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"vault","type":"address"}],"name":"marketingStats","outputs":[{"internalType":"address","name":"marketingWalletAddr","type":"address"},{"internalType":"uint256","name":"pendingMarketingAmount","type":"uint256"},{"internalType":"uint256","name":"marketingWalletBalance","type":"uint256"},{"internalType":"uint256","name":"marketingAutoSendThresholdValue","type":"uint256"},{"internalType":"bool","name":"marketingAutoSendEnabled","type":"bool"},{"internalType":"uint16","name":"marketingSharePercent","type":"uint16"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"vault","type":"address"},{"internalType":"address","name":"user","type":"address"}],"name":"userStats","outputs":[{"internalType":"uint256","name":"tokenBalance","type":"uint256"},{"internalType":"uint256","name":"pendingHolderRewardAmount","type":"uint256"},{"internalType":"uint256","name":"pendingBurnRewardAmount","type":"uint256"},{"internalType":"uint256","name":"pendingInviteRewardAmount","type":"uint256"},{"internalType":"uint256","name":"cumulativeBurned","type":"uint256"},{"internalType":"uint256","name":"burnWeightValue","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"}],"stateMutability":"view","type":"function"}]
+            },
+            // VaultFactory
+            FACTORY: {
+                address: "0x55EC175Ab2f506ACb52E106b88B9707BF70230AA"
+            },
+            // 金库地址
+            VAULT: {
+                address: "0xe515D4e904F0e2127a1e82E53F1Ec86a03635979"
+            },
+            // 营销钱包（多签）
+            MULTISIG: {
+                address: "0xf25635ec0f3ca460043d9f2abb49caacaa0328e6",
+                displayName: "营销钱包"
+            },
+            // 金库合约 ABI
+            VAULT_ABI: [{"inputs":[{"internalType":"address","name":"taxToken_","type":"address"},{"internalType":"address","name":"listaStakeManager_","type":"address"},{"internalType":"address","name":"slisBNB_","type":"address"},{"internalType":"address","name":"marketingWallet_","type":"address"},{"internalType":"uint256","name":"autoStakeThreshold_","type":"uint256"},{"internalType":"uint256","name":"burnActivationThreshold_","type":"uint256"},{"internalType":"uint256","name":"marketingAutoSendThreshold_","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ApproveFailed","type":"error"},{"inputs":[],"name":"DepositFailed","type":"error"},{"inputs":[],"name":"NoDividendContract","type":"error"},{"inputs":[],"name":"NoReward","type":"error"},{"inputs":[],"name":"Reentrancy","type":"error"},{"inputs":[],"name":"TransferFailed","type":"error"},{"inputs":[],"name":"Unauthorized","type":"error"},{"inputs":[{"internalType":"uint256","name":"chainId","type":"uint256"}],"name":"UnsupportedChain","type":"error"},{"inputs":[],"name":"ZeroAddress","type":"error"},{"inputs":[],"name":"ZeroAmount","type":"error"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newValue","type":"uint256"}],"name":"AutoStakeThresholdUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"dividendContract","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"HolderRewardsForwarded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newValue","type":"uint256"}],"name":"MarketingAutoSendThresholdUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"MarketingAutoSent","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"MarketingClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"oldWallet","type":"address"},{"indexed":false,"internalType":"address","name":"newWallet","type":"address"}],"name":"MarketingWalletUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"marketingSlis","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"burnPoolSlis","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"holderSlis","type":"uint256"}],"name":"StakeSplit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountBNB","type":"uint256"}],"name":"TaxReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amountBNB","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"slisReceived","type":"uint256"}],"name":"TaxStaked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":true,"internalType":"address","name":"inviter","type":"address"}],"name":"UserBurned","type":"event"},{"inputs":[],"name":"BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"BURN_POOL_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MARKETING_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"autoStakeThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"burnDistributor","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"burnInfo","outputs":[{"internalType":"uint256","name":"rawBurned","type":"uint256"},{"internalType":"uint256","name":"weight","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"},{"internalType":"bool","name":"inviterQualified","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claim","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimBurnReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"holder","type":"address"}],"name":"claimFor","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimInviteReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"}],"name":"claimMarketing","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"forwardHolderRewards","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"holderDividendContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"listaStakeManager","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"marketingAutoSendThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"marketingWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"overview","outputs":[{"internalType":"address","name":"_targetToken","type":"address"},{"internalType":"bool","name":"_initialized","type":"bool"},{"internalType":"bool","name":"_internalEnabled","type":"bool"},{"internalType":"bool","name":"_graduatedToExternalOnly","type":"bool"},{"internalType":"uint16","name":"_dipBuyThresholdBps","type":"uint16"},{"internalType":"uint16","name":"_currentSlippageBps","type":"uint16"},{"internalType":"uint256","name":"_internalPriceAnchor","type":"uint256"},{"internalType":"uint256","name":"_externalPriceAnchor","type":"uint256"},{"internalType":"uint256","name":"_vaultNativeBalance","type":"uint256"},{"internalType":"uint256","name":"_totalReceivedReward","type":"uint256"},{"internalType":"uint256","name":"_totalDistributedReward","type":"uint256"},{"internalType":"uint256","name":"_myPending","type":"uint256"},{"internalType":"uint256","name":"_myRealised","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingBurnReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingClaim","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingHolderSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingInviteReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingMarketingSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingTaxBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newThreshold","type":"uint256"}],"name":"setAutoStakeThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"newThreshold","type":"uint256"}],"name":"setBurnActivationThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"newThreshold","type":"uint256"}],"name":"setMarketingAutoSendThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newWallet","type":"address"}],"name":"setMarketingWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"slisBNB","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"stakePendingTax","outputs":[{"internalType":"bool","name":"ok","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"taxToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalHolderForwarded","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSlisReceived","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalStakedBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"vaultUISchema","outputs":[{"components":[{"internalType":"string","name":"vaultType","type":"string"},{"internalType":"string","name":"description","type":"string"},{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"fieldType","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"}],"internalType":"struct FieldDescriptor[]","name":"inputs","type":"tuple[]"},{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"fieldType","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"}],"internalType":"struct FieldDescriptor[]","name":"outputs","type":"tuple[]"},{"components":[{"internalType":"string","name":"tokenType","type":"string"},{"internalType":"string","name":"amountFieldName","type":"string"}],"internalType":"struct ApproveAction[]","name":"approvals","type":"tuple[]"},{"internalType":"bool","name":"isInputArray","type":"bool"},{"internalType":"bool","name":"isOutputArray","type":"bool"},{"internalType":"bool","name":"isWriteMethod","type":"bool"}],"internalType":"struct VaultMethodSchema[]","name":"methods","type":"tuple[]"}],"internalType":"struct VaultUISchema","name":"schema","type":"tuple"}],"stateMutability":"pure","type":"function"},{"stateMutability":"payable","type":"receive"}]
+            // BurnReferralDistributor - 销毁返佣合约
+            BURN_DISTRIBUTOR: {
+                address: "0x4d2e6eAAbaA95610136562ff59463d47Fd836620",
+                abi: [{"inputs":[{"internalType":"address","name":"token_","type":"address"},{"internalType":"address","name":"rewardToken_","type":"address"},{"internalType":"uint256","name":"activationThreshold_","type":"uint256"},{"internalType":"address","name":"admin_","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"AlreadyInitialized","type":"error"},{"inputs":[],"name":"OnlyVault","type":"error"},{"inputs":[],"name":"Reentrancy","type":"error"},{"inputs":[],"name":"TransferFailed","type":"error"},{"inputs":[],"name":"Unauthorized","type":"error"},{"inputs":[],"name":"ZeroAddress","type":"error"},{"inputs":[],"name":"ZeroAmount","type":"error"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newValue","type":"uint256"}],"name":"ActivationThresholdUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"inputAmount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"actualBurnAmount","type":"uint256"},{"indexed":true,"internalType":"address","name":"inviter","type":"address"},{"indexed":false,"internalType":"uint256","name":"inviterReward","type":"uint256"},{"indexed":true,"internalType":"address","name":"inviter2","type":"address"},{"indexed":false,"internalType":"uint256","name":"inviter2Reward","type":"uint256"}],"name":"BurnProcessed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BurnRewardAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BurnRewardClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"InviteRewardClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"vault","type":"address"}],"name":"VaultInitialized","type":"event"},{"inputs":[],"name":"BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DEAD","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"L1_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"L2_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRECISION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"accRewardPerWeight","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"activationThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"admin","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"burnInfo","outputs":[{"internalType":"uint256","name":"rawBurned","type":"uint256"},{"internalType":"uint256","name":"weight","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"},{"internalType":"bool","name":"inviterQualified","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"burnWeight","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"claimBurnRewardFor","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"claimInviteRewardFor","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"cumulativeRawBurned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"vault_","type":"address"}],"name":"initializeVault","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"inviterOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"notifyReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"inviterCandidate","type":"address"}],"name":"onBurn","outputs":[{"internalType":"uint256","name":"actualBurn","type":"uint256"},{"internalType":"uint256","name":"l1Reward","type":"uint256"},{"internalType":"uint256","name":"l2Reward","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingBurn","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingBurnReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingInvite","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingInviteReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingRewardCarry","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"rewardDebt","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newThreshold","type":"uint256"}],"name":"setActivationThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"token","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalActualBurned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalBurnRewardDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalBurnWeight","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalInviteRewardClaimed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalInviteRewardDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"vault","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]
+            }
+        };
+
+        // ==================== 公告配置 ====================
+        const ANNOUNCEMENTS = {
+            milestones: [
+                { threshold: 10000000, title: "累计销毁突破 1000万 REMIX", message: "社区销毁热情高涨，销毁分红池持续扩大" },
+                { threshold: 20000000, title: "累计销毁突破 2000万 REMIX", message: "销毁里程碑达成，感谢所有参与者" },
+                { threshold: 30000000, title: "累计销毁突破 3000万 REMIX", message: "社区共识不断增强，REMIX 通缩加速" },
+                { threshold: 40000000, title: "累计销毁突破 4000万 REMIX", message: "销毁量创新高，持币者收益稳步增长" },
+                { threshold: 50000000, title: "累计销毁突破 5000万 REMIX", message: "halfway to the moon! 销毁过半目标" },
+                { threshold: 60000000, title: "累计销毁突破 6000万 REMIX", message: "里程碑达成！社区力量无可阻挡" },
+            ],
+            dailyMilestones: [
+                { threshold: 1000000, title: "今日销毁突破 100万 REMIX", message: "单日销毁量创新高" },
+            ],
+            manual: [
+                { date: "2026-04-18", title: "MEYieldVault V2 正式上线", message: "新增 Lens 查询合约，优化 Gas 费用，邀请系统全面开放", isNew: true },
+            ]
+        };
+
+        // ==================== 链上数据缓存 ====================
+        let chainData = {
+            totalBurned: 0,
+            totalSupply: 0,
+            pendingTaxBNB: 0,
+            totalStakedBNB: 0,
+            userRewards: {
+                holder: 0,
+                burn: 0,
+                invite: 0
+            },
+            userBurned: 0,
+            burnWeight: 0,
+            inviter: null,
+            hasInviter: false,
+            selfQualified: false,
+            activationThreshold: 0
+        };
+
+        // ==================== Web3  provider ====================
+        let provider = null;
+        let signer = null;
+        let userAddress = null;
+
+        // ==================== 代币信息 ====================
+        let tokenInfo = {
+            symbol: CONTRACTS.TOKEN.symbol,
+            name: ''
+        };
+
+        // 从链上读取代币信息并更新 UI
+        async function loadTokenInfo() {
+            if (!provider) return;
+            try {
+                const tokenAbi = [
+                    {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+                    {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}
+                ];
+                const token = new ethers.Contract(CONTRACTS.TOKEN.address, tokenAbi, provider);
+                
+                // 读取代币 symbol
+                const symbol = await token.symbol();
+                tokenInfo.symbol = symbol;
+                
+                // 更新页面上的代币名称显示
+                updateTokenSymbolDisplay(symbol);
+                
+                // 更新 Logo 和标题
+                const logoSymbol = document.getElementById('tokenLogoSymbol');
+                const appTitle = document.getElementById('appTitle');
+                if (logoSymbol) logoSymbol.textContent = symbol.slice(0, 4);
+                if (appTitle) appTitle.textContent = symbol + '生态中心';
+                
+            } catch (e) {
+                console.error('加载代币信息失败:', e);
+                // 使用默认配置
+                updateTokenSymbolDisplay(CONTRACTS.TOKEN.symbol);
+                const logoSymbol = document.getElementById('tokenLogoSymbol');
+                const appTitle = document.getElementById('appTitle');
+                if (logoSymbol) logoSymbol.textContent = CONTRACTS.TOKEN.symbol.slice(0, 4);
+                if (appTitle) appTitle.textContent = CONTRACTS.TOKEN.symbol + '生态中心';
+            }
+        }
+
+        // 更新页面上所有代币 symbol 显示
+        function updateTokenSymbolDisplay(symbol) {
+            document.querySelectorAll('.token-symbol').forEach(el => {
+                el.textContent = symbol;
+            });
+        }
+
+        // ==================== 邀请链接处理 ====================
+        // 获取当前页面基础 URL（不含参数）
+        function getBaseUrl() {
+            const url = new URL(window.location.href);
+            return url.origin + url.pathname;
+        }
+
+        // 生成邀请链接
+        function generateInviteLink(address) {
+            if (!address) return '';
+            return `${getBaseUrl()}?ref=${address}`;
+        }
+
+        // 更新邀请链接显示
+        function updateInviteLink() {
+            const input = document.getElementById('inviteLinkInput');
+            if (input && userAddress) {
+                input.value = generateInviteLink(userAddress);
+            }
+        }
+
+        // 复制邀请链接
+        function copyInviteLink() {
+            const input = document.getElementById('inviteLinkInput');
+            if (!input || !input.value) {
+                alert('请先连接钱包');
+                return;
+            }
+            input.select();
+            document.execCommand('copy');
+            alert('邀请链接已复制！');
+        }
+
+        // 解析 URL 参数
+        function getUrlParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // 检查并自动填充邀请地址
+        function checkAndFillInviter() {
+            const refAddress = getUrlParam('ref');
+            if (refAddress && refAddress.startsWith('0x') && refAddress.length === 42) {
+                const inviterInput = document.getElementById('inviterAddressInput');
+                if (inviterInput && !inviterInput.value) {
+                    inviterInput.value = refAddress;
+                    // 显示提示
+                    showToast(`已自动填入邀请人地址: ${refAddress.slice(0, 6)}...${refAddress.slice(-4)}`);
+                }
+            }
+        }
+
+        // 显示轻提示
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm z-50 animate-fade-in';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // 格式化大数
+        function formatEther(value, decimals = 4) {
+            if (!value) return '0';
+            const num = parseFloat(ethers.utils.formatEther(value.toString()));
+            return num.toLocaleString('en-US', { maximumFractionDigits: decimals });
+        }
+
+        // 读取 Lens 全局统计
+        async function loadGlobalStats() {
+            if (!provider) return;
+            try {
+                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
+                const stats = await lens.globalStats(CONTRACTS.VAULT.address);
+                
+                chainData.pendingTaxBNB = stats.pendingTaxBNBAmount;
+                chainData.totalStakedBNB = stats.totalStakedBNBAmount;
+                
+                // 更新 UI
+                document.getElementById('pendingBnb').textContent = formatEther(stats.pendingTaxBNBAmount, 2) + ' BNB';
+                
+                // 检查质押阈值
+                STAKE_CONFIG.pendingBnb = parseFloat(formatEther(stats.pendingTaxBNBAmount, 4));
+                checkStakeThreshold();
+            } catch (e) {
+                console.error('加载全局统计失败:', e);
+            }
+        }
+
+        // 读取 Lens 销毁统计
+        async function loadBurnStats() {
+            if (!provider) return;
+            try {
+                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
+                const stats = await lens.burnGlobalStats(CONTRACTS.VAULT.address);
+                
+                chainData.totalBurned = stats.totalActualBurnedAmount;
+                
+                // 更新总燃烧量显示
+                const burned = parseFloat(formatEther(stats.totalActualBurnedAmount, 0));
+                const burnedFormatted = burned.toLocaleString();
+                document.querySelector('#page-overview .text-3xl.font-bold.text-pink-600').textContent = burnedFormatted;
+                
+                // 更新社区页总销毁量
+                const communityBurnEl = document.getElementById('communityTotalBurn');
+                if (communityBurnEl) {
+                    communityBurnEl.textContent = burned >= 1000000 ? (burned / 1000000).toFixed(1) + 'M' : burnedFormatted;
+                }
+                
+                // 计算通缩率
+                if (chainData.totalSupply > 0) {
+                    const deflationRate = (burned / chainData.totalSupply * 100).toFixed(2);
+                    document.querySelector('#page-overview .flex.justify-between.mt-2 span:last-child').textContent = `通缩率 ${deflationRate}%`;
+                    document.querySelector('#page-overview .progress-fill.gradient-pink').style.width = deflationRate + '%';
+                }
+            } catch (e) {
+                console.error('加载销毁统计失败:', e);
+            }
+        }
+
+        // 读取用户统计
+        async function loadUserStats() {
+            if (!provider || !userAddress) return;
+            try {
+                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
+                const stats = await lens.userStats(CONTRACTS.VAULT.address, userAddress);
+                
+                chainData.userRewards.holder = stats.pendingHolderRewardAmount;
+                chainData.userRewards.burn = stats.pendingBurnRewardAmount;
+                chainData.userRewards.invite = stats.pendingInviteRewardAmount;
+                chainData.userBurned = stats.cumulativeBurned;
+                chainData.burnWeight = stats.burnWeightValue;
+                
+                // 更新收益页
+                const totalRewards = parseFloat(formatEther(
+                    stats.pendingHolderRewardAmount.add(stats.pendingBurnRewardAmount).add(stats.pendingInviteRewardAmount)
+                , 2));
+                document.querySelector('#page-rewards .text-3xl.font-bold.gradient-green-text').textContent = '$' + totalRewards.toLocaleString();
+                
+                // 更新各奖励
+                document.querySelector('#page-rewards .card:nth-child(2) .text-2xl.font-bold.text-amber-600').textContent = formatEther(stats.pendingHolderRewardAmount, 2);
+                document.querySelector('#page-rewards .card:nth-child(3) .text-2xl.font-bold.text-pink-600').textContent = formatEther(stats.pendingBurnRewardAmount, 2);
+                document.querySelector('#page-rewards .card:nth-child(4) .text-2xl.font-bold.text-mint-600').textContent = formatEther(stats.pendingInviteRewardAmount, 2);
+                
+                // 更新销毁页统计
+                document.querySelector('#page-burn .text-xl.font-bold.text-pink-600').textContent = formatEther(stats.cumulativeBurned, 0);
+                
+            } catch (e) {
+                console.error('加载用户统计失败:', e);
+            }
+        }
+
+        // 读取邀请统计
+        async function loadInviteStats() {
+            if (!provider || !userAddress) return;
+            try {
+                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
+                const stats = await lens.inviteStats(CONTRACTS.VAULT.address, userAddress);
+                
+                chainData.inviter = stats.inviter;
+                chainData.hasInviter = stats.hasInviter;
+                chainData.selfQualified = stats.selfQualified;
+                chainData.activationThreshold = stats.activationThresholdValue;
+                
+                // 更新邀请页
+                const threshold = parseFloat(formatEther(stats.activationThresholdValue, 0));
+                const burned = parseFloat(formatEther(stats.inviterBurnedAmount || 0, 0));
+                const progress = Math.min((burned / threshold) * 100, 100);
+                
+                document.querySelector('#page-invite .progress-fill.gradient-green').style.width = progress + '%';
+                document.querySelector('#page-invite .font-medium span.text-pink-600').textContent = burned.toLocaleString();
+                document.querySelector('#page-invite .font-medium').innerHTML = `<span class="text-pink-600">${burned.toLocaleString()}</span> / ${threshold.toLocaleString()} REMIX`;
+                
+                // 更新激活状态
+                const statusBadge = document.querySelector('#page-invite .px-3.py-1');
+                if (stats.selfQualified) {
+                    statusBadge.textContent = '已激活';
+                    statusBadge.className = 'px-3 py-1 bg-mint-100 text-mint-600 text-xs rounded-full font-medium';
+                } else {
+                    statusBadge.textContent = '未激活';
+                    statusBadge.className = 'px-3 py-1 bg-gray-100 text-gray-500 text-xs rounded-full font-medium';
+                }
+                
+            } catch (e) {
+                console.error('加载邀请统计失败:', e);
+            }
+        }
+
+        // 读取营销钱包统计
+        async function loadMarketingStats() {
+            if (!provider) return;
+            try {
+                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
+                const stats = await lens.marketingStats(CONTRACTS.VAULT.address);
+                
+                // 更新社区页营销钱包 slisBNB 余额
+                document.getElementById('marketingSlisBalance').textContent = formatEther(stats.marketingWalletBalance, 2);
+                
+            } catch (e) {
+                console.error('加载营销统计失败:', e);
+            }
+        }
+
+        // 读取营销钱包 BNB 余额
+        async function loadMarketingBnbBalance() {
+            if (!provider) return;
+            try {
+                const bnbBalance = await provider.getBalance(CONTRACTS.MULTISIG.address);
+                document.getElementById('marketingBnbBalance').textContent = formatEther(bnbBalance, 2);
+            } catch (e) {
+                console.error('读取营销钱包 BNB 余额失败:', e);
+                document.getElementById('marketingBnbBalance').textContent = '--';
+            }
+        }
+
+        // 读取代币总供应量
+        async function loadTokenSupply() {
+            if (!provider) return;
+            try {
+                const tokenAbi = [{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+                const token = new ethers.Contract(CONTRACTS.TOKEN.address, tokenAbi, provider);
+                chainData.totalSupply = await token.totalSupply();
+            } catch (e) {
+                console.error('加载代币供应量失败:', e);
+            }
+        }
+
+        // 读取 BurnReferralDistributor 数据
+        async function loadBurnDistributorStats() {
+            if (!provider) return;
+            try {
+                const distributor = new ethers.Contract(
+                    CONTRACTS.BURN_DISTRIBUTOR.address, 
+                    CONTRACTS.BURN_DISTRIBUTOR.abi, 
+                    provider
+                );
+                
+                // 读取总销毁量
+                const totalBurned = await distributor.totalActualBurned();
+                chainData.totalBurned = totalBurned;
+                
+                // 更新总燃烧量显示
+                const burned = parseFloat(formatEther(totalBurned, 0));
+                const burnedFormatted = burned.toLocaleString();
+                const totalBurnEl = document.querySelector('#page-overview .text-3xl.font-bold.text-pink-600');
+                if (totalBurnEl) totalBurnEl.textContent = burnedFormatted;
+                
+                // 更新社区页总销毁量
+                const communityBurnEl = document.getElementById('communityTotalBurn');
+                if (communityBurnEl) {
+                    communityBurnEl.textContent = burned >= 1000000 ? (burned / 1000000).toFixed(1) + 'M' : burnedFormatted;
+                }
+                
+                // 计算通缩率
+                if (chainData.totalSupply > 0) {
+                    const deflationRate = (burned / parseFloat(formatEther(chainData.totalSupply, 0)) * 100).toFixed(2);
+                    const deflationEl = document.querySelector('#page-overview .flex.justify-between.mt-2 span:last-child');
+                    if (deflationEl) deflationEl.textContent = `通缩率 ${deflationRate}%`;
+                    const progressEl = document.querySelector('#page-overview .progress-fill.gradient-pink');
+                    if (progressEl) progressEl.style.width = deflationRate + '%';
+                }
+                
+                // 读取激活门槛
+                const threshold = await distributor.activationThreshold();
+                chainData.activationThreshold = threshold;
+                
+            } catch (e) {
+                console.error('加载 BurnDistributor 统计失败:', e);
+            }
+        }
+
+        // 读取用户 BurnReferralDistributor 数据
+        async function loadUserBurnDistributorStats() {
+            if (!provider || !userAddress) return;
+            try {
+                const distributor = new ethers.Contract(
+                    CONTRACTS.BURN_DISTRIBUTOR.address, 
+                    CONTRACTS.BURN_DISTRIBUTOR.abi, 
+                    provider
+                );
+                
+                // 读取用户销毁信息
+                const burnInfo = await distributor.burnInfo(userAddress);
+                chainData.userBurned = burnInfo.rawBurned;
+                chainData.burnWeight = burnInfo.weight;
+                
+                // 读取待领取奖励
+                const pendingBurnReward = await distributor.pendingBurnReward(userAddress);
+                const pendingInviteReward = await distributor.pendingInviteReward(userAddress);
+                
+                chainData.userRewards.burn = pendingBurnReward;
+                chainData.userRewards.invite = pendingInviteReward;
+                
+                // 更新收益页面显示
+                const burnRewardEl = document.getElementById('burnRewardAmount');
+                if (burnRewardEl) burnRewardEl.textContent = formatEther(pendingBurnReward, 2);
+                
+                const inviteRewardEl = document.getElementById('inviteRewardAmount');
+                if (inviteRewardEl) inviteRewardEl.textContent = formatEther(pendingInviteReward, 2);
+                
+                // 更新销毁页统计
+                const userBurnedEl = document.querySelector('#page-burn .text-xl.font-bold.text-pink-600');
+                if (userBurnedEl) userBurnedEl.textContent = formatEther(burnInfo.rawBurned, 0);
+                
+                const burnWeightEl = document.querySelector('#page-burn .text-xl.font-bold.text-mint-600');
+                if (burnWeightEl && chainData.totalBurned > 0) {
+                    const weightPercent = (parseFloat(formatEther(burnInfo.weight, 4)) / parseFloat(formatEther(chainData.totalBurned, 4)) * 100).toFixed(2);
+                    burnWeightEl.textContent = weightPercent + '%';
+                }
+                
+            } catch (e) {
+                console.error('加载用户 BurnDistributor 统计失败:', e);
+            }
+        }
+
+        // 刷新所有数据
+        async function refreshAllData() {
+            await loadTokenSupply();
+            await loadGlobalStats();
+            await loadBurnStats();
+            await loadBurnDistributorStats();
+            await loadMarketingStats();
+            if (userAddress) {
+                await loadUserStats();
+                await loadInviteStats();
+                await loadUserBurnDistributorStats();
+            }
+        }
+
+        let walletConnected = false;
+
+        // 连接钱包
+        async function toggleWallet() {
+            if (walletConnected) {
+                // 断开连接
+                walletConnected = false;
+                userAddress = null;
+                signer = null;
+                updateWalletUI();
+                return;
+            }
+
+            // 检查是否安装了 MetaMask
+            if (typeof window.ethereum === 'undefined') {
+                alert('请先安装 MetaMask 钱包');
+                return;
+            }
+
+            try {
+                // 请求连接
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
+                // 初始化 provider
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                userAddress = accounts[0];
+                walletConnected = true;
+
+                // 更新 UI
+                updateWalletUI();
+                
+                // 加载数据
+                await refreshAllData();
+
+                // 监听账户变化
+                window.ethereum.on('accountsChanged', (accounts) => {
+                    if (accounts.length === 0) {
+                        walletConnected = false;
+                        userAddress = null;
+                    } else {
+                        userAddress = accounts[0];
+                    }
+                    updateWalletUI();
+                });
+
+                // 监听链变化
+                window.ethereum.on('chainChanged', () => {
+                    window.location.reload();
+                });
+
+            } catch (error) {
+                console.error('连接钱包失败:', error);
+                alert('连接钱包失败: ' + error.message);
+            }
+        }
+
+        function updateWalletUI() {
+            const main = document.getElementById('mainContent');
+            const btn = document.getElementById('walletBtn');
+            const text = document.getElementById('walletText');
+
+            if (walletConnected && userAddress) {
+                main.classList.remove('wallet-disconnected');
+                main.classList.add('wallet-connected');
+                // 更新邀请链接
+                updateInviteLink();
+                btn.className = 'px-4 py-2 rounded-full text-sm font-medium transition-all bg-pink-100 text-pink-700 border border-pink-200';
+                text.textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+            } else {
+                main.classList.remove('wallet-connected');
+                main.classList.add('wallet-disconnected');
+                btn.className = 'px-4 py-2 rounded-full text-sm font-medium transition-all bg-gray-100 text-gray-600 border border-gray-200';
+                text.textContent = '连接钱包';
+            }
+        }
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('page-' + pageName).classList.add('active');
+            document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+        }
+
+        function setMaxBurn() {
+            document.getElementById('burnAmount').value = '50000';
+            updateBurnPreview();
+        }
+
+        function updateBurnPreview() {
+            const amount = parseFloat(document.getElementById('burnAmount').value) || 0;
+            const l1 = amount * 0.10;
+            const l2 = amount * 0.05;
+            const burn = amount * 0.85;
+
+            document.getElementById('previewBurn').textContent = burn.toLocaleString() + ' REMIX';
+            document.getElementById('previewL1').textContent = l1.toLocaleString() + ' REMIX';
+            document.getElementById('previewL2').textContent = l2.toLocaleString() + ' REMIX';
+        }
+
+        // 生成公告列表
+        function generateAnnouncements() {
+            const list = document.getElementById('announcementList');
+            const announcements = [];
+
+            // 检查总销毁里程碑
+            ANNOUNCEMENTS.milestones.forEach(m => {
+                if (CURRENT_TOTAL_BURN >= m.threshold) {
+                    announcements.push({
+                        type: 'milestone',
+                        title: m.title,
+                        message: m.message,
+                        date: '已达成'
+                    });
+                }
+            });
+
+            // 检查今日销毁
+            ANNOUNCEMENTS.dailyMilestones.forEach(m => {
+                if (TODAY_BURN >= m.threshold) {
+                    announcements.push({
+                        type: 'daily',
+                        title: m.title,
+                        message: m.message,
+                        date: '今日',
+                        isNew: true
+                    });
+                }
+            });
+
+            // 添加手动公告
+            ANNOUNCEMENTS.manual.forEach(m => {
+                announcements.push({
+                    type: 'manual',
+                    title: m.title,
+                    message: m.message,
+                    date: m.date,
+                    isNew: m.isNew
+                });
+            });
+
+            // 渲染
+            list.innerHTML = announcements.slice(0, 5).map((a, i) => `
+                <div class="p-3 ${a.isNew ? 'bg-gradient-to-r from-pink-50 to-mint-50 border border-pink-100' : 'bg-gray-50'} rounded-xl">
+                    <div class="flex items-center gap-2 mb-2">
+                        ${a.isNew ? '<span class="px-2 py-0.5 bg-pink-500 text-white text-xs rounded">最新</span>' : ''}
+                        <span class="text-xs text-gray-400">${a.date}</span>
+                    </div>
+                    <div class="text-sm font-medium text-gray-800 mb-1">${a.title}</div>
+                    <div class="text-xs text-gray-500">${a.message}</div>
+                </div>
+            `).join('');
+        }
+
+        // 加载营销钱包余额（从多签地址读取）
+        async function loadMarketingWallet() {
+            if (!provider) return;
+            
+            // 从 Lens 读取营销钱包 slisBNB 余额
+            await loadMarketingStats();
+            
+            // 读取营销钱包 BNB 余额
+            await loadMarketingBnbBalance();
+        }
+
+        // 质押相关配置
+        const STAKE_CONFIG = {
+            threshold: 0.1, // 0.1 BNB 阈值
+            pendingBnb: 0, // 待质押 BNB（从链上读取）
+            autoNotify: true // 是否开启阈值提醒
+        };
+
+        // 检查质押阈值
+        function checkStakeThreshold() {
+            const progress = Math.min((STAKE_CONFIG.pendingBnb / STAKE_CONFIG.threshold) * 100, 100);
+            const stakeBtn = document.getElementById('stakeBtn');
+            const stakeStatus = document.getElementById('stakeStatus');
+            const stakeProgress = document.getElementById('stakeProgress');
+
+            if (stakeProgress) {
+                stakeProgress.style.width = progress + '%';
+            }
+
+            if (STAKE_CONFIG.pendingBnb >= STAKE_CONFIG.threshold) {
+                // 达到阈值
+                if (stakeStatus) {
+                    stakeStatus.textContent = '可触发';
+                    stakeStatus.className = 'px-2 py-1 bg-mint-100 text-mint-600 text-xs rounded-full';
+                }
+                if (stakeBtn) {
+                    stakeBtn.disabled = false;
+                    stakeBtn.textContent = '立即触发质押';
+                    stakeBtn.className = 'btn-primary w-full py-3 text-sm font-medium';
+                }
+            } else {
+                // 未达到阈值
+                if (stakeStatus) {
+                    stakeStatus.textContent = '未达阈值';
+                    stakeStatus.className = 'px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-full';
+                }
+                if (stakeBtn) {
+                    stakeBtn.disabled = true;
+                    stakeBtn.textContent = `还需 ${(STAKE_CONFIG.threshold - STAKE_CONFIG.pendingBnb).toFixed(2)} BNB`;
+                    stakeBtn.className = 'w-full py-3 text-sm font-medium rounded-2xl bg-gray-100 text-gray-400 cursor-not-allowed';
+                }
+            }
+        }
+
+        // 触发质押
+        async function triggerStake() {
+            if (!signer) {
+                alert('请先连接钱包');
+                return;
+            }
+            
+            const btn = document.getElementById('stakeBtn');
+            btn.textContent = '处理中...';
+            btn.disabled = true;
+
+            try {
+                // 使用金库合约 ABI 调用 stakePendingTax
+                const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
+                const tx = await vault.stakePendingTax();
+                await tx.wait();
+                
+                alert('质押成功！');
+                await refreshAllData();
+            } catch (error) {
+                console.error('质押失败:', error);
+                alert('质押失败: ' + error.message);
+            } finally {
+                checkStakeThreshold();
+            }
+        }
+
+        // 执行销毁
+        async function executeBurn() {
+            if (!signer) {
+                alert('请先连接钱包');
+                return;
+            }
+            
+            const amount = document.getElementById('burnAmount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                alert('请输入有效的销毁数量');
+                return;
+            }
+            
+            const btn = event.target;
+            btn.textContent = '处理中...';
+            btn.disabled = true;
+
+            try {
+                // 1. 先授权代币
+                const tokenAbi = [
+                    {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}
+                ];
+                const token = new ethers.Contract(CONTRACTS.TOKEN.address, tokenAbi, signer);
+                
+                const burnAmount = ethers.utils.parseEther(amount);
+                
+                // 授权给 BurnReferralDistributor
+                const approveTx = await token.approve(CONTRACTS.BURN_DISTRIBUTOR.address, burnAmount);
+                await approveTx.wait();
+                
+                // 2. 调用销毁
+                const distributor = new ethers.Contract(
+                    CONTRACTS.BURN_DISTRIBUTOR.address, 
+                    CONTRACTS.BURN_DISTRIBUTOR.abi, 
+                    signer
+                );
+                
+                // 获取邀请人地址（从专门的输入框）
+                const inviterInput = document.getElementById('inviterAddressInput');
+                const inviter = inviterInput && inviterInput.value && inviterInput.value.startsWith('0x') 
+                    ? inviterInput.value 
+                    : ethers.constants.AddressZero;
+                
+                const tx = await distributor.onBurn(userAddress, burnAmount, inviter);
+                await tx.wait();
+                
+                alert('销毁成功！');
+                document.getElementById('burnAmount').value = '';
+                updateBurnPreview();
+                await refreshAllData();
+            } catch (error) {
+                console.error('销毁失败:', error);
+                alert('销毁失败: ' + error.message);
+            } finally {
+                btn.textContent = '确认销毁';
+                btn.disabled = false;
+            }
+        }
+
+        // 领取奖励
+        async function claimReward(type) {
+            if (!signer) {
+                alert('请先连接钱包');
+                return;
+            }
+            
+            try {
+                const distributor = new ethers.Contract(
+                    CONTRACTS.BURN_DISTRIBUTOR.address, 
+                    CONTRACTS.BURN_DISTRIBUTOR.abi, 
+                    signer
+                );
+                
+                let tx;
+                if (type === 'burn') {
+                    tx = await distributor.claimBurnRewardFor(userAddress);
+                } else if (type === 'invite') {
+                    tx = await distributor.claimInviteRewardFor(userAddress);
+                } else {
+                    // TODO: 领取持币分红（通过金库合约）
+                    alert('持币分红领取功能待实现');
+                    return;
+                }
+                
+                await tx.wait();
+                alert('领取成功！');
+                await refreshAllData();
+            } catch (error) {
+                console.error('领取失败:', error);
+                alert('领取失败: ' + error.message);
+            }
+        }
+
+        // 请求通知权限
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        // 轮询检查阈值（每 30 秒）
+        setInterval(() => {
+            // 实际应从链上读取 pendingTaxAmount
+            checkStakeThreshold();
+        }, 30000);
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateBurnPreview();
+            generateAnnouncements();
+            loadMarketingWallet();
+            checkStakeThreshold();
+            
+            // 检查 URL 参数并自动填充邀请地址
+            checkAndFillInviter();
+            
+            // 如果已有 provider，自动刷新数据
+            if (typeof window.ethereum !== 'undefined') {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                // 先加载代币信息
+                loadTokenInfo();
+                refreshAllData();
+            } else {
+                // 没有钱包也尝试加载代币信息（使用默认配置）
+                loadTokenInfo();
+            }
+        });
+    </script>
+    <!-- Ethers.js -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</body>
+</html>
