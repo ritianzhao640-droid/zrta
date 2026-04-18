@@ -552,36 +552,18 @@
 
             <!-- 四类奖励卡片 -->
             <div class="space-y-3">
-                <!-- WBNB 持币分红 (1%) -->
-                <div class="card p-5">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                        </div>
-                        <div>
-                            <div class="font-semibold text-gray-800">持币分红（WBNB）</div>
-                            <div class="text-xs text-gray-500">来自 1% 税收分配</div>
-                            <div class="text-xs text-blue-500 mt-0.5">🔒 持币满 100 万 REMIX 达成资格</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="text-2xl font-bold text-blue-600" id="holderWbnbAmount">--</div>
-                            <div class="text-xs text-gray-400">WBNB</div>
-                        </div>
-                        <button onclick="claimReward('holderWbnb', event)" class="btn-secondary px-5 py-2 text-sm">领取</button>
-                    </div>
-                </div>
+                
 
-                <!-- slisBNB 持币分红 (20%) -->
+                <!-- 持币分红（最终到账 WBNB/BNB） -->
                 <div class="card p-5">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
                             <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div>
-                            <div class="font-semibold text-gray-800">持币分红（slisBNB）</div>
-                            <div class="text-xs text-gray-500">来自 20% 持币分配</div>
+                            <div class="font-semibold text-gray-800">持币分红（最终到账 WBNB/BNB）</div>
+                            <div class="text-xs text-gray-500">来自持币分配，最终到账 WBNB/BNB</div>
+                            <div class="text-xs text-amber-500 mt-0.5">🔒 持币满 <span id="holderWbnbMinShare">100万</span> REMIX 达成资格</div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
@@ -1093,7 +1075,23 @@
             TOKEN: {
                 address: "0xb8bf1754c7b102b6845f55d6e2f463b838bc7777",
                 symbol: "REMIX",
-                decimals: 18
+                decimals: 18,
+                abi: [
+                    {
+                        inputs: [{ internalType: "address", name: "account", type: "address" }],
+                        name: "balanceOf",
+                        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+                        stateMutability: "view",
+                        type: "function"
+                    },
+                    {
+                        inputs: [],
+                        name: "dividendContract",
+                        outputs: [{ internalType: "address", name: "", type: "address" }],
+                        stateMutability: "view",
+                        type: "function"
+                    }
+                ]
             },
             // Lens 查询接口
             LENS: {
@@ -1148,7 +1146,29 @@
                 ]
             },
             // WBNB 持币分红 (1%) 合约 ABI — 通过 vault.holderDividendContract() 获取地址
-                                    WBNB_DIVIDEND_ABI: []
+                                    WBNB_DIVIDEND_ABI: [
+                                      {
+                                        inputs: [{ internalType: "address", name: "user", type: "address" }],
+                                        name: "withdrawableDividends",
+                                        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+                                        stateMutability: "view",
+                                        type: "function",
+                                      },
+                                      {
+                                        inputs: [],
+                                        name: "withdrawDividends",
+                                        outputs: [{ internalType: "bool", name: "success", type: "bool" }],
+                                        stateMutability: "nonpayable",
+                                        type: "function",
+                                      },
+                                      {
+                                        inputs: [],
+                                        name: "minimumShareBalance",
+                                        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+                                        stateMutability: "view",
+                                        type: "function",
+                                      }
+                                    ]
         };
 
         // ==================== 公告配置 ====================
@@ -1169,6 +1189,30 @@
             ]
         };
 
+        // ==================== Dividend 地址解析工具 ====================
+        async function resolveDividendAddress(providerOrSigner) {
+          const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, providerOrSigner);
+
+          try {
+            const divAddr = await vault.holderDividendContract();
+            if (divAddr && divAddr !== ethers.constants.AddressZero) return divAddr;
+          } catch (e) {
+            console.warn("[resolveDividendAddress] vault.holderDividendContract failed:", e.message);
+          }
+
+          try {
+            const token = new ethers.Contract(CONTRACTS.TOKEN.address, CONTRACTS.TOKEN.abi, providerOrSigner);
+            const divAddr2 = await token.dividendContract();
+            if (divAddr2 && divAddr2 !== ethers.constants.AddressZero) return divAddr2;
+          } catch (e) {
+            console.warn("[resolveDividendAddress] token.dividendContract failed:", e.message);
+          }
+
+          return ethers.constants.AddressZero;
+        }
+
+        
+
         // ==================== 链上数据缓存 ====================
         let chainData = {
             totalBurned: 0,
@@ -1178,7 +1222,6 @@
             totalSlisReceived: 0,
             userRewards: {
                 holder: 0,
-                holderWbnb: 0,
                 burn: 0,
                 invite: 0
             },
@@ -1564,9 +1607,9 @@
 
                 // ====== 方法1: Vault 合约直接查询（实时）======
                 
-                // --- slisBNB 持币分红 (20%) — vault.pendingClaim(user) ---
+                // --- 持币分红（最终到账 WBNB/BNB） — vault.pendingClaim(user) ---
                 let holderReward = ethers.BigNumber.from(0);
-                try { holderReward = await vault.pendingClaim(userAddress); } catch (e) { console.warn('[slisNB持币] pendingClaim 失败:', e.message?.slice(0, 80)); }
+                try { holderReward = await vault.pendingClaim(userAddress); console.log("[holder] pending =", holderReward.toString()); } catch (e) { console.warn('[slisNB持币] pendingClaim 失败:', e.message?.slice(0, 80)); }
                 chainData.userRewards.holder = holderReward;
                 
                 // 额外诊断：pendingHolderSlis() 对比
@@ -1581,12 +1624,12 @@
 
                 // --- 燃烧分红 ---
                 let burnReward = ethers.BigNumber.from(0);
-                try { burnReward = await vault.pendingBurnReward(userAddress); } catch (e) { console.warn('[燃烧分红] pendingBurnReward 失败:', e.message?.slice(0, 80)); }
+                try { burnReward = await vault.pendingBurnReward(userAddress); console.log("[burn] pending =", burnReward.toString()); } catch (e) { console.warn('[燃烧分红] pendingBurnReward 失败:', e.message?.slice(0, 80)); }
                 chainData.userRewards.burn = burnReward;
 
                 // --- 邀请返佣 ---
                 let inviteReward = ethers.BigNumber.from(0);
-                try { inviteReward = await vault.pendingInviteReward(userAddress); } catch (e) { console.warn('[邀请返佣] pendingInviteReward 失败:', e.message?.slice(0, 80)); }
+                try { inviteReward = await vault.pendingInviteReward(userAddress); console.log("[invite] pending =", inviteReward.toString()); } catch (e) { console.warn('[邀请返佣] pendingInviteReward 失败:', e.message?.slice(0, 80)); }
                 chainData.userRewards.invite = inviteReward;
 
                 // ====== 方法2: overview() 交叉验证（已禁用 — 实际合约的 overview() 返回结构未知）======
@@ -1622,21 +1665,26 @@
                 // Lens 持币分红值也打出来
                 console.log(`[对比] 持币分红-Lens: ${ethers.utils.formatEther(stats.pendingHolderRewardAmount || 0)} | 燃烧分红-Lens: ${ethers.utils.formatEther(stats.pendingBurnRewardAmount || 0)} | 邀请返佣-Lens: ${ethers.utils.formatEther(stats.pendingInviteRewardAmount || 0)}`);
 
-                // ====== WBNB 持币分红 (1%) — 通过独立分红合约 =====
-                let wbnbHolderReward = ethers.BigNumber.from(0);
+                // ====== WBNB 持币分红资格检查 — 通过独立分红合约读取 minimumShareBalance =====
                 try {
-                    const divAddr = await vault.holderDividendContract();
-                    if (divAddr && divAddr !== ethers.constants.AddressZero) {
-                        const divContract = new ethers.Contract(divAddr, CONTRACTS.WBNB_DIVIDEND_ABI, provider);
-                        wbnbHolderReward = await divContract.withdrawableDividends(userAddress);
+                    const divAddr = await resolveDividendAddress(provider);
+                    console.log("[holderWbnb] dividend addr =", divAddr);
+                    if (!divAddr || divAddr === ethers.constants.AddressZero) {
+                        // 无分红合约配置
+                    } else {
+                        const divContract = new ethers.Contract(divAddr, WBNB_DIVIDEND_ABI, provider);
+                        // 读取minimumShareBalance并更新UI
+                        try {
+                            const minShare = await divContract.minimumShareBalance();
+                            const minShareFormatted = formatEther(minShare, 0);
+                            const minShareEl = document.getElementById('holderWbnbMinShare');
+                            if (minShareEl) minShareEl.textContent = minShareFormatted;
+                        } catch (e) {
+                            console.warn('[holderWbnb] minimumShareBalance读取失败:', e.message);
+                        }
                     }
-                    chainData.userRewards.holderWbnb = wbnbHolderReward;
-                    const wbnbEl = document.getElementById('holderWbnbAmount');
-                    if (wbnbEl) wbnbEl.textContent = formatEther(wbnbHolderReward, 6);
                 } catch (e) {
-                    console.warn('[WBNB持币分红] 读取失败:', e.message?.slice(0, 80));
-                    const wbnbEl = document.getElementById('holderWbnbAmount');
-                    if (wbnbEl) wbnbEl.textContent = '0';
+                    console.warn('[WBNB持币分红] 资格检查失败:', e.message?.slice(0, 80));
                 }
                 
                 // 更新用户持有代币数量显示
@@ -1647,14 +1695,12 @@
                 }
 
                 // 更新收益页 — 总奖励
-                const _wbnbRwd = (wbnbHolderReward && typeof wbnbHolderReward.add === 'function') ? wbnbHolderReward : ethers.BigNumber.from(0);
                 const totalRewards = parseFloat(formatEther(
-                    _wbnbRwd
-                        .add(chainData.userRewards.holder || 0)
+                    (chainData.userRewards.holder || ethers.BigNumber.from(0))
                         .add(chainData.userRewards.burn || 0)
                         .add(chainData.userRewards.invite || 0)
                     , 4));
-                console.log('[总奖励计算] wbnb:', _wbnbRwd.toString(), 'holder:', chainData.userRewards.holder?.toString(), 'burn:', chainData.userRewards.burn?.toString(), 'invite:', chainData.userRewards.invite?.toString(), 'total:', totalRewards);
+                console.log('[总奖励计算] holder:', chainData.userRewards.holder?.toString(), 'burn:', chainData.userRewards.burn?.toString(), 'invite:', chainData.userRewards.invite?.toString(), 'total:', totalRewards);
                 const totalRewardEl = document.getElementById('totalRewardAmount');
                 if (totalRewardEl) {
                     if (isNaN(totalRewards) || totalRewards <= 0) {
@@ -3370,43 +3416,24 @@
                 let successCount = 0;
                 const results = [];
 
-                // ===== 1. WBNB 持币分红 (1%) — 通过独立分红合约 =====
-                try {
-                    const divAddr = await vault.holderDividendContract();
-                    if (divAddr && divAddr !== ethers.constants.AddressZero) {
-                        const divContract = new ethers.Contract(divAddr, CONTRACTS.WBNB_DIVIDEND_ABI, signer);
-                        const pendingWbnb = await divContract.withdrawableDividends(userAddress);
-                        if (!pendingWbnb.isZero() && parseFloat(ethers.utils.formatEther(pendingWbnb)) > 0) {
-                            await divContract.withdrawDividends();
-                            successCount++;
-                            results.push('WBNB持币分红 ✓');
-                        } else {
-                            results.push('WBNB持币分红: 无可领取');
-                        }
-                    } else {
-                        results.push('WBNB持币分红: 合约未配置');
-                    }
-                } catch (e) {
-                    console.warn('一键-WBNB持币分红:', e.message?.slice(0, 80));
-                    results.push('WBNB持币分红: ' + (e.code === 'CALL_EXCEPTION' ? '无可领取' : '失败'));
-                }
+                
 
-                // ===== 2. slisBNB 持币分红 (20%) — vault.claim() =====
+                // ===== 1. 持币分红（最终到账 WBNB/BNB） — vault.claim() =====
                 try {
                     const pendingHolder = await vault.pendingClaim(userAddress);
                     if (!pendingHolder.isZero() && parseFloat(ethers.utils.formatEther(pendingHolder)) > 0) {
                         await vault.claim();
                         successCount++;
-                        results.push('slisBNB持币分红 ✓');
+                        results.push('持币分红 ✓');
                     } else {
-                        results.push('slisBNB持币分红: 无可领取');
+                        results.push('持币分红: 无可领取');
                     }
                 } catch (e) {
-                    console.warn('一键-slisBNB持币分红:', e.message?.slice(0, 80));
-                    results.push('slisBNB持币分红: ' + (e.code === 'CALL_EXCEPTION' ? '无可领取' : '失败'));
+                    console.warn('一键-持币分红:', e.message?.slice(0, 80));
+                    results.push('持币分红: ' + (e.code === 'CALL_EXCEPTION' ? '无可领取' : '失败'));
                 }
 
-                // ===== 3. 燃烧分红 — vault.claimBurnReward() =====
+                // ===== 2. 燃烧分红 — vault.claimBurnReward() =====
                 try {
                     const pendingBurn = await vault.pendingBurnReward(userAddress);
                     if (!pendingBurn.isZero() && parseFloat(ethers.utils.formatEther(pendingBurn)) > 0) {
@@ -3421,9 +3448,9 @@
                     results.push('销毁分红: 失败');
                 }
 
-                // ===== 4. 邀请返佣 — 双合约读取 + 双重领取保障 =====
+                // ===== 3. 邀请返佣 — 双合约读取 + 双重领取保障 =====
                 try {
-                    const distContract = new ethers.Contract(CONTRACTS.BURN_DISTRIBUTOR.address, CONTRACTS.BURN_DISTRIBUTOR.abi, provider);
+                    const distContract = new ethers.Contract(CONTRACTS.BURN_DISTRIBUTOR.address, CONTRACTS.BURN_DISTRIBUTOR.abi, signer);
                     let pendingInvite = await vault.pendingInviteReward(userAddress);
                     // Vault 返回 0 时回退到 Distributor
                     if (pendingInvite.isZero()) {
@@ -3469,49 +3496,21 @@
 
             try {
                 if (type === 'holder') {
-                    // slisBNB 持币分红 (20%)
+                    // 持币分红（最终到账 WBNB/BNB）
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
-                    let pendingAmount = ethers.BigNumber.from(0);
-                    try { pendingAmount = await vault.pendingClaim(userAddress); } catch (e) { console.warn('[slisBNB] check failed:', e.message?.slice(0, 60)); }
-                    const num = parseFloat(ethers.utils.formatEther(pendingAmount));
-                    console.log(`[slisBNB持币] pendingClaim = ${num}`);
-                    if (num <= 0 || pendingAmount.isZero()) {
-                        showToast('当前 slisBNB 持币分红为 0\n来源：20% slisBNB 分配池', 'info', 3000);
-                        btn.textContent = originalText; btn.disabled = false; return;
-                    }
+                    const pending = await vault.pendingClaim(userAddress);
+                    console.log("[holder] pending =", pending.toString());
+                    if (pending.isZero()) throw new Error("NoReward");
                     const tx = await vault.claim();
                     showToast('交易提交中...', 'info', 1500); await tx.wait();
-                    showToast('slisBNB 持币分红领取成功！✅', 'success');
+                    showToast('持币分红领取成功！✅', 'success');
 
-                } else if (type === 'holderWbnb') {
-                    // WBNB 持币分红 (1%)
-                    const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
-                    const divAddr = await vault.holderDividendContract();
-                    if (!divAddr || divAddr === ethers.constants.AddressZero) {
-                        showToast('WBNB 分红合约未配置', 'error'); btn.textContent = originalText; btn.disabled = false; return;
-                    }
-                    const divContract = new ethers.Contract(divAddr, CONTRACTS.WBNB_DIVIDEND_ABI, signer);
-                    let pendingAmount = ethers.BigNumber.from(0);
-                    try { pendingAmount = await divContract.withdrawableDividends(userAddress); } catch (e) {}
-                    const num = parseFloat(ethers.utils.formatEther(pendingAmount));
-                    if (num <= 0 || pendingAmount.isZero()) {
-                        showToast('当前 WBNB 持币分红为 0\n资格：持币满100万REMIX', 'info', 3000);
-                        btn.textContent = originalText; btn.disabled = false; return;
-                    }
-                    const tx = await divContract.withdrawDividends();
-                    showToast('交易提交中...', 'info', 1500); await tx.wait();
-                    showToast('WBNB 持币分红领取成功！💰', 'success');
-
-                } else if (type === 'burn') {
+                 else if (type === 'burn') {
                     // 燃烧分红
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
-                    let pendingAmount = ethers.BigNumber.from(0);
-                    try { pendingAmount = await vault.pendingBurnReward(userAddress); } catch (e) {}
-                    const num = parseFloat(ethers.utils.formatEther(pendingAmount));
-                    if (num <= 0 || pendingAmount.isZero()) {
-                        showToast('当前燃烧分红为 0\n需先销毁代币才能获分红', 'info', 3000);
-                        btn.textContent = originalText; btn.disabled = false; return;
-                    }
+                    const pending = await vault.pendingBurnReward(userAddress);
+                    console.log("[burn] pending =", pending.toString());
+                    if (pending.isZero()) throw new Error("NoReward");
                     const tx = await vault.claimBurnReward();
                     showToast('交易提交中...', 'info', 1500); await tx.wait();
                     showToast('燃烧分红领取成功！🔥', 'success');
@@ -3520,35 +3519,24 @@
                     // 邀请返佣 — 双合约读取 + 双重领取保障
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
                     const distributor = new ethers.Contract(
-                        CONTRACTS.BURN_DISTRIBUTOR.address, CONTRACTS.BURN_DISTRIBUTOR.abi, signer
+                        CONTRACTS.BURN_DISTRIBUTOR.address,
+                        CONTRACTS.BURN_DISTRIBUTOR.abi,
+                        signer
                     );
 
-                    let pendingAmount = ethers.BigNumber.from(0);
-                    // 先从 Vault 查询（快捷方法）
-                    try { pendingAmount = await vault.pendingInviteReward(userAddress); } catch (e) {
-                        console.warn('[邀请] Vault查询失败，尝试Distributor:', e.message?.slice(0, 60));
+                    let pending = await vault.pendingInviteReward(userAddress);
+                    if (pending.isZero()) {
+                        pending = await distributor.pendingInviteReward(userAddress);
                     }
-                    // 如果 Vault 返回 0，再从 Distributor 直接查（权威数据源）
-                    if (pendingAmount.isZero()) {
-                        try { pendingAmount = await distributor.pendingInviteReward(userAddress); } catch (e2) {}
-                    }
+                    console.log("[invite] pending =", pending.toString());
+                    if (pending.isZero()) throw new Error("NoReward");
 
-                    const num = parseFloat(ethers.utils.formatEther(pendingAmount));
-                    console.log(`[邀请返佣] 待领取: ${num} slisBNB`);
-
-                    if (num <= 0 || pendingAmount.isZero()) {
-                        showToast('当前邀请返佣为 0\n下级用户销毁时产生返佣', 'info', 3000);
-                        btn.textContent = originalText; btn.disabled = false; return;
-                    }
-
-                    // 尝试 Vault 级快捷领取
                     try {
                         const tx = await vault.claimInviteReward();
                         showToast('交易提交中...', 'info', 1500); await tx.wait();
                         showToast('邀请返佣领取成功！🤝', 'success');
-                    } catch (vaultErr) {
-                        console.warn('[邀请] Vault领取失败，尝试Distributor直接领:', vaultErr.message?.slice(0, 80));
-                        // 回退：直接从 Distributor 合约领取
+                    } catch (e) {
+                        console.warn('[邀请] Vault领取失败，尝试Distributor直接领:', e.message?.slice(0, 80));
                         const tx2 = await distributor.claimInviteRewardFor(userAddress);
                         showToast('交易提交中...', 'info', 1500); await tx2.wait();
                         showToast('邀请返佣领取成功！🤝', 'success');
