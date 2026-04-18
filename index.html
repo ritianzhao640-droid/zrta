@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MEYieldVault</title>
+    <meta name="description" content="MEYieldVault - 基于BSC链的DeFi质押平台，提供SLIS-BNB/WBNB分红、销毁奖励、邀请奖励和排行榜功能。">
+    <meta name="keywords" content="DeFi, BSC, 质押, 分红, 销毁奖励, 邀请奖励, REMIX代币">
+    <meta property="og:title" content="MEYieldVault">
+    <meta property="og:description" content="MEYieldVault - 基于BSC链的DeFi质押平台">
+    <meta property="og:url" content="https://zrta.asia">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://zrta.asia">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -367,7 +374,7 @@
                 </div>
                 <div class="text-3xl font-bold gradient-green-text mb-1" id="totalStakedValue">--</div>
                 <div class="text-sm text-gray-400" id="totalSlisAmount">≈ -- slisBNB</div>
-                <div class="mt-4 grid grid-cols-3 gap-2">
+                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     <div class="bg-pink-50 rounded-xl p-3">
                         <div class="text-xs text-gray-500 mb-1">待质押 BNB</div>
                         <div class="text-base font-semibold text-pink-600" id="pendingBnb">--</div>
@@ -487,7 +494,7 @@
             </div>
 
             <!-- 我的资产 -->
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="card p-4">
                     <div class="flex items-center gap-2 mb-2">
                         <div class="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center">
@@ -644,7 +651,7 @@
             <!-- 我的销毁统计 -->
             <div class="card p-5">
                 <h3 class="font-semibold text-gray-800 mb-4">我的销毁统计</h3>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div class="bg-pink-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">累计销毁</div>
                         <div class="text-xl font-bold text-pink-600" id="myCumulativeBurn">--</div>
@@ -728,7 +735,7 @@
                 </div>
 
                 <!-- 邀请统计 -->
-                <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     <div class="text-center p-3 glass-subtle rounded-xl">
                         <div class="text-2xl font-bold text-pink-600" id="l1InviteCount">--</div>
                         <div class="text-xs text-gray-500">L1 邀请</div>
@@ -880,7 +887,7 @@
                 </div>
                 
                 <!-- 社区数据概览 -->
-                <div class="grid grid-cols-3 gap-2 mb-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-5">
                     <div class="text-center p-3 bg-pink-50 rounded-xl">
                         <div class="text-lg font-bold text-pink-600" id="holderCount">--</div>
                         <div class="text-xs text-gray-500">持币地址</div>
