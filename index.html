@@ -401,7 +401,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-pink-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">累计销毁</div>
-                        <div class="text-xl font-bold text-pink-600">500,000</div>
+                        <div class="text-xl font-bold text-pink-600" id="myCumulativeBurn">--</div>
                         <div class="text-xs text-gray-400">REMIX</div>
                     </div>
                     <div class="bg-mint-50 rounded-xl p-4">
@@ -1409,10 +1409,10 @@
                 if (inviteRewardEl) inviteRewardEl.textContent = formatEther(pendingInviteReward, 4);
                 
                 // 更新销毁页统计
-                const userBurnedEl = document.querySelector('#page-burn .text-xl.font-bold.text-pink-600');
+                const userBurnedEl = document.getElementById('myCumulativeBurn');
                 if (userBurnedEl) {
                     const burnedNum = parseFloat(ethers.utils.formatEther(burnInfo.rawBurned));
-                    userBurnedEl.textContent = burnedNum.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                    userBurnedEl.textContent = formatCN(burnedNum, 1);
                 }
                 
                 const burnWeightEl = document.querySelector('#page-burn .text-xl.font-bold.text-mint-600');
@@ -1952,32 +1952,37 @@
             btn.disabled = true;
 
             try {
-                // 1. 先授权代币
+                // 1. 先授权代币给 Vault 合约（Vault 会内部调用 distributor）
                 const tokenAbi = [
-                    {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}
+                    {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+                    {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
                 ];
                 const token = new ethers.Contract(CONTRACTS.TOKEN.address, tokenAbi, signer);
                 
                 const burnAmount = ethers.utils.parseEther(amount);
                 
-                // 授权给 BurnReferralDistributor
-                const approveTx = await token.approve(CONTRACTS.BURN_DISTRIBUTOR.address, burnAmount);
-                await approveTx.wait();
+                // 检查当前授权额度，不足时才发起授权
+                const currentAllowance = await token.allowance(userAddress, CONTRACTS.VAULT.address);
+                if (currentAllowance.lt(burnAmount)) {
+                    // 授权给 Vault 合约
+                    const approveTx = await token.approve(CONTRACTS.VAULT.address, ethers.constants.MaxUint256);
+                    await approveTx.wait();
+                }
                 
-                // 2. 调用销毁
-                const distributor = new ethers.Contract(
-                    CONTRACTS.BURN_DISTRIBUTOR.address, 
-                    CONTRACTS.BURN_DISTRIBUTOR.abi, 
+                // 2. 通过 Vault 合约执行销毁（Vault 内部会调用 distributor.onBurn）
+                const vault = new ethers.Contract(
+                    CONTRACTS.VAULT.address,
+                    CONTRACTS.VAULT_ABI,
                     signer
                 );
                 
-                // 获取邀请人地址（从专门的输入框）
+                // 获取邀请人地址
                 const inviterInput = document.getElementById('inviterAddressInput');
                 const inviter = inviterInput && inviterInput.value && inviterInput.value.startsWith('0x') 
                     ? inviterInput.value 
                     : ethers.constants.AddressZero;
                 
-                const tx = await distributor.onBurn(userAddress, burnAmount, inviter);
+                const tx = await vault.burn(burnAmount, inviter);
                 await tx.wait();
                 
                 alert('销毁成功！');
