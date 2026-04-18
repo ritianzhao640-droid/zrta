@@ -168,8 +168,9 @@
                 </div>
                 <span id="appTitle" class="font-bold text-lg gradient-green-text">REMIX生态中心</span>
             </div>
-            <button id="walletBtn" onclick="toggleWallet()" class="px-4 py-2 rounded-full text-sm font-medium transition-all border">
+            <button id="walletBtn" onclick="toggleWallet()" class="px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5">
                 <span id="walletText">连接钱包</span>
+                <span id="walletSlisDisplay" class="hidden text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full font-medium">--</span>
             </button>
         </div>
     </header>
@@ -957,6 +958,20 @@
             return num.toLocaleString('en-US', { maximumFractionDigits: decimals });
         }
 
+        // 中文数字格式化：170000 → 17万, 123456789 → 1.23亿
+        function formatCN(num, decimals = 2) {
+            if (num === null || num === undefined || isNaN(num)) return '--';
+            num = parseFloat(num);
+            if (num === 0) return '0';
+            const abs = Math.abs(num);
+            if (abs >= 100000000) {
+                return (num / 100000000).toFixed(decimals).replace(/\.?0+$/, '') + '亿';
+            } else if (abs >= 10000) {
+                return (num / 10000).toFixed(decimals).replace(/\.?0+$/, '') + '万';
+            }
+            return num.toLocaleString('en-US', { maximumFractionDigits: decimals > 0 ? Math.min(decimals, 2) : 0 });
+        }
+
         // slisBNB 价格缓存
         let slisBNBPrice = 0;
         
@@ -1062,17 +1077,11 @@
                 chainData.burnWeight = stats.burnWeightValue;
                 chainData.userTokenBalance = stats.tokenBalance;
                 
-                // 更新用户持有代币数量显示
+                // 更新用户持有代币数量显示（中文格式）
                 const tokenBalanceEl = document.getElementById('userTokenBalance');
                 if (tokenBalanceEl) {
                     const balance = parseFloat(ethers.utils.formatEther(stats.tokenBalance));
-                    if (balance >= 1000000) {
-                        tokenBalanceEl.textContent = (balance / 1000000).toFixed(2) + 'M';
-                    } else if (balance >= 1000) {
-                        tokenBalanceEl.textContent = (balance / 1000).toFixed(2) + 'K';
-                    } else {
-                        tokenBalanceEl.textContent = balance.toLocaleString('en-US', { maximumFractionDigits: 2 });
-                    }
+                    tokenBalanceEl.textContent = formatCN(balance, 1);
                 }
                 
                 // 更新收益页
@@ -1084,17 +1093,11 @@
                     totalRewardEl.textContent = '$' + totalRewards.toLocaleString();
                 }
                 
-                // 更新销毁页余额显示
+                // 更新销毁页余额显示（中文格式）
                 const burnBalanceEl = document.getElementById('burnTokenBalance');
                 if (burnBalanceEl) {
                     const bal = parseFloat(ethers.utils.formatEther(stats.tokenBalance));
-                    if (bal >= 1000000) {
-                        burnBalanceEl.textContent = (bal / 1000000).toFixed(2) + 'M';
-                    } else if (bal >= 1000) {
-                        burnBalanceEl.textContent = (bal / 1000).toFixed(2) + 'K';
-                    } else {
-                        burnBalanceEl.textContent = bal.toLocaleString('en-US', { maximumFractionDigits: 2 });
-                    }
+                    burnBalanceEl.textContent = formatCN(bal, 1);
                 }
                 
                 // 更新各奖励
@@ -1314,7 +1317,7 @@
                 leaderboardEl.innerHTML = sorted.map(([addr, amount], i) => {
                     const isFirst = i === 0;
                     const weightPct = totalBurned > 0 ? (amount / totalBurned * 100).toFixed(1) : '0';
-                    const amountStr = amount >= 1000000 ? (amount / 1000000).toFixed(2) + 'M' : amount.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                    const amountStr = formatCN(amount, 1);
                     const shortAddr = addr.slice(0, 6) + '...' + addr.slice(-4);
                     return `
                         <div class="flex items-center gap-3 p-3 ${isFirst ? 'bg-pink-50 rounded-xl border border-pink-100' : 'bg-gray-50 rounded-xl'}">
@@ -1456,41 +1459,47 @@
 
         // 刷新所有数据（并行优化版）
         async function refreshAllData() {
-            // 第一批：无依赖的并行加载
-            const batch1 = Promise.allSettled([
+            // 手机端优化：所有无依赖的调用全部并行，不串行等待
+            // UI 在每批数据返回后立即更新（渐进式渲染），不等全部完成
+
+            const startTime = performance.now();
+
+            // 第一批：纯链上读取，完全并行
+            const batch1 = await Promise.allSettled([
                 loadTokenSupply(),
                 loadGlobalStats(),
                 loadBurnStats(),
                 loadMarketingStats()
             ]);
-            
-            // 第二批：依赖第一批的部分（Distributor 读取 + 社区统计）
-            await batch1;
-            const batch2 = Promise.allSettled([
-                loadBurnDistributorStats(),   // 内含排行榜渲染
-                loadCommunityStats()          // BscScan + GeckoTerminal HTTP
-            ]);
-            await batch2;
-            
-            // 更新公告系统变量
+
+            // 第一批数据回来就立即刷新公告和看板（不等后续批次）
             CURRENT_TOTAL_BURN = parseFloat(ethers.utils.formatEther(chainData.totalBurned || 0));
             generateAnnouncements();
-            
-            // 第三批：数据看板页（复用已缓存的数据）
-            await loadStatsPage();
-            
-            // 第四批：用户相关（需钱包连接）
+            loadStatsPage(); // 不await，让它在后台跑
+
+            // 第二批：Distributor + 社区数据（与看板页并行）
+            const [batch2, _statsPage] = await Promise.allSettled([
+                Promise.allSettled([
+                    loadBurnDistributorStats(),
+                    loadCommunityStats()
+                ]),
+                loadStatsPage() // 确保看板页完成
+            ]);
+
+            // 第三批：用户相关（需钱包连接）—— 与上面并行启动
             if (userAddress) {
-                // 用户数据并行加载
-                await Promise.allSettled([
+                const userTasks = [
                     loadUserStats(),
                     loadInviteStats(),
-                    loadUserBurnDistributorStats()
-                ]);
-                
-                // 营销钱包 USD 等价金额更新（在所有余额读取完成后）
-                await updateMarketingUsdValue();
+                    loadUserBurnDistributorStats(),
+                    updateMarketingUsdValue()
+                ];
+                await Promise.allSettled(userTasks);
+                // 用户数据回来后更新 slisBNB 余额显示到钱包按钮
+                updateWalletSlisDisplay();
             }
+
+            console.log(`refreshAllData 完成, 耗时 ${(performance.now() - startTime).toFixed(0)}ms`);
         }
 
         let walletConnected = false;
@@ -1554,19 +1563,22 @@
             const main = document.getElementById('mainContent');
             const btn = document.getElementById('walletBtn');
             const text = document.getElementById('walletText');
+            const slisEl = document.getElementById('walletSlisDisplay');
 
             if (walletConnected && userAddress) {
                 main.classList.remove('wallet-disconnected');
                 main.classList.add('wallet-connected');
                 // 更新邀请链接
                 updateInviteLink();
-                btn.className = 'px-4 py-2 rounded-full text-sm font-medium transition-all bg-pink-100 text-pink-700 border border-pink-200';
+                btn.className = 'px-3 py-2 rounded-full text-sm font-medium transition-all bg-pink-100 text-pink-700 border border-pink-200 flex items-center gap-1.5';
                 text.textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+                // slisBNB 显示由 refreshAllData 完成后调用 updateWalletSlisDisplay
             } else {
                 main.classList.remove('wallet-connected');
                 main.classList.add('wallet-disconnected');
                 btn.className = 'px-4 py-2 rounded-full text-sm font-medium transition-all bg-gray-100 text-gray-600 border border-gray-200';
                 text.textContent = '连接钱包';
+                if (slisEl) slisEl.classList.add('hidden');
             }
         }
 
@@ -1672,7 +1684,7 @@
                 const totalBurnEl = document.getElementById('statsTotalBurn');
                 if (totalBurnEl && chainData.totalBurned > 0) {
                     const burned = parseFloat(ethers.utils.formatEther(chainData.totalBurned));
-                    totalBurnEl.textContent = burned >= 1000000 ? (burned / 1000000).toFixed(1) + 'M' : burned.toLocaleString();
+                    totalBurnEl.textContent = formatCN(burned, 1);
                 }
 
                 // 2. 总奖励发放（从 BurnReferralDistributor 读取）
@@ -2002,7 +2014,7 @@
             }
         }
 
-        // 领取奖励
+        // 领取奖励（单独领取）
         async function claimReward(type) {
             if (!signer) {
                 alert('请先连接钱包');
@@ -2010,29 +2022,69 @@
             }
             
             try {
-                const distributor = new ethers.Contract(
-                    CONTRACTS.BURN_DISTRIBUTOR.address, 
-                    CONTRACTS.BURN_DISTRIBUTOR.abi, 
-                    signer
-                );
-                
-                let tx;
                 if (type === 'burn') {
-                    tx = await distributor.claimBurnRewardFor(userAddress);
+                    const distributor = new ethers.Contract(
+                        CONTRACTS.BURN_DISTRIBUTOR.address,
+                        CONTRACTS.BURN_DISTRIBUTOR.abi,
+                        signer
+                    );
+                    const tx = await distributor.claimBurnRewardFor(userAddress);
+                    await tx.wait();
+                    alert('销毁分红领取成功！');
                 } else if (type === 'invite') {
-                    tx = await distributor.claimInviteRewardFor(userAddress);
+                    const distributor = new ethers.Contract(
+                        CONTRACTS.BURN_DISTRIBUTOR.address,
+                        CONTRACTS.BURN_DISTRIBUTOR.abi,
+                        signer
+                    );
+                    const tx = await distributor.claimInviteRewardFor(userAddress);
+                    await tx.wait();
+                    alert('邀请返佣领取成功！');
+                } else if (type === 'holder') {
+                    // 持币分红通过 Vault 合约的 claim() 方法
+                    const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
+                    const tx = await vault.claim();
+                    await tx.wait();
+                    alert('持币分红领取成功！');
                 } else {
-                    // TODO: 领取持币分红（通过金库合约）
-                    alert('持币分红领取功能待实现');
+                    alert('未知奖励类型');
                     return;
                 }
                 
-                await tx.wait();
-                alert('领取成功！');
                 await refreshAllData();
             } catch (error) {
                 console.error('领取失败:', error);
-                alert('领取失败: ' + error.message);
+                // 过滤掉"无可领取"的正常提示
+                const msg = error.message || '';
+                if (msg.includes('nothing to claim') || msg.includes('0 reward') || msg.includes('no reward') || 
+                    msg.includes('already claimed') || msg.includes('zero')) {
+                    alert('当前该类奖励为空，无需领取');
+                } else {
+                    alert('领取失败: ' + (error.reason || msg));
+                }
+            }
+        }
+
+        // 更新钱包区域的 slisBNB 余额显示
+        function updateWalletSlisDisplay() {
+            const walletSlisEl = document.getElementById('walletSlisDisplay');
+            if (!walletSlisEl) return;
+
+            if (!userAddress) {
+                walletSlisEl.classList.add('hidden');
+                return;
+            }
+
+            const holderReward = chainData.userRewards.holder ? parseFloat(ethers.utils.formatEther(chainData.userRewards.holder.toString())) : 0;
+            const burnReward = chainData.userRewards.burn ? parseFloat(ethers.utils.formatEther(chainData.userRewards.burn.toString())) : 0;
+            const inviteReward = chainData.userRewards.invite ? parseFloat(ethers.utils.formatEther(chainData.userRewards.invite.toString())) : 0;
+            const total = holderReward + burnReward + inviteReward;
+
+            if (total > 0.0001) {
+                walletSlisEl.classList.remove('hidden');
+                walletSlisEl.textContent = total < 100 ? total.toFixed(2) + ' sBNB' : formatCN(total, 1);
+            } else {
+                walletSlisEl.classList.add('hidden');
             }
         }
 
