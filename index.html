@@ -529,7 +529,7 @@
                             <div class="text-2xl font-bold text-blue-600" id="holderWbnbAmount">--</div>
                             <div class="text-xs text-gray-400">WBNB</div>
                         </div>
-                        <button onclick="claimReward('holderWbnb')" class="btn-secondary px-5 py-2 text-sm">领取</button>
+                        <button onclick="claimReward('holderWbnb', event)" class="btn-secondary px-5 py-2 text-sm">领取</button>
                     </div>
                 </div>
 
@@ -549,7 +549,7 @@
                             <div class="text-2xl font-bold text-amber-600" id="holderRewardAmount">--</div>
                             <div class="text-xs text-gray-400">slisBNB</div>
                         </div>
-                        <button onclick="claimReward('holder')" class="btn-secondary px-5 py-2 text-sm">领取</button>
+                        <button onclick="claimReward('holder', event)" class="btn-secondary px-5 py-2 text-sm">领取</button>
                     </div>
                 </div>
 
@@ -568,7 +568,7 @@
                             <div class="text-2xl font-bold text-pink-600" id="burnRewardAmount">--</div>
                             <div class="text-xs text-gray-400">slisBNB</div>
                         </div>
-                        <button onclick="claimReward('burn')" class="btn-secondary px-5 py-2 text-sm">领取</button>
+                        <button onclick="claimReward('burn', event)" class="btn-secondary px-5 py-2 text-sm">领取</button>
                     </div>
                 </div>
 
@@ -587,7 +587,7 @@
                             <div class="text-2xl font-bold text-mint-600" id="inviteRewardAmount">--</div>
                             <div class="text-xs text-gray-400">slisBNB</div>
                         </div>
-                        <button onclick="claimReward('invite')" class="btn-secondary px-5 py-2 text-sm">领取</button>
+                        <button onclick="claimReward('invite', event)" class="btn-secondary px-5 py-2 text-sm">领取</button>
                     </div>
                 </div>
             </div>
@@ -637,7 +637,7 @@
                         </div>
                     </div>
 
-                    <button onclick="executeBurn()" class="btn-primary w-full py-4 text-base">确认销毁</button>
+                    <button onclick="executeBurn(event)" class="btn-primary w-full py-4 text-base">确认销毁</button>
                 </div>
             </div>
 
@@ -747,7 +747,7 @@
                 <div class="p-3 rounded-xl" style="background: linear-gradient(135deg, rgba(167, 243, 208, 0.5) 0%, rgba(252, 231, 243, 0.5) 100%);">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-600">待领取返佣</span>
-                        <button onclick="claimReward('invite')" class="btn-secondary px-4 py-1.5 text-xs font-medium rounded-lg">领取</button>
+                        <button onclick="claimReward('invite', event)" class="btn-secondary px-4 py-1.5 text-xs font-medium rounded-lg">领取</button>
                     </div>
                     <div class="flex items-center justify-between mt-1">
                         <div class="text-2xl font-bold gradient-green-text" id="invitePendingReward">--</div>
@@ -3188,7 +3188,7 @@
         }
 
         // 执行销毁
-        async function executeBurn() {
+        async function executeBurn(event) {
             if (!signer) { showToast('请先连接钱包', 'warning'); return; }
             
             const amount = document.getElementById('burnAmount').value;
@@ -3197,7 +3197,7 @@
                 return;
             }
             
-            const btn = event.target;
+            const btn = event?.target || document.activeElement;
             btn.textContent = '处理中...';
             btn.disabled = true;
 
@@ -3408,10 +3408,10 @@
         }
 
         // 领取奖励（单独领取）— 全部用 Toast 通知
-        async function claimReward(type) {
+        async function claimReward(type, event) {
             if (!signer) { showToast('请先连接钱包', 'warning'); return; }
 
-            const btn = event.target;
+            const btn = event?.target || document.activeElement;
             const originalText = btn.textContent;
             btn.textContent = '领取中...';
             btn.disabled = true;
