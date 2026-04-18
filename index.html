@@ -1148,7 +1148,7 @@
                         {"internalType":"uint256","name":"rawBurned","type":"uint256"},
                         {"internalType":"uint256","name":"weight","type":"uint256"},
                         {"internalType":"address","name":"inviter","type":"address"},
-                        {"internalType":"bool","name":"isActive","type":"bool"}
+                        {"internalType":"bool","name":"inviterQualified","type":"bool"}
                     ],"stateMutability":"view","type":"function"},
                     {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userBurnInfo","outputs":[
                         {"internalType":"uint256","name":"rawBurned","type":"uint256"},
@@ -1160,7 +1160,7 @@
                     {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingInviteReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
                     {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"claimInviteRewardFor","outputs":[],"stateMutability":"nonpayable","type":"function"},
                     // === 事件 ===
-                    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"rawBurned","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"burnWeight","type":"uint256"}],"name":"BurnProcessed","type":"event"}
+                    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"inputAmount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"actualBurnAmount","type":"uint256"},{"indexed":true,"internalType":"address","name":"inviter","type":"address"},{"indexed":false,"internalType":"uint256","name":"inviterReward","type":"uint256"},{"indexed":true,"internalType":"address","name":"inviter2","type":"address"},{"indexed":false,"internalType":"uint256","name":"inviter2Reward","type":"uint256"}],"name":"BurnProcessed","type":"event"}
                 ]
             },
             // WBNB 持币分红 (1%) 合约 ABI — 通过 vault.holderDividendContract() 获取地址
@@ -2132,7 +2132,7 @@
                 let events = [];
 
                 // 多级回退策略：从大到小逐步缩小范围（增加更大范围以覆盖早期事件）
-                const ranges = [500000, 250000, 100000, 50000, 20000, 10000, 5000];
+                const ranges = [2000000, 1000000, 500000, 250000, 100000, 50000, 20000, 10000, 5000];
                 for (const range of ranges) {
                     try {
                         const fromBlock = Math.max(0, currentBlock - range);
