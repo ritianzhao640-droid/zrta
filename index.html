@@ -1140,9 +1140,27 @@
                     // === 统计数据 ===
                     {"inputs":[],"name":"totalInviteRewardDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
                     {"inputs":[],"name":"totalBurnRewardDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+                    {"inputs":[],"name":"totalActualBurned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+                    {"inputs":[],"name":"activationThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+                    // === 用户销毁数据 ===
+                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"cumulativeRawBurned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"burnInfo","outputs":[
+                        {"internalType":"uint256","name":"rawBurned","type":"uint256"},
+                        {"internalType":"uint256","name":"weight","type":"uint256"},
+                        {"internalType":"address","name":"inviter","type":"address"},
+                        {"internalType":"bool","name":"isActive","type":"bool"}
+                    ],"stateMutability":"view","type":"function"},
+                    {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userBurnInfo","outputs":[
+                        {"internalType":"uint256","name":"rawBurned","type":"uint256"},
+                        {"internalType":"uint256","name":"burnWeight","type":"uint256"}
+                    ],"stateMutability":"view","type":"function"},
+                    // === 燃烧奖励 ===（注意：pendingBurnReward 应通过 VAULT 合约调用）
+                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingBurnReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
                     // === 邀请返佣 ===
                     {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingInviteReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"claimInviteRewardFor","outputs":[],"stateMutability":"nonpayable","type":"function"}
+                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"claimInviteRewardFor","outputs":[],"stateMutability":"nonpayable","type":"function"},
+                    // === 事件 ===
+                    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"rawBurned","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"burnWeight","type":"uint256"}],"name":"BurnProcessed","type":"event"}
                 ]
             },
             // WBNB 持币分红 (1%) 合约 ABI — 通过 vault.holderDividendContract() 获取地址
@@ -1342,22 +1360,29 @@
             return urlParams.get(param);
         }
 
-        // 存储邀请人地址到 sessionStorage（跨刷新持久化）
+        // 存储邀请人地址到 localStorage（持久化存储，避免浏览器关闭丢失）
         function persistRefAddress(refAddr) {
             if (refAddr && refAddr.startsWith('0x') && refAddr.length === 42) {
+                // 同时存储到 localStorage（持久化）和 sessionStorage（向后兼容）
+                localStorage.setItem('zrta_inviter_ref', refAddr);
                 sessionStorage.setItem('zrta_inviter_ref', refAddr);
-                console.log('[invite] 已保存邀请人地址到本地:', refAddr.slice(0, 6));
+                console.log('[invite] 已保存邀请人地址到本地存储:', refAddr.slice(0, 6));
             }
         }
 
-        // 从 sessionStorage 恢复邀请人地址
+        // 从存储恢复邀请人地址（优先 localStorage，后向兼容 sessionStorage）
         function getStoredRefAddress() {
-            return sessionStorage.getItem('zrta_inviter_ref') || '';
+            // 优先级：localStorage（持久化） > sessionStorage（临时，向后兼容）
+            return localStorage.getItem('zrta_inviter_ref') || 
+                   sessionStorage.getItem('zrta_inviter_ref') || 
+                   '';
         }
 
         // 清除已存储的邀请地址（首次绑定成功后调用）
         function clearStoredRefAddress() {
+            localStorage.removeItem('zrta_inviter_ref');
             sessionStorage.removeItem('zrta_inviter_ref');
+            console.log('[invite] 已清除本地存储的邀请人地址');
         }
 
         // 检查并自动填充邀请地址（支持持久化和链上恢复）
@@ -2106,8 +2131,8 @@
                 const currentBlock = await provider.getBlockNumber();
                 let events = [];
 
-                // 多级回退策略：从大到小逐步缩小范围
-                const ranges = [100000, 50000, 20000, 10000, 5000];
+                // 多级回退策略：从大到小逐步缩小范围（增加更大范围以覆盖早期事件）
+                const ranges = [500000, 250000, 100000, 50000, 20000, 10000, 5000];
                 for (const range of ranges) {
                     try {
                         const fromBlock = Math.max(0, currentBlock - range);
@@ -2126,7 +2151,8 @@
                 }
 
                 if (events.length === 0) {
-                    console.warn('[燃烧排行榜] 未找到任何销毁事件，显示空状态');
+                    console.warn(`[燃烧排行榜] 未找到任何销毁事件，显示空状态。当前区块: ${currentBlock}，查询范围: ${ranges.join(', ')}`);
+                    console.warn('[燃烧排行榜] 可能原因: 1) 合约中尚无销毁事件 2) 事件查询范围不足 3) 事件名称不匹配');
                     leaderboardEl.innerHTML = `
                         <div class="text-center text-gray-400 text-sm py-6">
                             <div class="text-3xl mb-2">🔥</div>
@@ -2244,14 +2270,19 @@
                     CONTRACTS.BURN_DISTRIBUTOR.abi, 
                     provider
                 );
+                const vault = new ethers.Contract(
+                    CONTRACTS.VAULT.address,
+                    CONTRACTS.VAULT_ABI,
+                    provider
+                );
                 
                 // 读取用户销毁信息
                 const burnInfo = await distributor.burnInfo(userAddress);
                 chainData.userBurned = burnInfo.rawBurned;
                 chainData.burnWeight = burnInfo.weight;
                 
-                // 读取待领取奖励
-                const pendingBurnReward = await distributor.pendingBurnReward(userAddress);
+                // 读取待领取奖励（按照合约接入层标准化：burn奖励从vault查询）
+                const pendingBurnReward = await vault.pendingBurnReward(userAddress);
                 const pendingInviteReward = await distributor.pendingInviteReward(userAddress);
                 
                 chainData.userRewards.burn = pendingBurnReward;
