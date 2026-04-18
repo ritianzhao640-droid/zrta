@@ -370,7 +370,7 @@
                     </div>
                     <div class="bg-mint-50 rounded-xl p-3">
                         <div class="text-xs text-gray-500 mb-1">自动质押阈值</div>
-                        <div class="text-base font-semibold text-mint-600">0.1 BNB</div>
+                        <div class="text-base font-semibold text-mint-600">0.01 BNB</div>
                     </div>
                     <div class="bg-amber-50 rounded-xl p-3">
                         <div class="text-xs text-gray-500 mb-1">我的持有</div>
@@ -415,10 +415,19 @@
                 </div>
             </div>
 
-            <!-- slisBNB 三分分配 -->
+            <!-- 收益分配比例 -->
             <div class="card p-5">
                 <h3 class="font-semibold text-gray-800 mb-4">收益分配比例</h3>
-                <div class="flex items-center gap-4 mb-4">
+                
+                <!-- BNB 持币分红 -->
+                <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span class="text-sm text-gray-600 flex-1">WBNB 持币分红</span>
+                    <span class="font-semibold text-blue-600">1%</span>
+                </div>
+
+                <!-- slisBNB 三分分配 -->
+                <div class="flex items-center gap-4 mt-4">
                     <div class="w-24 h-24 rounded-full relative" style="background: conic-gradient(#ec4899 0deg 144deg, #22c55e 144deg 288deg, #f59e0b 288deg 360deg);">
                         <div class="absolute inset-3 bg-white rounded-full flex items-center justify-center">
                             <span class="text-xs text-gray-400">slisBNB</span>
@@ -437,7 +446,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-3 h-3 rounded-full bg-amber-500"></div>
-                            <span class="text-sm text-gray-600 flex-1">持币分红</span>
+                            <span class="text-sm text-gray-600 flex-1">持币分红 (slis)</span>
                             <span class="font-semibold text-amber-600">20%</span>
                         </div>
                     </div>
@@ -464,8 +473,29 @@
                 <button class="btn-primary w-full py-3.5 text-base" onclick="claimAllRewards()">一键领取全部</button>
             </div>
 
-            <!-- 三类奖励卡片 -->
+            <!-- 四类奖励卡片 -->
             <div class="space-y-3">
+                <!-- WBNB 持币分红 (1%) -->
+                <div class="card p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-800">持币分红</div>
+                            <div class="text-xs text-gray-500">来自 1% BNB 分配</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-blue-600" id="holderWbnbAmount">--</div>
+                            <div class="text-xs text-gray-400">WBNB</div>
+                        </div>
+                        <button onclick="claimReward('holderWbnb')" class="btn-secondary px-5 py-2 text-sm">领取</button>
+                    </div>
+                </div>
+
+                <!-- slisBNB 持币分红 (20%) -->
                 <div class="card p-5">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
@@ -965,8 +995,16 @@
                 address: "0xf25635ec0f3ca460043d9f2abb49caacaa0328e6",
                 displayName: "营销钱包"
             },
-            // 金库合约 ABI (简化版)
-            VAULT_ABI: [{"inputs":[],"name":"stakePendingTax","outputs":[{"internalType":"bool","name":"ok","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claim","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"pendingTaxBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            // 金库合约 ABI (扩展版 - 含 WBNB 持币分红)
+            VAULT_ABI: [
+                {"inputs":[],"name":"stakePendingTax","outputs":[{"internalType":"bool","name":"ok","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+                {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},
+                {"inputs":[],"name":"claim","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+                {"inputs":[],"name":"pendingTaxBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+                // WBNB 持币分红 (1%) 相关接口
+                {"inputs":[],"name":"claimWbnbHolderReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+                {"inputs":[],"name":"pendingWbnbHolderReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+            ],
             // BurnReferralDistributor - 销毁返佣合约
             BURN_DISTRIBUTOR: {
                 address: "0x4d2e6eAAbaA95610136562ff59463d47Fd836620",
@@ -1001,6 +1039,7 @@
             totalSlisReceived: 0,
             userRewards: {
                 holder: 0,
+                holderWbnb: 0,
                 burn: 0,
                 invite: 0
             },
@@ -1252,7 +1291,7 @@
                 // 更新触发质押区域的进度文本
                 const progressTextEl = document.getElementById('stakeProgressText');
                 if (progressTextEl) {
-                    progressTextEl.textContent = `当前: ${formatEther(stats.pendingTaxBNBAmount, 4)} BNB / 阈值: 0.1 BNB`;
+                    progressTextEl.textContent = `当前: ${formatEther(stats.pendingTaxBNBAmount, 4)} BNB / 阈值: 0.01 BNB`;
                 }
                 
                 // 检查质押阈值
@@ -1292,6 +1331,22 @@
                 chainData.burnWeight = stats.burnWeightValue;
                 chainData.userTokenBalance = stats.tokenBalance;
                 
+                // ===== 新增：读取 WBNB 持币分红 (1%) =====
+                let wbnbHolderReward = 0;
+                try {
+                    const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, provider);
+                    wbnbHolderReward = await vault.pendingWbnbHolderReward();
+                    chainData.userRewards.holderWbnb = wbnbHolderReward;
+
+                    // 更新 WBNB 持币分红卡片
+                    const wbnbEl = document.getElementById('holderWbnbAmount');
+                    if (wbnbEl) wbnbEl.textContent = formatEther(wbnbHolderReward, 6);
+                } catch (e) {
+                    console.warn('[WBNB持币分红] 读取失败(合约可能未部署此方法):', e.message?.slice(0, 80));
+                    const wbnbEl = document.getElementById('holderWbnbAmount');
+                    if (wbnbEl) wbnbEl.textContent = '0';
+                }
+                
                 // 更新用户持有代币数量显示（中文格式）
                 const tokenBalanceEl = document.getElementById('userTokenBalance');
                 if (tokenBalanceEl) {
@@ -1299,10 +1354,14 @@
                     tokenBalanceEl.textContent = formatCN(balance, 1);
                 }
                 
-                // 更新收益页
+                // 更新收益页 — 总奖励（4项：WBNB持币 + slisBNB持币 + 销毁 + 邀请）
+                const _wbnbRwd = (wbnbHolderReward && typeof wbnbHolderReward.add === 'function') ? wbnbHolderReward : ethers.BigNumber.from(0);
                 const totalRewards = parseFloat(formatEther(
-                    stats.pendingHolderRewardAmount.add(stats.pendingBurnRewardAmount).add(stats.pendingInviteRewardAmount)
-                , 2));
+                    _wbnbRwd
+                        .add(stats.pendingHolderRewardAmount)
+                        .add(stats.pendingBurnRewardAmount)
+                        .add(stats.pendingInviteRewardAmount)
+                    , 4));
                 const totalRewardEl = document.getElementById('totalRewardAmount');
                 if (totalRewardEl) {
                     totalRewardEl.textContent = '$' + totalRewards.toLocaleString();
@@ -1315,10 +1374,13 @@
                     burnBalanceEl.textContent = formatCN(bal, 1);
                 }
                 
-                // 更新各奖励
-                document.querySelector('#page-rewards .card:nth-child(2) .text-2xl.font-bold.text-amber-600').textContent = formatEther(stats.pendingHolderRewardAmount, 2);
-                document.querySelector('#page-rewards .card:nth-child(3) .text-2xl.font-bold.text-pink-600').textContent = formatEther(stats.pendingBurnRewardAmount, 2);
-                document.querySelector('#page-rewards .card:nth-child(4) .text-2xl.font-bold.text-mint-600').textContent = formatEther(stats.pendingInviteRewardAmount, 2);
+                // 更新各奖励卡片（4张卡片，nth-child 从2开始）
+                // card-2: slisBNB 持币分红 (amber)
+                document.querySelector('#page-rewards .space-y-3 > div:nth-child(2) .text-2xl.font-bold.text-amber-600').textContent = formatEther(stats.pendingHolderRewardAmount, 4);
+                // card-3: 销毁分红 (pink)
+                document.querySelector('#page-rewards .space-y-3 > div:nth-child(3) .text-2xl.font-bold.text-pink-600').textContent = formatEther(stats.pendingBurnRewardAmount, 4);
+                // card-4: 邀请返佣 (mint)
+                document.querySelector('#page-rewards .space-y-3 > div:nth-child(4) .text-2xl.font-bold.text-mint-600').textContent = formatEther(stats.pendingInviteRewardAmount, 4);
                 
                 // 更新销毁页统计
                 document.querySelector('#page-burn .text-xl.font-bold.text-pink-600').textContent = formatEther(stats.cumulativeBurned, 0);
@@ -2296,7 +2358,7 @@
 
         // 质押相关配置
         const STAKE_CONFIG = {
-            threshold: 0.1, // 0.1 BNB 阈值
+            threshold: 0.01, // 0.01 BNB 阈值
             pendingBnb: 0, // 待质押 BNB（从链上读取）
             autoNotify: true // 是否开启阈值提醒
         };
@@ -2497,7 +2559,24 @@
                     results.push('邀请返佣: 失败');
                 }
 
-                // 3. 领取持币分红（通过 Vault 合约）
+                // 3. 领取 WBNB 持币分红 (1%)
+                try {
+                    const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
+                    const pendingWbnb = await vault.pendingWbnbHolderReward();
+                    if (!pendingWbnb.isZero() && parseFloat(ethers.utils.formatEther(pendingWbnb)) > 0) {
+                        const txWbnb = await vault.claimWbnbHolderReward();
+                        await txWbnb.wait();
+                        successCount++;
+                        results.push('WBNB持币分红 ✓');
+                    } else {
+                        results.push('WBNB持币分红: 无可领取');
+                    }
+                } catch (e) {
+                    console.warn('一键-WBNB持币分红:', e.message?.slice(0, 80));
+                    results.push('WBNB持币分红: 失败或未开放');
+                }
+
+                // 4. 领取 slisBNB 持币分红 (20%，通过 Vault 合约)
                 try {
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
                     await vault.estimateGas.claim(); // 先检查是否可行
@@ -2582,6 +2661,29 @@
                     showToast('交易已提交，等待确认...');
                     await tx.wait();
                     alert('邀请返佣领取成功！');
+
+                } else if (type === 'holderWbnb') {
+                    // WBNB 持币分红 (1%) — 通过 Vault 合约的 claimWbnbHolderReward 方法
+                    const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
+
+                    // 先检查可领数量
+                    try {
+                        const pending = await vault.pendingWbnbHolderReward();
+                        const pendingNum = parseFloat(ethers.utils.formatEther(pending));
+                        console.log(`[WBNB持币分红] pendingWbnbHolderReward = ${pendingNum}`);
+
+                        if (pendingNum <= 0 || pending.isZero()) {
+                            alert('当前 WBNB 持币分红为 0。WBNB 持币分红来自 1% BNB 分配池，需要持有代币才能获得分红。');
+                            return;
+                        }
+                    } catch (checkErr) {
+                        console.warn('[WBNB持币分红] 检查失败，直接尝试领取:', checkErr.message?.slice(0, 80));
+                    }
+
+                    const tx = await vault.claimWbnbHolderReward();
+                    showToast('交易已提交，等待确认...');
+                    await tx.wait();
+                    alert('WBNB 持币分红领取成功！');
 
                 } else if (type === 'holder') {
                     // 持币分红通过 Vault 合约的 claim() 方法
