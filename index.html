@@ -337,6 +337,37 @@
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
+
+        /* 交互增强 */
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(219, 39, 119, 0.2), 0 2px 8px rgba(22, 163, 74, 0.15);
+        }
+        .btn-primary, .btn-secondary {
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover, .btn-secondary:hover {
+            filter: brightness(1.1);
+        }
+        .bottom-nav-item {
+            transition: color 0.2s ease;
+        }
+        .glass-subtle {
+            transition: background-color 0.2s ease;
+        }
+        .glass-subtle:hover {
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        input, select, textarea {
+            transition: border-color 0.2s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #ec4899;
+            ring-color: #ec4899;
+        }
     </style>
 </head>
 <body class="text-gray-900">
@@ -796,7 +827,7 @@
         <div id="page-stats" class="page space-y-4">
             <div class="card p-5 mt-4">
                 <h3 class="font-semibold text-gray-800 mb-4">全局统计</h3>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div class="bg-pink-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">总销毁量</div>
                         <div class="text-lg font-bold text-pink-600" id="statsTotalBurn">--</div>
@@ -872,7 +903,7 @@
                         <h4 class="font-medium text-gray-800 text-sm">营销钱包</h4>
                         <span class="text-xs text-gray-400">多签地址监控</span>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="bg-white/70 rounded-xl p-3">
                             <div class="text-xs text-gray-500 mb-1">slisBNB 余额</div>
                             <div class="text-lg font-bold text-pink-600" id="marketingSlisBalance">--</div>
