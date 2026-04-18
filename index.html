@@ -1135,6 +1135,18 @@
                 {"inputs":[],"name":"totalStakedBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
                 {"inputs":[],"name":"totalSlisReceived","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
             ],
+            // 燃烧分销合约（邀请返佣与燃烧分红）
+            BURN_DISTRIBUTOR: {
+                address: "0x4d2e6eAAbaA95610136562ff59463d47Fd836620",
+                abi: [
+                    // === 统计数据 ===
+                    {"inputs":[],"name":"totalInviteRewardDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+                    {"inputs":[],"name":"totalBurnRewardDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+                    // === 邀请返佣 ===
+                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingInviteReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"claimInviteRewardFor","outputs":[],"stateMutability":"nonpayable","type":"function"}
+                ]
+            },
             // WBNB 持币分红 (1%) 合约 ABI — 通过 vault.holderDividendContract() 获取地址
                                     WBNB_DIVIDEND_ABI: []
         };
