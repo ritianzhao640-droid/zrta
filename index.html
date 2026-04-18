@@ -1334,6 +1334,16 @@
                     burnMap[user] = (burnMap[user] || 0) + amount;
                 }
                 
+                // ★ 关键修复：如果当前用户已连接，用合约状态补充自己的数据
+                // （合约 cumulativeRawBurned 是即时更新的，不依赖事件索引延迟）
+                if (userAddress && chainData.userBurned > 0) {
+                    const myStateBurn = parseFloat(ethers.utils.formatEther(chainData.userBurned));
+                    // 合约状态的值 ≥ 事件汇总的值（因为事件可能有延迟）
+                    if (!burnMap[userAddress] || myStateBurn > burnMap[userAddress]) {
+                        burnMap[userAddress] = myStateBurn;
+                    }
+                }
+                
                 // 排序取前3
                 const sorted = Object.entries(burnMap)
                     .sort((a, b) => b[1] - a[1])
@@ -1988,7 +1998,24 @@
                 alert('销毁成功！');
                 document.getElementById('burnAmount').value = '';
                 updateBurnPreview();
+
+                // 立即刷新用户数据（合约状态即时可用）
                 await refreshAllData();
+
+                // 延迟刷新排行榜（等 BSC 节点索引完事件日志）
+                setTimeout(async () => {
+                    try {
+                        const distributor = new ethers.Contract(
+                            CONTRACTS.BURN_DISTRIBUTOR.address,
+                            CONTRACTS.BURN_DISTRIBUTOR.abi,
+                            provider
+                        );
+                        // 只重新查排行榜，不刷新全部数据（避免太重）
+                        await loadBurnLeaderboard(distributor);
+                    } catch (e) {
+                        console.warn('延迟排行榜刷新失败:', e);
+                    }
+                }, 5000); // 5秒后事件索引应该就绪
             } catch (error) {
                 console.error('销毁失败:', error);
                 alert('销毁失败: ' + error.message);
