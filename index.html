@@ -1494,12 +1494,33 @@
                 chainData.activationThreshold = stats.activationThresholdValue;
 
                 // 更新邀请页 — 用用户自己的累计销毁量（而非上级的 inviterBurnedAmount）
-                const threshold = parseFloat(ethers.utils.formatEther(stats.activationThresholdValue, 0));
+                // activationThresholdValue 是 18 decimals 的原始值，需要 formatUnits 转换
+                let threshold = 0;
+                try {
+                    const rawThreshold = stats.activationThresholdValue;
+                    // 确保是有效数值再转换（防止合约返回异常大数）
+                    if (rawThreshold && rawThreshold !== 0) {
+                        threshold = parseFloat(ethers.utils.formatUnits(rawThreshold, 18));
+                        // 安全兜底：如果转换后仍然是个天文数字（> 100亿），说明数据源有问题，回退到默认值
+                        if (threshold > 10000000000 || !Number.isFinite(threshold)) {
+                            console.warn('[invite] 阈值异常:', rawThreshold.toString(), '→ 使用默认 100万');
+                            threshold = 1000000;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('[invite] 阈值解析失败，使用默认 100万');
+                    threshold = 1000000;
+                }
+
                 // 使用 chainData.userBurned（来自 distributor.burnInfo，更准确）
-                let myBurned = parseFloat(ethers.utils.formatEther(chainData.userBurned || 0, 0));
+                let myBurned = 0;
+                try {
+                    myBurned = parseFloat(ethers.utils.formatUnits(chainData.userBurned || 0, 18));
+                    if (!Number.isFinite(myBurned)) myBurned = 0;
+                } catch (e) { myBurned = 0; }
                 if (myBurned === 0 && stats.inviterBurnedAmount) {
-                    // 兜底：如果 userBurned 还没加载完，先用 Lens 的（注意这是上级数据源，仅作兜底）
-                    myBurned = parseFloat(ethers.utils.formatEther(stats.inviterBurnedAmount, 0));
+                    try { myBurned = parseFloat(ethers.utils.formatUnits(stats.inviterBurnedAmount, 18)); } catch (e) {}
+                    if (!Number.isFinite(myBurned)) myBurned = 0;
                 }
                 const progress = threshold > 0 ? Math.min((myBurned / threshold) * 100, 100) : 0;
                 
