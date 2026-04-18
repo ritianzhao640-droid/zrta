@@ -1366,25 +1366,42 @@
             }
         }
 
-        // 格式化大数
+        // 格式化大数（ethers uint256 → 可读字符串）
         function formatEther(value, decimals = 4) {
             if (!value) return '0';
             const num = parseFloat(ethers.utils.formatEther(value.toString()));
             return num.toLocaleString('en-US', { maximumFractionDigits: decimals });
         }
 
-        // 中文数字格式化：170000 → 17万, 123456789 → 1.23亿
+        // 中文数字格式化（支持极大值）：170000 → 17万, 123456789 → 1.23亿, 大于兆用科学计数法
         function formatCN(num, decimals = 2) {
             if (num === null || num === undefined || isNaN(num)) return '--';
             num = parseFloat(num);
             if (num === 0) return '0';
             const abs = Math.abs(num);
-            if (abs >= 100000000) {
+            if (abs >= 10000000000000000) {
+                // 超过千万兆 → 科学计数法
+                return num.toExponential(decimals);
+            } else if (abs >= 1000000000000) {
+                return (num / 1000000000000).toFixed(decimals).replace(/\.?0+$/, '') + '万亿';
+            } else if (abs >= 100000000) {
                 return (num / 100000000).toFixed(decimals).replace(/\.?0+$/, '') + '亿';
             } else if (abs >= 10000) {
                 return (num / 10000).toFixed(decimals).replace(/\.?0+$/, '') + '万';
             }
             return num.toLocaleString('en-US', { maximumFractionDigits: decimals > 0 ? Math.min(decimals, 2) : 0 });
+        }
+
+        // 奖励金额智能格式化：正常值用 formatEther，超大值自动切换中文单位
+        function formatReward(value, decimals = 4) {
+            if (!value) return '0';
+            const num = parseFloat(ethers.utils.formatEther(value.toString()));
+            // 超过 100亿 自动切换单位显示
+            if (Math.abs(num) > 10000000000) {
+                return formatCN(num, Math.max(decimals, 2));
+            }
+            return num.toLocaleString('en-US', { maximumFractionDigits: decimals });
+        }
         }
 
         // slisBNB 价格缓存（避免重复请求）
@@ -1596,14 +1613,27 @@
                     if (lensHolderValue && finalHolder.lt(lensHolderValue)) finalHolder = lensHolderValue;
                     
                     const displayVal = finalHolder ? finalHolder.toString() : '0';
-                    holderRewardEl.textContent = formatEther(displayVal, 4);
+                    
+                    // 智能格式化：正常值用小数，超大值自动切中文单位/科学计数法
+                    holderRewardEl.textContent = formatReward(displayVal, 4);
                     
                     const num = parseFloat(ethers.utils.formatEther(displayVal));
-                    if (num > 0) {
-                        console.log(`✅ [slisBNB持币] 最终显示: ${formatEther(displayVal, 4)} slisBNB (来源: ${finalHolder === chainData.userRewards.holder ? 'vault' : 'Lens'})`);
+                    // 异常大值警告（超过 100亿 slisBNB 可能是合约数据问题）
+                    if (num > 10000000000) {
+                        console.warn(`⚠️ [slisBNB持币] 数值异常偏大: ${num.toLocaleString()} — 合约可能返回了原始未转换的值或存在精度配置差异`);
+                        holderRewardEl.title = `原始值: ${displayVal}\n换算后: ${num.toLocaleString()} slisBNB\n⚠️ 该数值异常偏大，请确认合约 decimals 配置`;
+                        holderRewardEl.classList.add('text-orange-500');
+                        holderRewardEl.classList.remove('text-amber-600');
+                    } else if (num > 0) {
+                        console.log(`✅ [slisBNB持币] 最终显示: ${formatReward(displayVal, 4)} slisBNB (来源: ${finalHolder === chainData.userRewards.holder ? 'vault' : 'Lens'})`);
+                        holderRewardEl.title = '';
+                        holderRewardEl.classList.remove('text-orange-500');
+                        holderRewardEl.classList.add('text-amber-600');
                     } else {
                         console.log(`⚠️ [slisBNB持币] 所有数据源均为 0 → 合约层面无待领取记录`);
                         holderRewardEl.title = '所有数据源(vault/Lens/overview)均为0\n合约可能尚未分配或已全部领取';
+                        holderRewardEl.classList.remove('text-orange-500');
+                        holderRewardEl.classList.add('text-amber-600');
                     }
                 }
                 
