@@ -422,8 +422,8 @@
                     </div>
                 </div>
                 
-                <!-- 触发质押按钮 - 缩小一半 -->
-                <div id="stakeTriggerSection" class="mt-3 p-2 rounded-lg border border-pink-100"
+                <!-- 触发质押按钮 - 缩小一半 （已隐藏，根据用户要求移除手动触发质押功能） -->
+                <div id="stakeTriggerSection" class="mt-3 p-2 rounded-lg border border-pink-100 hidden"
                      style="background: linear-gradient(135deg, rgba(253, 242, 248, 0.9) 0%, rgba(240, 253, 244, 0.9) 100%);">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -466,7 +466,7 @@
                 <!-- ZRT 工厂分配 -->
                 <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
                     <div class="w-3 h-3 rounded-full gradient-green"></div>
-                    <span class="text-sm text-gray-600 flex-1">ZRT工厂 → 质押金库</span>
+                    <span class="text-sm text-gray-600 flex-1">买卖税收 → 质押金库 → 收益 → ZRT工厂分配</span>
                     <span class="font-semibold text-green-600">99%</span>
                 </div>
                 <p class="text-xs text-green-500 mb-3 -mt-2">🏭 交易税(BNB) 99% 自动进入金库质押到 Lista</p>
@@ -499,7 +499,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-3 h-3 rounded-full bg-amber-500"></div>
-                            <span class="text-sm text-gray-600 flex-1">持币分红 (slis)</span>
+                            <span class="text-sm text-gray-600 flex-1">持币分红（WBNB／SLISBNB）</span>
                             <span class="font-semibold text-amber-600">20%</span>
                         </div>
                     </div>
@@ -1147,27 +1147,27 @@
             },
             // WBNB 持币分红 (1%) 合约 ABI — 通过 vault.holderDividendContract() 获取地址
             WBNB_DIVIDEND_ABI: [
-                {
-                    "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
-                    "name": "withdrawableDividends",
-                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-                    "stateMutability": "view",
-                    "type": "function"
-                },
-                {
-                    "inputs": [],
-                    "name": "withdrawDividends",
-                    "outputs": [{ "internalType": "bool", "name": "success", "type": "bool" }],
-                    "stateMutability": "nonpayable",
-                    "type": "function"
-                },
-                {
-                    "inputs": [],
-                    "name": "minimumShareBalance",
-                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-                    "stateMutability": "view",
-                    "type": "function"
-                }
+              {
+                inputs: [{ internalType: "address", name: "user", type: "address" }],
+                name: "withdrawableDividends",
+                outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+                stateMutability: "view",
+                type: "function",
+              },
+              {
+                inputs: [],
+                name: "withdrawDividends",
+                outputs: [{ internalType: "bool", name: "success", type: "bool" }],
+                stateMutability: "nonpayable",
+                type: "function",
+              },
+              {
+                inputs: [],
+                name: "minimumShareBalance",
+                outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+                stateMutability: "view",
+                type: "function",
+              }
             ]
         };
 
@@ -1215,14 +1215,19 @@
 
         // ==================== WBNB 持币分红读取工具 ====================
         async function loadHolderWbnbReward(provider, userAddress) {
-            const divAddr = await resolveDividendAddress(provider);
-            console.log("[holderWbnb] dividend addr =", divAddr);
-            if (!divAddr || divAddr === ethers.constants.AddressZero) return ethers.BigNumber.from(0);
-            const dividend = new ethers.Contract(divAddr, WBNB_DIVIDEND_ABI, provider);
-            const pending = await dividend.withdrawableDividends(userAddress);
-            console.log("[holderWbnb] pending =", pending.toString());
-            return pending;
-        }
+  try {
+    const divAddr = await resolveDividendAddress(provider);
+    if (!divAddr || divAddr === ethers.constants.AddressZero) {
+      return ethers.BigNumber.from(0);
+    }
+
+    const divContract = new ethers.Contract(divAddr, WBNB_DIVIDEND_ABI, provider);
+    return await divContract.withdrawableDividends(userAddress);
+  } catch (e) {
+    console.warn("[holderWbnb] load failed:", e.message);
+    return ethers.BigNumber.from(0);
+  }
+}
 
         // ==================== 链上数据缓存 ====================
         let chainData = {
@@ -1513,7 +1518,7 @@
             }
 
             try {
-                const SLIS_BNB_ADDRESS = '0x1b0e7652f143c29832189136a3e6a3957c46a9ad';
+                const SLIS_BNB_ADDRESS = '0xb0b84d294e0c75a6abe60171b70edeb2efd14a1b';
                 try {
                     const priceResp = await fetch(`https://api.geckoterminal.com/api/v2/simple/networks/bsc/token_price/${SLIS_BNB_ADDRESS}`, { signal: AbortSignal.timeout(5000) });
                     const priceData = await priceResp.json();
@@ -1525,13 +1530,13 @@
                     }
                 } catch { /* fallback */ }
 
-                console.warn('slisBNB 价格获取失败，使用近似值 1 BNB');
-                slisBNBPrice = 1.0;
+                console.warn('slisBNB 价格获取失败，使用默认价格 652.19 USD');
+                slisBNBPrice = 652.19;
                 _slisPriceCacheTime = Date.now();
-                return 1.0;
+                return 652.19;
             } catch (e) {
                 console.error('获取 slisBNB 价格失败:', e);
-                return 1.0;
+                return 652.19;
             }
         }
         
@@ -1560,7 +1565,7 @@
                         totalValueEl.textContent = '--';
                         console.warn('[总质押价值] 计算值异常，显示为 --');
                     } else {
-                        totalValueEl.textContent = '$' + totalValue.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                        totalValueEl.textContent = '$' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     }
                 }
                 
@@ -1695,15 +1700,10 @@
                         } catch (e) {
                             console.warn('[holderWbnb] minimumShareBalance读取失败:', e.message);
                         }
-                        // 读取 WBNB 持币分红奖励
-                        try {
-                            const pendingWbnb = await divContract.withdrawableDividends(userAddress);
-                            console.log("[holderWbnb] pending =", pendingWbnb.toString());
-                            chainData.userRewards.holderWbnb = pendingWbnb;
-                        } catch (e) {
-                            console.warn('[holderWbnb] withdrawableDividends读取失败:', e.message);
-                            chainData.userRewards.holderWbnb = ethers.BigNumber.from(0);
-                        }
+                        // 使用 loadHolderWbnbReward 读取奖励
+                        const pendingWbnb = await loadHolderWbnbReward(provider, userAddress);
+                        console.log("[holderWbnb] pending =", pendingWbnb.toString());
+                        chainData.userRewards.holderWbnb = pendingWbnb;
                     }
                 } catch (e) {
                     console.warn('[WBNB持币分红] 资格检查失败:', e.message?.slice(0, 80));
@@ -1718,18 +1718,25 @@
                 }
 
                 // 更新收益页 — 总奖励
-                const totalRewards = parseFloat(formatEther(
+                // 计算 slisBNB 总数量
+                const totalSlisRewards = parseFloat(formatEther(
                     (chainData.userRewards.holder || ethers.BigNumber.from(0))
                         .add(chainData.userRewards.burn || 0)
                         .add(chainData.userRewards.invite || 0)
                     , 4));
-                console.log('[总奖励计算] holder:', chainData.userRewards.holder?.toString(), 'burn:', chainData.userRewards.burn?.toString(), 'invite:', chainData.userRewards.invite?.toString(), 'total:', totalRewards);
+                console.log('[总奖励计算] holder:', chainData.userRewards.holder?.toString(), 'burn:', chainData.userRewards.burn?.toString(), 'invite:', chainData.userRewards.invite?.toString(), 'total slisBNB:', totalSlisRewards);
+                
+                // 获取 slisBNB 价格并计算美元价值
+                const slisPrice = await getSlisBNBPrice();
+                const totalRewardsUSD = totalSlisRewards * slisPrice;
+                console.log('[总奖励计算] slisBNB 价格:', slisPrice, 'USD, 总价值:', totalRewardsUSD, 'USD');
+                
                 const totalRewardEl = document.getElementById('totalRewardAmount');
                 if (totalRewardEl) {
-                    if (isNaN(totalRewards) || totalRewards <= 0) {
+                    if (isNaN(totalRewardsUSD) || totalRewardsUSD <= 0) {
                         totalRewardEl.textContent = '--';
                     } else {
-                        totalRewardEl.textContent = '$' + totalRewards.toLocaleString();
+                        totalRewardEl.textContent = '$' + totalRewardsUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     }
                 }
                 
@@ -3617,27 +3624,11 @@
             }
         }
 
-        // 更新钱包区域的 slisBNB 余额显示
+        // 更新钱包区域的 slisBNB 余额显示（已隐藏，根据用户要求移除 0.00sbnb 显示）
         function updateWalletSlisDisplay() {
             const walletSlisEl = document.getElementById('walletSlisDisplay');
             if (!walletSlisEl) return;
-
-            if (!userAddress) {
-                walletSlisEl.classList.add('hidden');
-                return;
-            }
-
-            const holderReward = chainData.userRewards.holder ? parseFloat(ethers.utils.formatEther(chainData.userRewards.holder.toString())) : 0;
-            const burnReward = chainData.userRewards.burn ? parseFloat(ethers.utils.formatEther(chainData.userRewards.burn.toString())) : 0;
-            const inviteReward = chainData.userRewards.invite ? parseFloat(ethers.utils.formatEther(chainData.userRewards.invite.toString())) : 0;
-            const total = holderReward + burnReward + inviteReward;
-
-            if (total > 0.0001) {
-                walletSlisEl.classList.remove('hidden');
-                walletSlisEl.textContent = total < 100 ? total.toFixed(2) + ' sBNB' : formatCN(total, 1);
-            } else {
-                walletSlisEl.classList.add('hidden');
-            }
+            walletSlisEl.classList.add('hidden');
         }
 
         // 请求通知权限
