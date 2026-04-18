@@ -40,39 +40,47 @@
         * { -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Inter', system-ui, sans-serif;
-            /* 粉绿渐变背景 */
-            background: linear-gradient(135deg, #fdf2f8 0%, #f0fdf4 50%, #ecfdf5 100%);
+            /* 深粉到深绿渐变 — 高饱和度加强版 */
+            background:
+                linear-gradient(135deg,
+                    rgba(252, 231, 243, 1) 0%,
+                    rgba(244, 186, 216, 0.9) 15%,
+                    rgba(212, 245, 220, 0.92) 40%,
+                    rgba(167, 232, 201, 0.95) 65%,
+                    rgba(134, 214, 175, 1) 90%,
+                    rgba(110, 200, 155, 1) 100%
+                );
             background-attachment: fixed;
             min-height: 100vh;
         }
-        
-        /* 渐变绿色 */
+
+        /* 渐变绿色 — 加深 */
         .gradient-green {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #059669 100%);
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 40%, #166534 100%);
         }
         .gradient-green-text {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
-        /* 粉色渐变 */
+
+        /* 粉色渐变 — 加深 */
         .gradient-pink {
-            background: linear-gradient(135deg, #ec4899 0%, #db2777 50%, #be185d 100%);
+            background: linear-gradient(135deg, #db2777 0%, #be185d 40%, #9d174d 100%);
         }
 
-        /* 粉绿品牌渐变（用于强调元素） */
+        /* 粉绿品牌渐变（用于强调元素）— 加深 */
         .gradient-brand {
             background: linear-gradient(135deg, #fce7f3 0%, #dcfce7 100%);
         }
-        
+
         /* 钱包状态滤镜 */
         .wallet-disconnected { filter: saturate(0) brightness(0.95); }
         .wallet-connected { filter: none; }
         .wallet-transition { transition: filter 0.4s ease; }
-        
+
         /* 底部导航 */
-        .bottom-nav-item.active { color: #ec4899; }
+        .bottom-nav-item.active { color: #db2777; }
         .bottom-nav-item.active::after {
             content: '';
             position: absolute;
@@ -81,68 +89,136 @@
             transform: translateX(-50%);
             width: 20px;
             height: 3px;
-            background: linear-gradient(90deg, #ec4899, #22c55e);
+            background: linear-gradient(90deg, #db2777, #16a34a);
             border-radius: 2px;
         }
-        
-        /* 卡片样式 — 玻璃态 */
+
+        /* 卡片样式 — 玻璃态 + 粉绿边框光晕（加深） */
         .card {
-            background: rgba(255, 255, 255, 0.72);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
             border-radius: 20px;
             box-shadow:
-                0 2px 8px rgba(236, 72, 153, 0.06),
-                0 4px 16px rgba(34, 197, 94, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+                0 4px 16px rgba(219, 39, 119, 0.14),
+                0 1px 4px rgba(22, 163, 74, 0.10),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            border: 1.5px solid rgba(255, 255, 255, 0.7);
+            position: relative;
+            overflow: hidden;
         }
-        
-        /* 按钮样式 */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3.5px;
+            background: linear-gradient(90deg, #ec4899, #f472b6, #a78bfa, #6ee7b7, #22c55e, #10b981, #ec4899);
+            opacity: 0.75;
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* 按钮样式 — 加深渐变 + 更强阴影 */
         .btn-primary {
-            background: linear-gradient(135deg, #ec4899 0%, #22c55e 100%);
+            background: linear-gradient(135deg, #be185d 0%, #db2777 25%, #ec4899 45%, #f472b6 55%, #4ade80 70%, #22c55e 85%, #16a34a 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
             color: white;
             border-radius: 16px;
             font-weight: 600;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 14px rgba(236, 72, 153, 0.25), 0 2px 6px rgba(34, 197, 94, 0.15);
+            transition: all 0.25s ease;
+            box-shadow:
+                0 5px 20px rgba(219, 39, 119, 0.35),
+                0 2px 10px rgba(34, 197, 94, 0.25);
+            position: relative;
+            overflow: hidden;
         }
-        .btn-primary:hover { box-shadow: 0 6px 20px rgba(236, 72, 153, 0.35), 0 3px 8px rgba(34, 197, 94, 0.2); }
-        .btn-primary:active { transform: scale(0.98); opacity: 0.92; box-shadow: 0 2px 8px rgba(236, 72, 153, 0.2); }
-        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .btn-primary:hover {
+            box-shadow:
+                0 6px 24px rgba(219, 39, 119, 0.40),
+                0 3px 12px rgba(34, 197, 94, 0.25);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active { transform: scale(0.97); opacity: 0.92; box-shadow: 0 2px 8px rgba(219, 39, 119, 0.25); }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            animation: none;
+            background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+            box-shadow: none;
+        }
+
+        /* 刷新按钮 */
+        .btn-refresh {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            border: 1.5px solid rgba(219, 39, 119, 0.2);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .btn-refresh:hover {
+            border-color: #db2777;
+            box-shadow: 0 2px 10px rgba(219, 39, 119, 0.15);
+        }
+        .btn-refresh.spinning svg {
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border: 1.5px solid rgba(236, 72, 153, 0.18);
+            border: 1.5px solid rgba(219, 39, 119, 0.22);
             border-radius: 16px;
             font-weight: 500;
             transition: all 0.2s ease;
         }
-        .btn-secondary:active { 
-            background: rgba(253, 242, 248, 0.9); 
-            border-color: #ec4899;
+        .btn-secondary:hover {
+            border-color: #db2777;
+            background: rgba(253, 242, 248, 0.95);
+            box-shadow: 0 2px 8px rgba(219, 39, 119, 0.12);
         }
-        
-        /* 输入框 */
+        .btn-secondary:active {
+            background: rgba(252, 231, 243, 0.98);
+            border-color: #db2777;
+            transform: scale(0.97);
+        }
+
+        /* 输入框 — 加深聚焦效果 */
         .input-field {
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.82);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
-            border: 1.5px solid rgba(236, 72, 153, 0.15);
+            border: 1.5px solid rgba(219, 39, 119, 0.18);
             border-radius: 16px;
             transition: all 0.2s ease;
         }
         .input-field:focus {
             outline: none;
-            border-color: #ec4899;
-            background: rgba(255, 255, 255, 0.92);
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+            border-color: #db2777;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 0 0 4px rgba(219, 39, 119, 0.12), 0 2px 8px rgba(219, 39, 119, 0.08);
         }
-        
+
         /* 进度条 */
         .progress-bar {
             height: 8px;
-            background: rgba(243, 244, 246, 0.6);
+            background: rgba(243, 244, 246, 0.5);
             border-radius: 4px;
             overflow: hidden;
         }
@@ -151,65 +227,104 @@
             border-radius: 4px;
             transition: width 0.6s ease;
         }
-        
+
         /* 页面切换 */
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
+
         /* 隐藏滚动条 */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* 脉冲动画 */
+
+        /* 脉冲动画 — 加深绿色 */
         @keyframes pulse-green {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-            50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.45); }
+            50% { box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
         }
         .pulse-dot { animation: pulse-green 2s infinite; }
-        
+
         /* 警告提示 */
         .warning-box {
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             border: 1px solid #f59e0b;
             border-radius: 12px;
         }
-        
-        /* 机制说明卡片 — 增强粉绿氛围 */
+
+        /* 机制说明卡片 — 深色粉绿氛围 */
         .mechanism-card {
-            background: linear-gradient(135deg, rgba(253, 242, 248, 0.8) 0%, rgba(240, 253, 244, 0.8) 100%);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(236, 72, 153, 0.12);
+            background: linear-gradient(135deg, rgba(253, 242, 248, 1) 0%, rgba(220, 252, 231, 1) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(219, 39, 119, 0.18);
             border-radius: 16px;
         }
 
-        /* 头部毛玻璃效果 */
+        /* 头部毛玻璃效果 — 加深 */
         header.glass-header {
-            background: rgba(255, 255, 255, 0.78);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border-bottom: 1px solid rgba(236, 72, 153, 0.08);
+            background: rgba(255, 255, 255, 0.86);
+            backdrop-filter: blur(22px) saturate(220%);
+            -webkit-backdrop-filter: blur(22px) saturate(220%);
+            border-bottom: 1.5px solid rgba(219, 39, 119, 0.14);
+            box-shadow: 0 2px 24px rgba(219, 39, 119, 0.08), 0 1px 4px rgba(0,0,0,0.05);
         }
 
-        /* 底部导航毛玻璃 */
+        /* 底部导航毛玻璃 — 加深 */
         nav.glass-nav {
-            background: rgba(255, 255, 255, 0.82);
-            backdrop-filter: blur(18px) saturate(180%);
-            -webkit-backdrop-filter: blur(18px) saturate(180%);
-            border-top: 1px solid rgba(236, 72, 153, 0.08);
+            background: rgba(255, 255, 255, 0.90);
+            backdrop-filter: blur(22px) saturate(220%);
+            -webkit-backdrop-filter: blur(22px) saturate(220%);
+            border-top: 1.5px solid rgba(219, 39, 119, 0.12);
+            box-shadow: 0 -4px 24px rgba(219, 39, 119, 0.09);
         }
 
-        /* 数据卡片微调 — 让小色块更柔和融入背景 */
-        .bg-pink-50 { background-color: rgba(253, 242, 248, 0.88) !important; }
-        .bg-mint-50 { background-color: rgba(240, 253, 244, 0.88) !important; }
-        .bg-amber-50 { background-color: rgba(255, 251, 235, 0.88) !important; }
+        /* 数据卡片微调 — 更深的底色 */
+        .bg-pink-50 { background-color: rgba(253, 242, 248, 1) !important; }
+        .bg-mint-50 { background-color: rgba(240, 253, 244, 1) !important; }
+        .bg-amber-50 { background-color: rgba(255, 251, 235, 1) !important; }
 
-        /* 轻量玻璃态 — 替代 bg-gray-50 */
+        /* 轻量玻璃态 — 替代 bg-gray-50，加深透明度 */
         .glass-subtle {
-            background: rgba(255, 255, 255, 0.48);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* 数字高亮 — 渐变文字增强 */
+        .text-pink-600 { color: #db2777 !important; }
+        .text-mint-600 { color: #16a34a !important; }
+        .bg-pink-100 { background-color: rgba(252, 231, 243, 0.9) !important; }
+        .bg-mint-100 { background-color: rgba(220, 252, 231, 0.9) !important; }
+
+        /* 排行榜第一名的特殊样式 */
+        .rank-first {
+            background: linear-gradient(135deg, rgba(252, 231, 243, 1) 0%, rgba(254, 250, 230, 0.95) 100%) !important;
+            border: 1.5px solid rgba(219, 39, 119, 0.30) !important;
+            box-shadow: 0 4px 16px rgba(219, 39, 119, 0.16);
+        }
+
+        /* Toast 提示美化 */
+        .toast-msg {
+            background: linear-gradient(135deg, #111827 0%, #374151 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 100;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        /* 加载骨架屏 */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.4) 25%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.4) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
     </style>
 </head>
@@ -218,15 +333,21 @@
     <header class="fixed top-0 left-0 right-0 glass-header z-50">
         <div class="flex items-center justify-between px-4 py-3">
             <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl gradient-green flex items-center justify-center">
+                <div class="w-9 h-9 rounded-xl gradient-green flex items-center justify-center shadow-lg shadow-green-500/25">
                     <span id="tokenLogoSymbol" class="text-white font-bold text-xs">ME</span>
                 </div>
                 <span id="appTitle" class="font-bold text-lg gradient-green-text">REMIX生态中心</span>
             </div>
-            <button id="walletBtn" onclick="toggleWallet()" class="px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5">
-                <span id="walletText">连接钱包</span>
-                <span id="walletSlisDisplay" class="hidden text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full font-medium">--</span>
-            </button>
+            <div class="flex items-center gap-2">
+                <!-- 手动刷新按钮 -->
+                <button id="refreshBtn" onclick="manualRefresh()" class="btn-refresh" title="刷新数据">
+                    <svg id="refreshIcon" class="w-5 h-5 text-pink-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                </button>
+                <button id="walletBtn" onclick="toggleWallet()" class="px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5">
+                    <span id="walletText">连接钱包</span>
+                    <span id="walletSlisDisplay" class="hidden text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full font-medium">--</span>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -801,8 +922,8 @@
                 <span class="text-[10px] font-medium">收益</span>
             </button>
             <button onclick="showPage('burn')" class="bottom-nav-item relative flex flex-col items-center gap-1 py-2 px-3 text-gray-400 transition-colors" data-page="burn">
-                <div class="w-12 h-12 -mt-6 rounded-full gradient-green flex items-center justify-center shadow-lg shadow-green-500/30">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path></svg>
+                <div class="w-12 h-12 -mt-6 rounded-full gradient-green flex items-center justify-center shadow-xl shadow-pink-500/20 ring-4 ring-white/60">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path></svg>
                 </div>
                 <span class="text-[10px] font-medium mt-1">销毁</span>
             </button>
@@ -996,17 +1117,43 @@
             }
         }
 
-        // 显示轻提示
+        // 显示轻提示（美化版）
         function showToast(message) {
             const toast = document.createElement('div');
-            toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm z-50 animate-fade-in';
+            toast.className = 'toast-msg fixed top-20 left-1/2 -translate-x-1/2 z-50';
+            toast.style.cssText = 'animation: fadeIn 0.3s ease;';
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.5s';
                 setTimeout(() => toast.remove(), 500);
-            }, 3000);
+            }, 2500);
+        }
+
+        // 手动刷新按钮
+        let isRefreshing = false;
+        async function manualRefresh() {
+            if (isRefreshing || !provider) {
+                if (!provider) showToast('请先连接钱包');
+                return;
+            }
+            isRefreshing = true;
+
+            const btn = document.getElementById('refreshBtn');
+            const icon = document.getElementById('refreshIcon');
+            btn.classList.add('spinning');
+
+            try {
+                await refreshAllData();
+                showToast('数据已更新 ✓');
+            } catch (e) {
+                console.error('手动刷新失败:', e);
+                showToast('刷新失败，请重试');
+            } finally {
+                btn.classList.remove('spinning');
+                setTimeout(() => { isRefreshing = false; }, 500);
+            }
         }
 
         // 格式化大数
@@ -1357,33 +1504,37 @@
             }
         }
         
-        // 从事件日志加载排行榜（优化版：扩大范围 + 重试）
+        // 从事件日志加载排行榜（增强版：多范围查询 + 合约状态补充 + 缓存）
+        let _leaderboardCache = null; // 缓存最近一次的排行数据
+        let _lastUserBurned = 0; // 记录用户上一次的累计销毁量
+
         async function loadBurnLeaderboard(distributor, totalBurned) {
             const leaderboardEl = document.getElementById('burnLeaderboard');
             if (!leaderboardEl) return;
-            
+
             try {
                 const currentBlock = await provider.getBlockNumber();
-                
-                // 尝试从更早的区块开始查（最多回溯 50000 块 ≈ BSC 约 40 小时）
                 let events = [];
-                
-                for (const range of [50000, 10000, 5000]) {
+
+                // 多级回退策略：从大到小逐步缩小范围
+                const ranges = [100000, 50000, 20000, 10000, 5000];
+                for (const range of ranges) {
                     try {
                         const fromBlock = Math.max(0, currentBlock - range);
                         const filter = distributor.filters.BurnProcessed();
                         const result = await Promise.race([
                             distributor.queryFilter(filter, fromBlock, 'latest'),
-                            new Promise((_, reject) => setTimeout(() => reject(new Error('query timeout')), 8000))
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('query timeout')), 10000))
                         ]);
                         events = result;
-                        if (events.length > 0 || range === 5000) break;
+                        console.log(`[排行榜] 范围 ${range} 块, 找到 ${events.length} 条事件`);
+                        if (events.length > 0 || range <= 5000) break;
                     } catch (e) {
-                        console.warn(`排行榜查询范围 ${range} 失败，尝试缩小范围:`, e.message);
+                        console.warn(`[排行榜] 范围 ${range} 失败:`, e.message?.slice(0, 80));
                         continue;
                     }
                 }
-                
+
                 // 汇总每个地址的销毁量
                 const burnMap = {};
                 for (const ev of events) {
@@ -1391,22 +1542,47 @@
                     const amount = parseFloat(ethers.utils.formatEther(ev.args.actualBurnAmount));
                     burnMap[user] = (burnMap[user] || 0) + amount;
                 }
-                
-                // ★ 关键修复：如果当前用户已连接，用合约状态补充自己的数据
-                // （合约 cumulativeRawBurned 是即时更新的，不依赖事件索引延迟）
-                if (userAddress && chainData.userBurned > 0) {
-                    const myStateBurn = parseFloat(ethers.utils.formatEther(chainData.userBurned));
-                    // 合约状态的值 ≥ 事件汇总的值（因为事件可能有延迟）
-                    if (!burnMap[userAddress] || myStateBurn > burnMap[userAddress]) {
-                        burnMap[userAddress] = myStateBurn;
+
+                // ★ 关键修复1：用合约状态补充当前用户的实时数据（不依赖事件索引延迟）
+                if (userAddress) {
+                    // 方式A：用 distributor.cumulativeRawBurned（最准确）
+                    try {
+                        const myCumulative = await distributor.cumulativeRawBurned(userAddress);
+                        const myStateBurn = parseFloat(ethers.utils.formatEther(myCumulative));
+
+                        if (myStateBurn > 0) {
+                            // 如果合约状态的值 ≥ 事件汇总，使用合约值（更准确）
+                            if (!burnMap[userAddress] || myStateBurn >= burnMap[userAddress]) {
+                                burnMap[userAddress] = myStateBurn;
+                                console.log(`[排行榜] 用户合约状态: ${myStateBurn} REMIX`);
+                            }
+
+                            // 检测到新增销毁（用于即时更新）
+                            if (myStateBurn > _lastUserBurned && _lastUserBurned > 0) {
+                                console.log(`[排行榜] 检测到新销毁: ${_lastUserBurned} → ${myStateBurn}`);
+                            }
+                            _lastUserBurned = myStateBurn;
+                        }
+                    } catch (e2) {
+                        console.warn('[排行榜] cumulativeRawBurned 读取失败:', e2.message);
+                        // 方式B：fallback 到 chainData.userBurned（来自 Lens）
+                        if (chainData.userBurned > 0) {
+                            const fallbackBurn = parseFloat(ethers.utils.formatEther(chainData.userBurned));
+                            if (!burnMap[userAddress] || fallbackBurn > burnMap[userAddress]) {
+                                burnMap[userAddress] = fallbackBurn;
+                            }
+                        }
                     }
                 }
-                
-                // 排序取前3
+
+                // 排序取前5（扩大展示范围）
                 const sorted = Object.entries(burnMap)
                     .sort((a, b) => b[1] - a[1])
-                    .slice(0, 3);
-                
+                    .slice(0, 5);
+
+                // 缓存结果
+                _leaderboardCache = { sorted, totalBurned };
+
                 if (sorted.length === 0) {
                     leaderboardEl.innerHTML = `
                         <div class="text-center text-gray-400 text-sm py-6">
@@ -1416,33 +1592,52 @@
                         </div>`;
                     return;
                 }
-                
+
+                // 渲染排行榜
                 leaderboardEl.innerHTML = sorted.map(([addr, amount], i) => {
                     const isFirst = i === 0;
+                    const isMe = addr.toLowerCase() === (userAddress || '').toLowerCase();
                     const weightPct = totalBurned > 0 ? (amount / totalBurned * 100).toFixed(1) : '0';
                     const amountStr = formatCN(amount, 1);
                     const shortAddr = addr.slice(0, 6) + '...' + addr.slice(-4);
+
+                    // 第一名特殊样式 + 自己高亮
+                    let cardClass = isFirst ? 'rank-first' : 'glass-subtle';
+                    if (isMe && !isFirst) cardClass += ' border-pink-200 border';
+
+                    // 排名徽章
+                    let rankBadge = '';
+                    if (i === 0) rankBadge = '<span class="text-lg">🥇</span>';
+                    else if (i === 1) rankBadge = '<span class="text-lg">🥈</span>';
+                    else if (i === 2) rankBadge = '<span class="text-lg">🥉</span>';
+
                     return `
-                        <div class="flex items-center gap-3 p-3 ${isFirst ? 'bg-pink-50 rounded-xl border border-pink-100' : 'glass-subtle rounded-xl'}">
-                            <div class="w-8 h-8 rounded-full ${isFirst ? 'gradient-pink' : 'bg-gray-200'} flex items-center justify-center ${isFirst ? 'text-white' : 'text-gray-600'} text-sm font-bold">${i + 1}</div>
-                            <div class="flex-1">
-                                <div class="font-medium text-sm">${shortAddr}</div>
+                        <div class="flex items-center gap-3 p-3 ${cardClass} rounded-xl transition-all">
+                            <div class="w-8 h-8 rounded-full ${isFirst ? 'gradient-pink' : (isMe ? 'bg-pink-100' : 'bg-gray-100')} flex items-center justify-center ${isFirst ? 'text-white' : (isMe ? 'text-pink-600' : 'text-gray-500')} text-sm font-bold">${rankBadge || (i+1)}</div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate">${shortAddr} ${isMe ? '<span class="text-xs text-pink-500 ml-1">(我)</span>' : ''}</div>
                                 <div class="text-xs text-gray-500">累计销毁 ${amountStr}</div>
                             </div>
-                            <div class="text-right">
-                                <div class="font-semibold ${isFirst ? 'text-pink-600' : 'text-gray-700'}">${weightPct}%</div>
+                            <div class="text-right flex-shrink-0">
+                                <div class="font-semibold ${isFirst ? 'text-pink-600' : (isMe ? 'text-green-600' : 'text-gray-700')}">${weightPct}%</div>
                                 <div class="text-xs text-gray-400">权重</div>
                             </div>
                         </div>`;
                 }).join('');
-                
+
             } catch (e) {
                 console.error('加载排行榜失败:', e);
+                // 如果有缓存，显示缓存数据而不是错误提示
+                if (_leaderboardCache) {
+                    console.log('[排行榜] 显示缓存数据');
+                    // 用缓存的 totalBurned 重新渲染（这里简化处理，直接显示上次结果）
+                    return;
+                }
                 leaderboardEl.innerHTML = `
                     <div class="text-center text-gray-400 text-sm py-6">
                         <div class="text-xl mb-1">⚠️</div>
                         <div>排行榜加载失败</div>
-                        <div class="text-xs mt-1">请稍后刷新重试</div>
+                        <button onclick="manualRefresh()" class="mt-2 text-xs text-pink-500 underline">点击重试</button>
                     </div>`;
             }
         }
@@ -2068,8 +2263,11 @@
                             CONTRACTS.BURN_DISTRIBUTOR.abi,
                             provider
                         );
-                        // 只重新查排行榜，不刷新全部数据（避免太重）
-                        await loadBurnLeaderboard(distributor);
+                        // 重新获取最新的总销毁量
+                        const newTotalBurned = await distributor.totalActualBurned();
+                        chainData.totalBurned = newTotalBurned;
+                        await loadBurnLeaderboard(distributor, newTotalBurned);
+                        showToast('排行榜已更新 ✓');
                     } catch (e) {
                         console.warn('延迟排行榜刷新失败:', e);
                     }
@@ -2083,69 +2281,96 @@
             }
         }
 
-        // 一键领取全部奖励
+        // 一键领取全部奖励 — 增强版
         async function claimAllRewards() {
             if (!signer) {
                 alert('请先连接钱包');
                 return;
             }
-            
+
             try {
                 const distributor = new ethers.Contract(
-                    CONTRACTS.BURN_DISTRIBUTOR.address, 
-                    CONTRACTS.BURN_DISTRIBUTOR.abi, 
+                    CONTRACTS.BURN_DISTRIBUTOR.address,
+                    CONTRACTS.BURN_DISTRIBUTOR.abi,
                     signer
                 );
-                
+
                 let successCount = 0;
-                
+                const results = [];
+
                 // 1. 领取销毁分红
                 try {
-                    const tx1 = await distributor.claimBurnRewardFor(userAddress);
-                    await tx1.wait();
-                    successCount++;
+                    const pendingBurn = await distributor.pendingBurnReward(userAddress);
+                    if (!pendingBurn.isZero() && parseFloat(ethers.utils.formatEther(pendingBurn)) > 0) {
+                        const tx1 = await distributor.claimBurnRewardFor(userAddress);
+                        await tx1.wait();
+                        successCount++;
+                        results.push('销毁分红 ✓');
+                    } else {
+                        results.push('销毁分红: 无可领取');
+                    }
                 } catch (e) {
-                    console.warn('销毁分红领取:', e.message);
+                    console.warn('一键-销毁分红:', e.message?.slice(0, 80));
+                    results.push('销毁分红: 失败');
                 }
-                
+
                 // 2. 领取邀请返佣
                 try {
-                    const tx2 = await distributor.claimInviteRewardFor(userAddress);
-                    await tx2.wait();
-                    successCount++;
+                    const pendingInvite = await distributor.pendingInviteReward(userAddress);
+                    if (!pendingInvite.isZero() && parseFloat(ethers.utils.formatEther(pendingInvite)) > 0) {
+                        const tx2 = await distributor.claimInviteRewardFor(userAddress);
+                        await tx2.wait();
+                        successCount++;
+                        results.push('邀请返佣 ✓');
+                    } else {
+                        results.push('邀请返佣: 无可领取');
+                    }
                 } catch (e) {
-                    console.warn('邀请返佣领取:', e.message);
+                    console.warn('一键-邀请返佣:', e.message?.slice(0, 80));
+                    results.push('邀请返佣: 失败');
                 }
-                
+
                 // 3. 领取持币分红（通过 Vault 合约）
                 try {
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
+                    await vault.estimateGas.claim(); // 先检查是否可行
                     const tx3 = await vault.claim();
                     await tx3.wait();
                     successCount++;
+                    results.push('持币分红 ✓');
                 } catch (e) {
-                    console.warn('持币分红领取（可能为0或未开放）:', e.message);
+                    console.warn('一键-持币分红:', e.message?.slice(0, 80));
+                    if (e.message?.includes('revert') || e.code === 'CALL_EXCEPTION') {
+                        results.push('持币分红: 暂未开放或为0');
+                    } else {
+                        results.push('持币分红: 失败');
+                    }
                 }
-                
+
                 if (successCount > 0) {
-                    alert(`成功领取 ${successCount} 项奖励！`);
+                    showToast(`成功领取 ${successCount} 项奖励！`);
                     await refreshAllData();
-                } else if (successCount === 0) {
-                    alert('当前无可领取奖励，或领取失败。请检查余额后重试。');
+                } else {
+                    alert(`领取详情:\n${results.join('\n')}\n\n当前无可领取奖励或合约暂未开放该功能。`);
                 }
             } catch (error) {
                 console.error('一键领取失败:', error);
-                alert('一键领取失败: ' + error.message);
+                alert('一键领取失败: ' + (error.reason || error.message || '未知错误'));
             }
         }
 
-        // 领取奖励（单独领取）
+        // 领取奖励（单独领取）— 增强版错误诊断
         async function claimReward(type) {
             if (!signer) {
                 alert('请先连接钱包');
                 return;
             }
-            
+
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '领取中...';
+            btn.disabled = true;
+
             try {
                 if (type === 'burn') {
                     const distributor = new ethers.Contract(
@@ -2153,7 +2378,20 @@
                         CONTRACTS.BURN_DISTRIBUTOR.abi,
                         signer
                     );
+
+                    // 先检查可领数量
+                    const pending = await distributor.pendingBurnReward(userAddress);
+                    const pendingNum = parseFloat(ethers.utils.formatEther(pending));
+                    console.log(`[销毁分红] pendingBurnReward = ${pendingNum}`);
+
+                    if (pendingNum <= 0 || pending.isZero()) {
+                        alert('当前销毁分红为 0，需要先销毁代币才能获得分红奖励。');
+                        return;
+                    }
+
+                    // 调用 claim
                     const tx = await distributor.claimBurnRewardFor(userAddress);
+                    showToast('交易已提交，等待确认...');
                     await tx.wait();
                     alert('销毁分红领取成功！');
                 } else if (type === 'invite') {
@@ -2162,30 +2400,93 @@
                         CONTRACTS.BURN_DISTRIBUTOR.abi,
                         signer
                     );
+
+                    // 先检查可领数量
+                    const pending = await distributor.pendingInviteReward(userAddress);
+                    const pendingNum = parseFloat(ethers.utils.formatEther(pending));
+                    console.log(`[邀请返佣] pendingInviteReward = ${pendingNum}`);
+
+                    if (pendingNum <= 0 || pending.isZero()) {
+                        alert('当前邀请返佣为 0。邀请返佣来源：当下级用户销毁代币时，你作为邀请人获得返佣。如果还没有下级完成销毁，则无返佣可领。');
+                        return;
+                    }
+
                     const tx = await distributor.claimInviteRewardFor(userAddress);
+                    showToast('交易已提交，等待确认...');
                     await tx.wait();
                     alert('邀请返佣领取成功！');
+
                 } else if (type === 'holder') {
                     // 持币分红通过 Vault 合约的 claim() 方法
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
+
+                    // 先尝试调用 estimateGas 看是否会失败
+                    try {
+                        await vault.estimateGas.claim();
+                    } catch (gasErr) {
+                        console.warn('[持币分红] estimateGas 失败:', gasErr.message);
+                        // 可能是无可领取金额或合约限制
+                        const tx = await vault.claim();
+                        await tx.wait();
+                        alert('持币分红领取成功！');
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                        await refreshAllData();
+                        return;
+                    }
+
                     const tx = await vault.claim();
+                    showToast('交易已提交，等待确认...');
                     await tx.wait();
                     alert('持币分红领取成功！');
+
                 } else {
                     alert('未知奖励类型');
                     return;
                 }
-                
+
+                btn.textContent = originalText;
+                btn.disabled = false;
                 await refreshAllData();
+
             } catch (error) {
-                console.error('领取失败:', error);
-                // 过滤掉"无可领取"的正常提示
-                const msg = error.message || '';
-                if (msg.includes('nothing to claim') || msg.includes('0 reward') || msg.includes('no reward') || 
-                    msg.includes('already claimed') || msg.includes('zero')) {
-                    alert('当前该类奖励为空，无需领取');
+                console.error(`[${type}] 领取失败详情:`, error);
+                btn.textContent = originalText;
+                btn.disabled = false;
+
+                // 解析详细错误原因
+                let errMsg = error.message || '';
+                let reason = error.reason || error.data?.message || '';
+
+                if (error.code === -32000 || errMsg.includes('insufficient funds')) {
+                    alert('⛔ 钱包 BNB 余额不足以支付 Gas 费');
+                } else if (errMsg.includes('user rejected') || errMsg.includes('rejected')) {
+                    alert('您取消了交易');
+                } else if (errMsg.includes('nothing to claim') || errMsg.includes('no reward') ||
+                           reason.includes('NothingToClaim') || reason.includes('NoReward')) {
+                    alert('当前无可领取奖励');
+                } else if (errMsg.includes('revert') || errMsg.includes('execution reverted')) {
+                    // 提取 revert 原因
+                    let revertReason = '';
+                    if (reason) {
+                        revertReason = reason;
+                    }
+                    const match = errMsg.match(/reverted with reason string '([^']+)'/i);
+                    if (match) revertReason = match[1];
+
+                    if (revertReason.includes('OnlyVault')) {
+                        alert('合约权限异常：该操作只能由 Vault 合约发起');
+                    } else if (revertReason.includes('ZeroAmount') || revertReason.includes('zero amount')) {
+                        alert('领取数量为 0：当前没有可领取的' + (type === 'burn' ? '销毁分红' : type === 'invite' ? '邀请返佣' : '持币分红'));
+                    } else if (revertReason.includes('TransferFailed')) {
+                        alert('转账失败：可能是 slisBNB 池余额不足');
+                    } else if (revertReason) {
+                        alert('领取失败: ' + revertReason);
+                    } else {
+                        alert('领取失败（合约回滚），请联系管理员查看日志');
+                    }
                 } else {
-                    alert('领取失败: ' + (error.reason || msg));
+                    alert('领取失败: ' + (reason || errMsg.slice(0, 100)));
                 }
             }
         }
