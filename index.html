@@ -1131,18 +1131,22 @@
             }, 2500);
         }
 
-        // 手动刷新按钮
-        let isRefreshing = false;
+        // 手动刷新按钮（复用 _isRefreshing 状态）
         async function manualRefresh() {
-            if (isRefreshing || !provider) {
-                if (!provider) showToast('请先连接钱包');
+            if (!provider) {
+                showToast('请先连接钱包');
                 return;
             }
-            isRefreshing = true;
+            if (_isRefreshing) return;
 
+            // 重置懒加载标记，强制重新加载
+            _communityLoaded = false;
+            _statsHeavyLoaded = false;
+
+            // 刷新按钮动画
             const btn = document.getElementById('refreshBtn');
             const icon = document.getElementById('refreshIcon');
-            btn.classList.add('spinning');
+            if (btn) btn.classList.add('spinning');
 
             try {
                 await refreshAllData();
@@ -1151,8 +1155,7 @@
                 console.error('手动刷新失败:', e);
                 showToast('刷新失败，请重试');
             } finally {
-                btn.classList.remove('spinning');
-                setTimeout(() => { isRefreshing = false; }, 500);
+                if (btn) btn.classList.remove('spinning');
             }
         }
 
@@ -1177,27 +1180,34 @@
             return num.toLocaleString('en-US', { maximumFractionDigits: decimals > 0 ? Math.min(decimals, 2) : 0 });
         }
 
-        // slisBNB 价格缓存
+        // slisBNB 价格缓存（避免重复请求）
         let slisBNBPrice = 0;
-        
-        // 获取 slisBNB 价格（从 GeckoTerminal / PancakeSwap 获取）
+        let _slisPriceCacheTime = 0;
+        const PRICE_CACHE_TTL = 60000; // 价格缓存 60 秒
+
+        // 获取 slisBNB 价格（带缓存）
         async function getSlisBNBPrice() {
+            // 缓存命中
+            if (_slisPriceCacheTime && Date.now() - _slisPriceCacheTime < PRICE_CACHE_TTL && slisBNBPrice > 0) {
+                return slisBNBPrice;
+            }
+
             try {
-                // slisBNB 在 BSC 上的地址
                 const SLIS_BNB_ADDRESS = '0x1b0e7652f143c29832189136a3e6a3957c46a9ad';
-                // 尝试从 GeckoTerminal 获取价格
                 try {
-                    const priceResp = await fetch(`https://api.geckoterminal.com/api/v2/simple/networks/bsc/token_price/${SLIS_BNB_ADDRESS}`);
+                    const priceResp = await fetch(`https://api.geckoterminal.com/api/v2/simple/networks/bsc/token_price/${SLIS_BNB_ADDRESS}`, { signal: AbortSignal.timeout(5000) });
                     const priceData = await priceResp.json();
                     const priceStr = priceData?.data?.attributes?.token_prices?.[SLIS_BNB_ADDRESS.toLowerCase()];
                     if (priceStr) {
-                        return parseFloat(priceStr);
+                        slisBNBPrice = parseFloat(priceStr);
+                        _slisPriceCacheTime = Date.now();
+                        return slisBNBPrice;
                     }
                 } catch { /* fallback */ }
-                
-                // 备用：使用 BNB 价格作为近似（slisBNB ≈ 1 BNB）
-                // 实际项目中可以从 Lista 价格预言机或 DexScreener 获取
+
                 console.warn('slisBNB 价格获取失败，使用近似值 1 BNB');
+                slisBNBPrice = 1.0;
+                _slisPriceCacheTime = Date.now();
                 return 1.0;
             } catch (e) {
                 console.error('获取 slisBNB 价格失败:', e);
@@ -1755,49 +1765,179 @@
             }
         }
 
-        // 刷新所有数据（并行优化版）
-        async function refreshAllData() {
-            // 手机端优化：所有无依赖的调用全部并行，不串行等待
-            // UI 在每批数据返回后立即更新（渐进式渲染），不等全部完成
+        // ==================== 性能优化：加载状态管理 ====================
+        let _isRefreshing = false;
+        const _loadState = {
+            global: false,      // 全局统计
+            burn: false,        // 销毁数据 + 排行榜
+            marketing: false,   // 营销钱包
+            user: false,        // 用户数据
+            community: false,   // 社区数据（BscScan API）
+            price: false        // 价格数据
+        };
 
-            const startTime = performance.now();
-
-            // 第一批：纯链上读取，完全并行
-            const batch1 = await Promise.allSettled([
-                loadTokenSupply(),
-                loadGlobalStats(),
-                loadBurnStats(),
-                loadMarketingStats()
-            ]);
-
-            // 第一批数据回来就立即刷新公告和看板（不等后续批次）
-            CURRENT_TOTAL_BURN = parseFloat(ethers.utils.formatEther(chainData.totalBurned || 0));
-            generateAnnouncements();
-            loadStatsPage(); // 不await，让它在后台跑
-
-            // 第二批：Distributor + 社区数据（与看板页并行）
-            const [batch2, _statsPage] = await Promise.allSettled([
-                Promise.allSettled([
-                    loadBurnDistributorStats(),
-                    loadCommunityStats()
-                ]),
-                loadStatsPage() // 确保看板页完成
-            ]);
-
-            // 第三批：用户相关（需钱包连接）—— 与上面并行启动
-            if (userAddress) {
-                const userTasks = [
-                    loadUserStats(),
-                    loadInviteStats(),
-                    loadUserBurnDistributorStats(),
-                    updateMarketingUsdValue()
-                ];
-                await Promise.allSettled(userTasks);
-                // 用户数据回来后更新 slisBNB 余额显示到钱包按钮
-                updateWalletSlisDisplay();
+        // 显示/隐藏全局加载指示器
+        function _setLoading(show = true) {
+            // 在 header 附近显示加载状态
+            let indicator = document.getElementById('loadingIndicator');
+            if (show && !indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'loadingIndicator';
+                indicator.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-pink-400 border-t-transparent rounded-full animate-spin"></span>';
+                indicator.style.cssText = 'position:fixed;bottom:84px;left:50%;transform:translateX(-50%);z-index:100;padding:8px 16px;border-radius:20px;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,0.1);display:flex;align-items:center;gap:8px;font-size:13px;color:#db2777;font-weight:500;';
+                document.body.appendChild(indicator);
             }
+            if (!show && indicator) {
+                indicator.remove();
+                return;
+            }
+            if (show && indicator) indicator.style.display = 'flex';
+        }
 
-            console.log(`refreshAllData 完成, 耗时 ${(performance.now() - startTime).toFixed(0)}ms`);
+        // 显示骨架屏（在数据加载前立即渲染占位）
+        function _showSkeletons() {
+            // 总览页骨架
+            const overview = document.getElementById('page-overview');
+            if (overview && !overview.dataset.skeletonShown) {
+                overview.dataset.skeletonShown = 'true';
+                overview.querySelectorAll('.card .text-3xl, .card .text-2xl').forEach(el => {
+                    el.classList.add('skeleton');
+                    el.textContent = '';
+                    el.style.height = (el.classList.contains('text-3xl') ? '36px' : '28px');
+                    el.style.width = '60%';
+                    el.style.minWidth = '80px';
+                });
+                overview.querySelectorAll('.text-lg.font-semibold').forEach(el => {
+                    el.classList.add('skeleton');
+                    el.style.width = '50%';
+                });
+                // 排行榜样架
+                const lbEl = document.getElementById('burnLeaderboard');
+                if (lbEl && lbEl.textContent.includes('加载中')) {
+                    lbEl.innerHTML = Array(3).fill(0).map((_, i) => `
+                        <div class="flex items-center gap-3 p-3 glass-subtle rounded-xl">
+                            <div class="w-8 h-8 rounded-full skeleton" style="width:32px;height:32px;"></div>
+                            <div class="flex-1"><div class="skeleton h-4 w-24 mb-1"></div><div class="skeleton h-3 w-16"></div></div>
+                            <div><div class="skeleton h-5 w-10"></div></div>
+                        </div>
+                    `).join('');
+                }
+            }
+            // 收益页骨架
+            const rewards = document.getElementById('page-rewards');
+            if (rewards && !rewards.dataset.skeletonShown) {
+                rewards.dataset.skeletonShown = 'true';
+                rewards.querySelectorAll('.text-3xl, .text-2xl.font-bold').forEach(el => {
+                    el.classList.add('skeleton');
+                    el.style.minWidth = '60px';
+                });
+            }
+        }
+
+        // 清除骨架屏样式
+        function _clearSkeletons() {
+            document.querySelectorAll('.skeleton').forEach(el => {
+                el.classList.remove('skeleton');
+                if (el.style.height === '36px' || el.style.height === '28px') {
+                    el.style.height = '';
+                }
+                if (el.style.width === '60%' || el.style.width === '50%' || el.style.width === 'min-width') {
+                    el.style.width = '';
+                    el.style.minWidth = '';
+                }
+            });
+        }
+
+        // ==================== 核心刷新函数 — 移动端极速版 ====================
+        async function refreshAllData() {
+            if (_isRefreshing) return;
+            _isRefreshing = true;
+
+            const t0 = performance.now();
+
+            // 立即显示骨架屏和加载状态
+            _showSkeletons();
+            _setLoading(true);
+
+            try {
+                // ====== 第一波：极速首屏数据（< 1秒） ======
+                // 这些都是单次 eth_call，BSC 响应很快（~200ms 每个）
+                const [globalRes, burnRes, supplyRes] = await Promise.allSettled([
+                    loadGlobalStats(),
+                    loadBurnStats(),       // 只读取 Lens 数据到 chainData
+                    loadTokenSupply()
+                ]);
+
+                // 营销钱包也并行（Lens 单次调用，很快）
+                const marketingPromise = loadMarketingStats().catch(e => console.warn('marketingStats:', e.message));
+
+                // 价格预取（不阻塞）
+                getSlisBNBPrice().catch(() => {});
+
+                // 第一波回来就更新 UI！
+                CURRENT_TOTAL_BURN = parseFloat(ethers.utils.formatEther(chainData.totalBurned || 0));
+                generateAnnouncements();
+
+                // 清除骨架并渲染关键 UI
+                _clearSkeletons();
+
+                // 更新总览页关键数据
+                const totalBurnedEl = document.getElementById('totalBurnedAmount');
+                if (totalBurnedEl && chainData.totalBurned > 0) {
+                    totalBurnedEl.textContent = formatCN(parseFloat(ethers.utils.formatEther(chainData.totalBurned)), 0);
+                }
+
+                console.log(`[perf] 首屏数据 ${(performance.now() - t0).toFixed(0)}ms`);
+
+                // ====== 第二波：Distributor 数据 + 排行榜（后台执行） ======
+                // 这是最重的操作：distributor 调用 + 排行榜事件查询
+                const distributorPromise = loadBurnDistributorStats()
+                    .then(() => console.log(`[perf] Distributor ${(performance.now() - t0).toFixed(0)}ms`))
+                    .catch(e => console.warn('Distributor:', e.message));
+
+                // 社区数据只在社区页可见时才加载（避免 BscScan API 拖慢速度）
+                const activePage = document.querySelector('.page.active')?.id || '';
+                const communityPromise = activePage === 'page-community'
+                    ? loadCommunityStats().catch(() => {})
+                    : Promise.resolve();
+
+                await Promise.allSettled([
+                    distributorPromise,
+                    marketingPromise,
+                    communityPromise
+                ]);
+
+                console.log(`[perf] 第二波完成 ${(performance.now() - t0).toFixed(0)}ms`);
+
+                // ====== 第三波：用户数据（需要钱包连接） ======
+                if (userAddress) {
+                    // 并行加载所有用户相关数据
+                    const userTasks = [
+                        loadUserStats(),
+                        loadInviteStats(),
+                        loadUserBurnDistributorStats()
+                    ];
+                    await Promise.allSettled(userTasks);
+
+                    updateWalletSlisDisplay();
+                    console.log(`[perf] 用户数据 ${(performance.now() - t0).toFixed(0)}ms`);
+                }
+
+                // 更新看板页静态数据（轻量级，纯 DOM 操作）
+                await loadStatsPage();
+
+                // 重型数据（总奖励 + USD 估值）— 不阻塞主流程
+                loadStatsPageHeavy();
+
+                console.log(`[perf] refreshAllData 总耗时 ${(performance.now() - t0).toFixed(0)}ms`);
+
+            } catch (e) {
+                console.error('[refreshAllData] 异常:', e);
+                _clearSkeletons();
+            } finally {
+                _isRefreshing = false;
+                _setLoading(false);
+            }
         }
 
         let walletConnected = false;
@@ -1883,9 +2023,40 @@
         function showPage(pageName) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById('page-' + pageName).classList.add('active');
-            document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+
+            const page = document.getElementById('page-' + pageName);
+            if (page) page.classList.add('active');
+
+            const navBtn = document.querySelector(`[data-page="${pageName}"]`);
+            if (navBtn) navBtn.classList.add('active');
+
+            // 懒加载：切换到社区页时才请求社区数据
+            if (pageName === 'community') {
+                _lazyLoadCommunity();
+            }
+            // 切换到看板页时才加载重型数据
+            if (pageName === 'stats') {
+                _lazyLoadStatsHeavy();
+            }
+        }
+
+        // 懒加载社区数据（防重复）
+        let _communityLoaded = false;
+        async function _lazyLoadCommunity() {
+            if (_communityLoaded) return;
+            _communityLoaded = true;
+            try {
+                await loadCommunityStats();
+                await loadMarketingBnbBalance();
+            } catch { /* silent */ }
+        }
+
+        // 懒加载看板重型数据（防重复）
+        let _statsHeavyLoaded = false;
+        async function _lazyLoadStatsHeavy() {
+            if (_statsHeavyLoaded) return;
+            _statsHeavyLoaded = true;
+            await loadStatsPageHeavy();
         }
 
         function setMaxBurn() {
@@ -1975,8 +2146,8 @@
             await loadMarketingBnbBalance();
         }
 
-        // 更新数据看板页（page-stats）的动态数据
-        async function loadStatsPage() {
+        // 更新数据看板页（page-stats）的动态数据 — 精简版（不做链上调用）
+        function loadStatsPage() {
             try {
                 // 1. 总销毁量
                 const totalBurnEl = document.getElementById('statsTotalBurn');
@@ -1985,34 +2156,7 @@
                     totalBurnEl.textContent = formatCN(burned, 1);
                 }
 
-                // 2. 总奖励发放（从 BurnReferralDistributor 读取）
-                const distributor = new ethers.Contract(CONTRACTS.BURN_DISTRIBUTOR.address, CONTRACTS.BURN_DISTRIBUTOR.abi, provider);
-                
-                const totalRewardEl = document.getElementById('statsTotalReward');
-                if (totalRewardEl) {
-                    try {
-                        const totalInviteReward = await distributor.totalInviteRewardDistributed();
-                        const totalBurnReward = await distributor.totalBurnRewardDistributed();
-                        // 用 slisBNB 单位显示，乘以价格估算 USD
-                        const totalRewardEth = parseFloat(ethers.utils.formatEther(totalInviteReward.add(totalBurnReward)));
-                        const price = await getSlisBNBPrice();
-                        totalRewardEl.textContent = '$' + (totalRewardEth * price).toLocaleString(undefined, { maximumFractionDigits: 1 });
-                    } catch {
-                        totalRewardEl.textContent = '--';
-                    }
-                }
-
-                // 3. 参与地址数（复用社区页数据或显示持币地址）
-                const participantCountEl = document.getElementById('statsParticipantCount');
-                if (participantCountEl) {
-                    // 尝试从已加载的数据获取
-                    const holderCountEl = document.getElementById('holderCount');
-                    if (holderCountEl && holderCountEl.textContent !== '--') {
-                        participantCountEl.textContent = holderCountEl.textContent;
-                    }
-                }
-
-                // 4. 通缩率
+                // 2. 通缩率
                 const deflationRateEl = document.getElementById('statsDeflationRate');
                 if (deflationRateEl && chainData.totalSupply > 0 && chainData.totalBurned > 0) {
                     const supply = parseFloat(ethers.utils.formatEther(chainData.totalSupply));
@@ -2020,25 +2164,32 @@
                     deflationRateEl.textContent = (burned / supply * 100).toFixed(2) + '%';
                 }
 
-                // 5. 营销钱包待领取
-                const marketingPendingEl = document.getElementById('statsMarketingPending');
-                if (marketingPendingEl) {
-                    try {
-                        const marketingSlis = document.getElementById('marketingSlisBalance');
-                        if (marketingSlis && marketingSlis.textContent !== '--') {
-                            marketingPendingEl.textContent = marketingSlis.textContent;
-                        }
-                    } catch { /* skip */ }
+                // 3. 参与地址数（复用社区页已加载数据）
+                const participantCountEl = document.getElementById('statsParticipantCount');
+                if (participantCountEl) {
+                    const holderCountEl = document.getElementById('holderCount');
+                    if (holderCountEl && holderCountEl.textContent !== '--') {
+                        participantCountEl.textContent = holderCountEl.textContent;
+                    }
                 }
 
-                // 6. 营销钱包地址
+                // 4. 营销钱包待领取
+                const marketingPendingEl = document.getElementById('statsMarketingPending');
+                if (marketingPendingEl) {
+                    const marketingSlis = document.getElementById('marketingSlisBalance');
+                    if (marketingSlis && marketingSlis.textContent !== '--') {
+                        marketingPendingEl.textContent = marketingSlis.textContent;
+                    }
+                }
+
+                // 5. 营销钱包地址
                 const marketingAddrEl = document.getElementById('statsMarketingAddr');
                 if (marketingAddrEl) {
                     const addr = CONTRACTS.MULTISIG.address;
                     marketingAddrEl.textContent = '营销钱包地址: ' + addr.slice(0, 6) + '...' + addr.slice(-4);
                 }
 
-                // 7. 合约地址 - 使用真实配置中的地址
+                // 6. 合约地址
                 const addrMap = {
                     contractVaultAddr: CONTRACTS.VAULT.address,
                     contractBurnDistAddr: CONTRACTS.BURN_DISTRIBUTOR.address,
@@ -2051,12 +2202,28 @@
                     if (el) el.textContent = addr.slice(0, 6) + '...' + addr.slice(-4);
                 }
 
-                // 8. 营销钱包 USD 等价金额更新
-                await updateMarketingUsdValue();
-
             } catch (e) {
                 console.error('更新数据看板失败:', e);
             }
+        }
+
+        // 加载看板页的重型数据（单独调用，不在主流程中）
+        async function loadStatsPageHeavy() {
+            try {
+                const totalRewardEl = document.getElementById('statsTotalReward');
+                if (totalRewardEl) {
+                    try {
+                        const distributor = new ethers.Contract(CONTRACTS.BURN_DISTRIBUTOR.address, CONTRACTS.BURN_DISTRIBUTOR.abi, provider);
+                        const totalInviteReward = await distributor.totalInviteRewardDistributed();
+                        const totalBurnReward = await distributor.totalBurnRewardDistributed();
+                        const totalRewardEth = parseFloat(ethers.utils.formatEther(totalInviteReward.add(totalBurnReward)));
+                        const price = await getSlisBNBPrice();
+                        totalRewardEl.textContent = '$' + (totalRewardEth * price).toLocaleString(undefined, { maximumFractionDigits: 1 });
+                    } catch { /* skip */ }
+                }
+
+                await updateMarketingUsdValue();
+            } catch (e) { /* silent */ }
         }
 
         // 更新营销钱包 USD 等价金额
@@ -2531,19 +2698,15 @@
                 updateBurnPreview();
                 generateAnnouncements();
                 checkStakeThreshold();
-                
+
                 // 检查 URL 参数并自动填充邀请地址
                 checkAndFillInviter();
-                
-                // 如果已有 provider，自动刷新数据
+
                 if (typeof window.ethereum !== 'undefined') {
                     provider = new ethers.providers.Web3Provider(window.ethereum);
-                    // 先加载代币信息
                     loadTokenInfo();
                     refreshAllData();
-                    loadMarketingWallet();
                 } else {
-                    // 没有钱包也尝试加载代币信息（使用默认配置）
                     loadTokenInfo();
                 }
             } catch (error) {
