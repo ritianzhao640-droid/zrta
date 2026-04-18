@@ -1512,8 +1512,18 @@
                 
                 // --- slisBNB 持币分红 (20%) — vault.pendingClaim(user) ---
                 let holderReward = ethers.BigNumber.from(0);
-                try { holderReward = await vault.pendingClaim(userAddress); } catch (e) { console.warn('[slisBNB持币] pendingClaim 失败:', e.message?.slice(0, 80)); }
+                try { holderReward = await vault.pendingClaim(userAddress); } catch (e) { console.warn('[slisNB持币] pendingClaim 失败:', e.message?.slice(0, 80)); }
                 chainData.userRewards.holder = holderReward;
+                
+                // 额外诊断：pendingHolderSlis() 对比
+                try {
+                    const holderSlis = await vault.pendingHolderSlis();
+                    console.log(`[🔍 诊断] pendingClaim 原始值: ${holderReward.toString()} (${holderReward.hex ? holderReward.hex() : 'N/A'})`);
+                    console.log(`[🔍 诊断] pendingHolderSlis 原始值: ${holderSlis.toString()} (${holderSlis.hex ? holderSlis.hex() : 'N/A'})`);
+                    console.log(`[🔍 诊断] 两者是否相等: ${holderReward.eq(holderSlis)} | 差值: ${holderReward.sub(holderSlis).toString()}`);
+                } catch(e3) {
+                    console.warn(`[🔍 诊断] pendingHolderSlis 调用失败:`, e3.message?.slice(0, 80));
+                }
 
                 // --- 燃烧分红 ---
                 let burnReward = ethers.BigNumber.from(0);
