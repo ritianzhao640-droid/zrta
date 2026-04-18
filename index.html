@@ -1538,14 +1538,25 @@
                     activationDisplayEl.textContent = threshold.toLocaleString();
                 }
                 
-                // 更新激活状态
+                // 更新激活状态 — 智能判定：链上状态 + 本地计算达标双重检查
+                // 防止 Lens 缓存延迟导致已达标但仍显示"未激活"
+                const isLocallyQualified = myBurned >= threshold && threshold > 0;
+                const isChainQualified = !!stats.selfQualified;
+                const isQualified = isChainQualified || isLocallyQualified;
+
                 const statusBadge = document.querySelector('#page-invite .px-3.py-1');
-                if (stats.selfQualified) {
+                if (isQualified) {
                     statusBadge.textContent = '已激活';
                     statusBadge.className = 'px-3 py-1 bg-mint-100 text-mint-600 text-xs rounded-full font-medium';
+                    // 同步更新 chainData
+                    chainData.selfQualified = true;
                 } else {
                     statusBadge.textContent = '未激活';
                     statusBadge.className = 'px-3 py-1 bg-gray-100 text-gray-500 text-xs rounded-full font-medium';
+                }
+
+                if (isLocallyQualified && !isChainQualified) {
+                    console.log('[invite] 本地判定已激活(销毁达标)，但链上 selfQualified 尚未更新');
                 }
                 
             } catch (e) {
