@@ -419,15 +419,16 @@
             <div class="card p-5">
                 <h3 class="font-semibold text-gray-800 mb-4">收益分配比例</h3>
                 
-                <!-- BNB 持币分红 -->
-                <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+                <!-- BNB 持币分红 (1%) -->
+                <div class="flex items-center gap-2 mb-2 pb-3 border-b border-gray-100">
                     <div class="w-3 h-3 rounded-full bg-blue-500"></div>
                     <span class="text-sm text-gray-600 flex-1">WBNB 持币分红</span>
                     <span class="font-semibold text-blue-600">1%</span>
                 </div>
+                <p class="text-xs text-blue-500 mb-3 -mt-2">🔒 持币满 100 万 REMIX 达成资格 · 来自 1% 税收分配</p>
 
                 <!-- slisBNB 三分分配 -->
-                <div class="flex items-center gap-4 mt-4">
+                <div class="flex items-center gap-4 mt-2">
                     <div class="w-24 h-24 rounded-full relative" style="background: conic-gradient(#ec4899 0deg 144deg, #22c55e 144deg 288deg, #f59e0b 288deg 360deg);">
                         <div class="absolute inset-3 bg-white rounded-full flex items-center justify-center">
                             <span class="text-xs text-gray-400">slisBNB</span>
@@ -482,8 +483,9 @@
                             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                         </div>
                         <div>
-                            <div class="font-semibold text-gray-800">持币分红</div>
-                            <div class="text-xs text-gray-500">来自 1% BNB 分配</div>
+                            <div class="font-semibold text-gray-800">持币分红（WBNB）</div>
+                            <div class="text-xs text-gray-500">来自 1% 税收分配</div>
+                            <div class="text-xs text-blue-500 mt-0.5">🔒 持币满 100 万 REMIX 达成资格</div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
@@ -502,7 +504,7 @@
                             <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div>
-                            <div class="font-semibold text-gray-800">持币分红</div>
+                            <div class="font-semibold text-gray-800">持币分红（slisBNB）</div>
                             <div class="text-xs text-gray-500">来自 20% 持币分配</div>
                         </div>
                     </div>
@@ -1331,18 +1333,16 @@
                 chainData.burnWeight = stats.burnWeightValue;
                 chainData.userTokenBalance = stats.tokenBalance;
                 
-                // ===== 新增：读取 WBNB 持币分红 (1%) =====
-                let wbnbHolderReward = 0;
+                // ===== 读取 WBNB 持币分红 (1%) =====
+                let wbnbHolderReward = ethers.BigNumber.from(0);
                 try {
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, provider);
                     wbnbHolderReward = await vault.pendingWbnbHolderReward();
                     chainData.userRewards.holderWbnb = wbnbHolderReward;
-
-                    // 更新 WBNB 持币分红卡片
                     const wbnbEl = document.getElementById('holderWbnbAmount');
                     if (wbnbEl) wbnbEl.textContent = formatEther(wbnbHolderReward, 6);
                 } catch (e) {
-                    console.warn('[WBNB持币分红] 读取失败(合约可能未部署此方法):', e.message?.slice(0, 80));
+                    console.warn('[WBNB持币分红] 读取失败:', e.message?.slice(0, 80));
                     const wbnbEl = document.getElementById('holderWbnbAmount');
                     if (wbnbEl) wbnbEl.textContent = '0';
                 }
@@ -2573,23 +2573,23 @@
                     }
                 } catch (e) {
                     console.warn('一键-WBNB持币分红:', e.message?.slice(0, 80));
-                    results.push('WBNB持币分红: 失败或未开放');
+                    results.push('WBNB持币分红: 失败');
                 }
 
                 // 4. 领取 slisBNB 持币分红 (20%，通过 Vault 合约)
                 try {
-                    const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
-                    await vault.estimateGas.claim(); // 先检查是否可行
-                    const tx3 = await vault.claim();
+                    const vault2 = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
+                    await vault2.estimateGas.claim();
+                    const tx3 = await vault2.claim();
                     await tx3.wait();
                     successCount++;
-                    results.push('持币分红 ✓');
+                    results.push('slisBNB持币分红 ✓');
                 } catch (e) {
-                    console.warn('一键-持币分红:', e.message?.slice(0, 80));
+                    console.warn('一键-slisBNB持币分红:', e.message?.slice(0, 80));
                     if (e.message?.includes('revert') || e.code === 'CALL_EXCEPTION') {
-                        results.push('持币分红: 暂未开放或为0');
+                        results.push('slisBNB持币分红: 无可领取');
                     } else {
-                        results.push('持币分红: 失败');
+                        results.push('slisBNB持币分红: 失败');
                     }
                 }
 
@@ -2663,7 +2663,7 @@
                     alert('邀请返佣领取成功！');
 
                 } else if (type === 'holderWbnb') {
-                    // WBNB 持币分红 (1%) — 通过 Vault 合约的 claimWbnbHolderReward 方法
+                    // WBNB 持币分红 (1%) — 通过 Vault 合约
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
 
                     // 先检查可领数量
@@ -2673,7 +2673,7 @@
                         console.log(`[WBNB持币分红] pendingWbnbHolderReward = ${pendingNum}`);
 
                         if (pendingNum <= 0 || pending.isZero()) {
-                            alert('当前 WBNB 持币分红为 0。WBNB 持币分红来自 1% BNB 分配池，需要持有代币才能获得分红。');
+                            alert('当前 WBNB 持币分红为 0。\n\n资格条件：持币满 100 万 REMIX\n来源：1% 税收 BNB 分配池');
                             return;
                         }
                     } catch (checkErr) {
@@ -2686,18 +2686,18 @@
                     alert('WBNB 持币分红领取成功！');
 
                 } else if (type === 'holder') {
-                    // 持币分红通过 Vault 合约的 claim() 方法
+                    // slisBNB 持币分红 (20%) — 通过 Vault 合约的 claim() 方法
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
 
                     // 先尝试调用 estimateGas 看是否会失败
                     try {
                         await vault.estimateGas.claim();
                     } catch (gasErr) {
-                        console.warn('[持币分红] estimateGas 失败:', gasErr.message);
-                        // 可能是无可领取金额或合约限制
+                        console.warn('[slisBNB持币分红] estimateGas 失败:', gasErr.message);
+                        // 可能是无可领取金额或合约限制，直接尝试
                         const tx = await vault.claim();
                         await tx.wait();
-                        alert('持币分红领取成功！');
+                        alert('slisBNB 持币分红领取成功！');
                         btn.textContent = originalText;
                         btn.disabled = false;
                         await refreshAllData();
@@ -2707,7 +2707,7 @@
                     const tx = await vault.claim();
                     showToast('交易已提交，等待确认...');
                     await tx.wait();
-                    alert('持币分红领取成功！');
+                    alert('slisBNB 持币分红领取成功！');
 
                 } else {
                     alert('未知奖励类型');
