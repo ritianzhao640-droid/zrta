@@ -1146,29 +1146,29 @@
                 ]
             },
             // WBNB 持币分红 (1%) 合约 ABI — 通过 vault.holderDividendContract() 获取地址
-                                    WBNB_DIVIDEND_ABI: [
-                                      {
-                                        inputs: [{ internalType: "address", name: "user", type: "address" }],
-                                        name: "withdrawableDividends",
-                                        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-                                        stateMutability: "view",
-                                        type: "function",
-                                      },
-                                      {
-                                        inputs: [],
-                                        name: "withdrawDividends",
-                                        outputs: [{ internalType: "bool", name: "success", type: "bool" }],
-                                        stateMutability: "nonpayable",
-                                        type: "function",
-                                      },
-                                      {
-                                        inputs: [],
-                                        name: "minimumShareBalance",
-                                        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-                                        stateMutability: "view",
-                                        type: "function",
-                                      }
-                                    ]
+            WBNB_DIVIDEND_ABI: [
+                {
+                    "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
+                    "name": "withdrawableDividends",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "withdrawDividends",
+                    "outputs": [{ "internalType": "bool", "name": "success", "type": "bool" }],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "minimumShareBalance",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
         };
 
         // ==================== 公告配置 ====================
@@ -1213,6 +1213,17 @@
 
         
 
+        // ==================== WBNB 持币分红读取工具 ====================
+        async function loadHolderWbnbReward(provider, userAddress) {
+            const divAddr = await resolveDividendAddress(provider);
+            console.log("[holderWbnb] dividend addr =", divAddr);
+            if (!divAddr || divAddr === ethers.constants.AddressZero) return ethers.BigNumber.from(0);
+            const dividend = new ethers.Contract(divAddr, WBNB_DIVIDEND_ABI, provider);
+            const pending = await dividend.withdrawableDividends(userAddress);
+            console.log("[holderWbnb] pending =", pending.toString());
+            return pending;
+        }
+
         // ==================== 链上数据缓存 ====================
         let chainData = {
             totalBurned: 0,
@@ -1222,6 +1233,7 @@
             totalSlisReceived: 0,
             userRewards: {
                 holder: 0,
+                holderWbnb: 0,
                 burn: 0,
                 invite: 0
             },
@@ -1665,12 +1677,13 @@
                 // Lens 持币分红值也打出来
                 console.log(`[对比] 持币分红-Lens: ${ethers.utils.formatEther(stats.pendingHolderRewardAmount || 0)} | 燃烧分红-Lens: ${ethers.utils.formatEther(stats.pendingBurnRewardAmount || 0)} | 邀请返佣-Lens: ${ethers.utils.formatEther(stats.pendingInviteRewardAmount || 0)}`);
 
-                // ====== WBNB 持币分红资格检查 — 通过独立分红合约读取 minimumShareBalance =====
+                // ====== WBNB 持币分红资格检查 + 奖励读取 — 通过独立分红合约读取 minimumShareBalance 和 withdrawableDividends =====
                 try {
                     const divAddr = await resolveDividendAddress(provider);
                     console.log("[holderWbnb] dividend addr =", divAddr);
                     if (!divAddr || divAddr === ethers.constants.AddressZero) {
                         // 无分红合约配置
+                        chainData.userRewards.holderWbnb = ethers.BigNumber.from(0);
                     } else {
                         const divContract = new ethers.Contract(divAddr, WBNB_DIVIDEND_ABI, provider);
                         // 读取minimumShareBalance并更新UI
@@ -1682,9 +1695,19 @@
                         } catch (e) {
                             console.warn('[holderWbnb] minimumShareBalance读取失败:', e.message);
                         }
+                        // 读取 WBNB 持币分红奖励
+                        try {
+                            const pendingWbnb = await divContract.withdrawableDividends(userAddress);
+                            console.log("[holderWbnb] pending =", pendingWbnb.toString());
+                            chainData.userRewards.holderWbnb = pendingWbnb;
+                        } catch (e) {
+                            console.warn('[holderWbnb] withdrawableDividends读取失败:', e.message);
+                            chainData.userRewards.holderWbnb = ethers.BigNumber.from(0);
+                        }
                     }
                 } catch (e) {
                     console.warn('[WBNB持币分红] 资格检查失败:', e.message?.slice(0, 80));
+                    chainData.userRewards.holderWbnb = ethers.BigNumber.from(0);
                 }
                 
                 // 更新用户持有代币数量显示
@@ -3504,8 +3527,23 @@
                     const tx = await vault.claim();
                     showToast('交易提交中...', 'info', 1500); await tx.wait();
                     showToast('持币分红领取成功！✅', 'success');
+                }
 
-                 else if (type === 'burn') {
+                else if (type === 'holderWbnb') {
+                    // WBNB 持币分红（1%）
+                    const divAddr = await resolveDividendAddress(signer);
+                    console.log("[holderWbnb] dividend addr =", divAddr);
+                    if (!divAddr || divAddr === ethers.constants.AddressZero) throw new Error("NoDividendContract");
+                    const dividend = new ethers.Contract(divAddr, WBNB_DIVIDEND_ABI, signer);
+                    const pending = await dividend.withdrawableDividends(userAddress);
+                    console.log("[holderWbnb] pending =", pending.toString());
+                    if (pending.isZero()) throw new Error("NoReward");
+                    const tx = await dividend.withdrawDividends();
+                    showToast('交易提交中...', 'info', 1500); await tx.wait();
+                    showToast('WBNB 持币分红领取成功！✅', 'success');
+                }
+
+                else if (type === 'burn') {
                     // 燃烧分红
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, signer);
                     const pending = await vault.pendingBurnReward(userAddress);
