@@ -583,9 +583,9 @@
                     </div>
 
                     <div>
-                        <label class="text-sm text-gray-500 mb-2 block">邀请人地址（可选）</label>
+                        <label class="text-sm text-gray-500 mb-2 block" id="inviterLabel">邀请人地址</label>
                         <input type="text" id="inviterAddressInput" placeholder="0x..." class="input-field w-full px-4 py-3 text-sm">
-                        <p class="text-xs text-gray-400 mt-2">填写邀请人可获得额外返佣奖励</p>
+                        <p class="text-xs text-gray-400 mt-2" id="inviterHint">填写邀请人可获得额外返佣奖励（L1:10% / L2:5%）</p>
                     </div>
 
                     <!-- 实时预览 -->
@@ -1181,16 +1181,51 @@
             return urlParams.get(param);
         }
 
-        // 检查并自动填充邀请地址
+        // 存储邀请人地址到 sessionStorage（跨刷新持久化）
+        function persistRefAddress(refAddr) {
+            if (refAddr && refAddr.startsWith('0x') && refAddr.length === 42) {
+                sessionStorage.setItem('zrta_inviter_ref', refAddr);
+                console.log('[invite] 已保存邀请人地址到本地:', refAddr.slice(0, 6));
+            }
+        }
+
+        // 从 sessionStorage 恢复邀请人地址
+        function getStoredRefAddress() {
+            return sessionStorage.getItem('zrta_inviter_ref') || '';
+        }
+
+        // 清除已存储的邀请地址（首次绑定成功后调用）
+        function clearStoredRefAddress() {
+            sessionStorage.removeItem('zrta_inviter_ref');
+        }
+
+        // 检查并自动填充邀请地址（支持持久化和链上恢复）
         function checkAndFillInviter() {
-            const refAddress = getUrlParam('ref');
+            const inviterInput = document.getElementById('inviterAddressInput');
+            if (!inviterInput) return;
+
+            // 优先级：URL 参数 > sessionStorage > 当前输入框已有值
+            let refAddress = getUrlParam('ref') || getStoredRefAddress();
+
             if (refAddress && refAddress.startsWith('0x') && refAddress.length === 42) {
-                const inviterInput = document.getElementById('inviterAddressInput');
-                if (inviterInput && !inviterInput.value) {
+                if (!inviterInput.value) {
                     inviterInput.value = refAddress;
-                    // 显示提示
-                    showToast(`已自动填入邀请人地址: ${refAddress.slice(0, 6)}...${refAddress.slice(-4)}`);
+                    // 持久化到 sessionStorage（防止用户刷新页面丢失）
+                    persistRefAddress(refAddress);
+                    showToast(`已自动填入邀请人: ${refAddress.slice(0, 6)}...${refAddress.slice(-4)}`);
                 }
+            }
+        }
+
+        // 连接钱包后恢复邀请人地址（如果输入框为空但有存储的 ref）
+        function restoreInviterAfterConnect() {
+            const inviterInput = document.getElementById('inviterAddressInput');
+            if (!inviterInput || inviterInput.value) return; // 已有值不覆盖
+
+            const stored = getStoredRefAddress();
+            if (stored && stored.startsWith('0x') && stored.length === 42) {
+                inviterInput.value = stored;
+                console.log('[invite] 钱包连接后恢复邀请人:', stored.slice(0, 6));
             }
         }
 
@@ -1512,16 +1547,20 @@
                     threshold = 1000000;
                 }
 
-                // 使用 chainData.userBurned（来自 distributor.burnInfo，更准确）
-                let myBurned = 0;
-                try {
-                    myBurned = parseFloat(ethers.utils.formatUnits(chainData.userBurned || 0, 18));
-                    if (!Number.isFinite(myBurned)) myBurned = 0;
-                } catch (e) { myBurned = 0; }
+                // 使用 chainData.userBurnedDisplay（来自 distributor.burnInfo，已转换为可读数值）
+                // 优先用已转换值；如果还没加载完（为0），则从原始值转换
+                let myBurned = chainData.userBurnedDisplay || 0;
+                if (myBurned === 0 && chainData.userBurned) {
+                    try {
+                        myBurned = parseFloat(ethers.utils.formatUnits(chainData.userBurned.toString(), 18));
+                        if (!Number.isFinite(myBurned)) myBurned = 0;
+                    } catch (e) { myBurned = 0; }
+                }
                 if (myBurned === 0 && stats.inviterBurnedAmount) {
                     try { myBurned = parseFloat(ethers.utils.formatUnits(stats.inviterBurnedAmount, 18)); } catch (e) {}
                     if (!Number.isFinite(myBurned)) myBurned = 0;
                 }
+                console.log('[invite] 进度条 myBurned:', myBurned, 'threshold:', threshold, '数据源:', chainData.userBurnedDisplay ? 'display(已转换)' : (chainData.userBurned ? 'rawBurned' : 'Lens兜底'));
                 const progress = threshold > 0 ? Math.min((myBurned / threshold) * 100, 100) : 0;
                 
                 // 使用新 ID 更新进度条和文本
@@ -1558,7 +1597,38 @@
                 if (isLocallyQualified && !isChainQualified) {
                     console.log('[invite] 本地判定已激活(销毁达标)，但链上 selfQualified 尚未更新');
                 }
-                
+
+                // ===== 自动填充/显示已绑定上级状态 =====
+                const inviterInput = document.getElementById('inviterAddressInput');
+                const inviterLabel = document.getElementById('inviterLabel');
+                const inviterHint = document.getElementById('inviterHint');
+
+                if (stats.hasInviter && stats.inviter && stats.inviter !== ethers.constants.AddressZero) {
+                    // 已有链上绑定的上级 → 显示并锁定
+                    chainData.inviter = stats.inviter;
+                    if (inviterInput && !inviterInput.value) {
+                        inviterInput.value = stats.inviter;
+                    }
+                    if (inviterLabel) {
+                        inviterLabel.textContent = '已绑定上级';
+                        inviterLabel.className = 'text-sm text-mint-600 mb-2 block font-medium';
+                    }
+                    if (inviterHint) {
+                        inviterHint.textContent = `✓ 已绑定: ${stats.inviter.slice(0, 6)}...${stats.inviter.slice(-4)} · 销毁时自动享受返佣`;
+                        inviterHint.className = 'text-xs text-mint-500 mt-2';
+                    }
+                } else {
+                    // 未绑定 → 提示用户填写
+                    if (inviterLabel) {
+                        inviterLabel.textContent = '邀请人地址';
+                        inviterLabel.className = 'text-sm text-gray-500 mb-2 block';
+                    }
+                    if (inviterHint) {
+                        inviterHint.textContent = '填写邀请人可获得额外返佣奖励（L1:10% / L2:5%）';
+                        inviterHint.className = 'text-xs text-gray-400 mt-2';
+                    }
+                }
+
             } catch (e) {
                 console.error('加载邀请统计失败:', e);
             }
@@ -1884,22 +1954,50 @@
                     }
                 }
                 
-                // 更新销毁页统计
+                // 更新销毁页统计 — 使用 Distributor 的 burnInfo.rawBurned（最准确的数据源）
                 const userBurnedEl = document.getElementById('myCumulativeBurn');
                 if (userBurnedEl) {
-                    const burnedNum = parseFloat(ethers.utils.formatEther(burnInfo.rawBurned));
-                    userBurnedEl.textContent = formatCN(burnedNum, 1);
+                    let burnedNum = 0;
+                    try {
+                        // 显式使用 formatUnits(rawValue, 18) 确保正确除以 10^18
+                        const rawVal = burnInfo.rawBurned;
+                        console.log('[burn] rawBurned 原始值:', rawVal?.toString(), '类型:', typeof rawVal);
+                        burnedNum = parseFloat(ethers.utils.formatUnits(rawVal.toString(), 18));
+                        console.log('[burn] 转换后累计销毁:', burnedNum);
+
+                        // 安全校验：如果数值异常大（> 10亿），说明数据源有问题
+                        if (!Number.isFinite(burnedNum) || burnedNum < 0 || burnedNum > 1e9) {
+                            console.warn('[burn] 累计销毁值异常:', burnedNum, '原始:', rawVal?.toString());
+                            burnedNum = 0;
+                            userBurnedEl.textContent = '--';
+                        } else {
+                            userBurnedEl.textContent = formatCN(burnedNum, 1);
+                        }
+                    } catch (e) {
+                        console.error('[burn] 累计销毁转换失败:', e);
+                        userBurnedEl.textContent = '--';
+                    }
+                    // 注意：chainData.userBurned 保持为原始 BigNumber（供邀请页进度条等复用）
+                    // 不再覆盖为已转换数值，避免其他地方二次 formatUnits 出错
+                    // 新增 chainData.userBurnedDisplay 存储已转换值，用于直接读取
+                    chainData.userBurnedDisplay = burnedNum;
                 }
-                
+
+                // 销毁权重计算（同样用 formatUnits 确保一致）
                 const burnWeightEl = document.querySelector('#page-burn .text-xl.font-bold.text-mint-600');
                 const burnRankEl = document.getElementById('myBurnRankText');
                 if (burnWeightEl && chainData.totalBurned > 0) {
-                    const myWeight = parseFloat(ethers.utils.formatEther(burnInfo.weight));
-                    const totalWeight = parseFloat(ethers.utils.formatEther(chainData.totalBurned));
+                    let myWeight = 0;
+                    let totalWeight = 0;
+                    try {
+                        myWeight = parseFloat(ethers.utils.formatUnits(burnInfo.weight.toString(), 18));
+                        totalWeight = parseFloat(ethers.utils.formatUnits(chainData.totalBurned.toString(), 18));
+                    } catch (e) { console.warn('[burn] 权重转换失败'); }
+                    
                     const weightPercent = totalWeight > 0 ? (myWeight / totalWeight * 100).toFixed(2) : '0';
                     burnWeightEl.textContent = weightPercent + '%';
                     if (burnRankEl) {
-                        burnRankEl.textContent = '权重 ' + myWeight.toLocaleString();
+                        burnRankEl.textContent = '权重 ' + myWeight.toLocaleString(undefined, { maximumFractionDigits: 0 });
                     }
                 }
                 
@@ -2221,6 +2319,9 @@
 
                 // 更新 UI
                 updateWalletUI();
+                
+                // 恢复邀请人地址（从 sessionStorage 或 URL 参数）
+                restoreInviterAfterConnect();
                 
                 // 加载数据
                 await refreshAllData();
@@ -2701,11 +2802,56 @@
                     signer
                 );
                 
-                // 获取邀请人地址
+                // 获取邀请人地址 — 三级优先：输入框 > sessionStorage存储 > 链上已绑定上级
+                let inviter = ethers.constants.AddressZero;
                 const inviterInput = document.getElementById('inviterAddressInput');
-                const inviter = inviterInput && inviterInput.value && inviterInput.value.startsWith('0x') 
-                    ? inviterInput.value 
-                    : ethers.constants.AddressZero;
+                const inputValue = inviterInput && inviterInput.value && inviterInput.value.trim();
+                
+                if (inputValue && inputValue.startsWith('0x') && inputValue.length === 42) {
+                    // 优先使用输入框的值
+                    inviter = inputValue;
+                    console.log(`[burn] 使用输入框邀请人: ${inviter.slice(0, 6)}...`);
+                } else {
+                    // 输入框为空 → 尝试从链上读取已绑定的上级
+                    try {
+                        const distributor = new ethers.Contract(
+                            CONTRACTS.BURN_DISTRIBUTOR.address,
+                            CONTRACTS.BURN_DISTRIBUTOR.abi,
+                            provider
+                        );
+                        const burnInfo = await distributor.burnInfo(userAddress);
+                        const chainedInviter = burnInfo.inviter;
+                        if (chainedInviter && chainedInviter !== ethers.constants.AddressZero) {
+                            inviter = chainedInviter;
+                            console.log(`[burn] 使用链上已绑定上级: ${inviter.slice(0, 6)}...`);
+                            // 同时回填到输入框
+                            if (inviterInput) inviterInput.value = inviter;
+                        } else {
+                            // 最后尝试 sessionStorage
+                            const stored = getStoredRefAddress();
+                            if (stored && stored.startsWith('0x') && stored.length === 42) {
+                                inviter = stored;
+                                console.log(`[burn] 使用本地存储邀请人: ${inviter.slice(0, 6)}...`);
+                                if (inviterInput) inviterInput.value = inviter;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('[burn] 链上读取上级失败:', e.message?.slice(0, 60));
+                    }
+                }
+
+                // 最终检查 — 如果仍然是零地址，警告用户
+                if (inviter === ethers.constants.AddressZero) {
+                    const confirmContinue = confirm(
+                        '⚠️ 您未填写邀请人地址！\n\n' +
+                        '销毁时将不产生任何邀请返佣。\n' +
+                        '一旦销毁，如果后续绑定上级，之前的销毁记录不会补发返佣。\n\n' +
+                        '是否继续销毁？'
+                    );
+                    if (!confirmContinue) {
+                        btn.textContent = originalText; btn.disabled = false; return;
+                    }
+                }
                 
                 const tx = await vault.burn(burnAmount, inviter);
                 await tx.wait();
