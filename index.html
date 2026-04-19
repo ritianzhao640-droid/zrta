@@ -2589,7 +2589,16 @@
                         console.log(`[inviteStats] 范围 ${range} 块, 找到 ${events.length} 条`);
                         if (events.length > 0 || range <= 50000) break;
                     } catch (e) {
-                        console.warn(`[inviteStats] 范围 ${range} 失败:`, e.message?.slice(0, 80));
+                        const errMsg = e.message || '';
+                        console.warn(`[inviteStats] 范围 ${range} 失败:`, errMsg.slice(0, 120));
+                        
+                        // 检测节点限制（403错误或其他限制性错误）
+                        if (errMsg.includes('403') || errMsg.includes('rate limit') || errMsg.includes('forbidden') || errMsg.includes('limit exceeded')) {
+                            console.warn('[inviteStats] RPC节点限制历史事件查询。将停止尝试并抛出错误。');
+                            // 抛出特殊错误，以便上层处理
+                            throw new Error('RPC_NODE_RESTRICTED');
+                        }
+                        // 其他错误继续尝试更小范围
                     }
                 }
                 return events;
@@ -2680,6 +2689,10 @@
                 }
 
             } catch (e) {
+                if (e.message === 'RPC_NODE_RESTRICTED') {
+                    console.warn('[inviteStats] RPC节点限制历史事件查询，邀请统计数据无法加载。');
+                    // 可以在这里显示一个小提示，但为了保持简洁，我们只记录日志并显示0
+                }
                 console.error('[inviteStats] 加载失败:', e);
                 // 显示 0 而不是 --
                 ['l1InviteCount', 'l2InviteCount'].forEach(id => {
