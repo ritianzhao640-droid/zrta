@@ -2117,6 +2117,97 @@
             }
         }
         
+        // 分页查询函数：将大范围查询拆分成多个小范围查询，规避RPC限制
+        async function queryPaginated(contract, filter, totalRange = 2000000, pageSize = 20000) {
+            try {
+                const currentBlock = await provider.getBlockNumber();
+                const fromBlock = Math.max(0, currentBlock - totalRange);
+                console.log(`[分页查询] 开始，总范围: ${totalRange}，分页大小: ${pageSize}，当前区块: ${currentBlock}，起始区块: ${fromBlock}`);
+                
+                // 计算总页数
+                const totalBlocks = currentBlock - fromBlock;
+                const totalPages = Math.ceil(totalBlocks / pageSize);
+                console.log(`[分页查询] 总区块: ${totalBlocks}，总页数: ${totalPages}`);
+                
+                // 创建所有分页查询任务
+                const promises = [];
+                for (let page = 0; page < totalPages; page++) {
+                    const startBlock = fromBlock + page * pageSize;
+                    const endBlock = Math.min(startBlock + pageSize - 1, currentBlock);
+                    
+                    // 确保范围有效
+                    if (startBlock >= endBlock) continue;
+                    
+                    promises.push(
+                        contract.queryFilter(filter, startBlock, endBlock)
+                            .catch(e => {
+                                // 单页失败不影响其他页
+                                const errMsg = e.message || '';
+                                console.warn(`[分页查询] 页${page+1}/${totalPages} (${startBlock}-${endBlock}) 失败:`, errMsg.slice(0, 80));
+                                
+                                // 检测节点限制（403错误或其他限制性错误）
+                                if (errMsg.includes('403') || errMsg.includes('rate limit') || errMsg.includes('forbidden') || errMsg.includes('limit exceeded')) {
+                                    console.warn(`[分页查询] RPC节点限制历史事件查询，页${page+1}被阻止`);
+                                    throw new Error('RPC_NODE_RESTRICTED');
+                                }
+                                
+                                // 其他错误返回空数组，继续其他页
+                                return [];
+                            })
+                    );
+                }
+                
+                // 并行执行所有分页查询（添加适当延迟避免速率限制）
+                const batchSize = 5; // 每批处理5个页面
+                let allEvents = [];
+                
+                for (let i = 0; i < promises.length; i += batchSize) {
+                    const batch = promises.slice(i, i + batchSize);
+                    const results = await Promise.allSettled(batch);
+                    
+                    // 检查是否有节点限制错误
+                    const hasNodeRestricted = results.some(r => 
+                        r.status === 'rejected' && r.reason?.message === 'RPC_NODE_RESTRICTED'
+                    );
+                    
+                    if (hasNodeRestricted) {
+                        console.warn('[分页查询] 检测到节点限制，停止后续查询');
+                        
+                        // 仍然收集已成功的页面数据
+                        for (const r of results) {
+                            if (r.status === 'fulfilled') {
+                                allEvents.push(...r.value);
+                            }
+                        }
+                        
+                        // 抛出节点限制错误，让上层处理
+                        throw new Error('RPC_NODE_RESTRICTED');
+                    }
+                    
+                    // 收集成功的页面数据
+                    for (const r of results) {
+                        if (r.status === 'fulfilled') {
+                            allEvents.push(...r.value);
+                        }
+                    }
+                    
+                    // 在批次之间添加延迟，避免速率限制
+                    if (i + batchSize < promises.length) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                }
+                
+                console.log(`[分页查询] 完成，共收集 ${allEvents.length} 条事件 (从${totalPages}页中)`);
+                return allEvents;
+                
+            } catch (e) {
+                // 重新抛出错误，让上层处理
+                if (e.message === 'RPC_NODE_RESTRICTED') throw e;
+                console.error('[分页查询] 整体失败:', e);
+                throw e;
+            }
+        }
+        
         // 从事件日志加载排行榜（增强版：多范围查询 + 合约状态补充 + 缓存）
         let _leaderboardCache = null; // 缓存最近一次的排行数据
         let _lastUserBurned = 0; // 记录用户上一次的累计销毁量
@@ -2130,32 +2221,41 @@
             try {
                 const currentBlock = await provider.getBlockNumber();
                 let events = [];
-
-                // 多级回退策略：从大到小逐步缩小范围（增加更大范围以覆盖早期事件）
-                const ranges = [2000000, 1000000, 500000, 250000, 100000, 50000, 20000, 10000, 5000];
                 let nodeRestricted = false;
-                for (const range of ranges) {
-                    try {
-                        const fromBlock = Math.max(0, currentBlock - range);
-                        const filter = distributor.filters.BurnProcessed();
-                        const result = await Promise.race([
-                            distributor.queryFilter(filter, fromBlock, 'latest'),
-                            new Promise((_, reject) => setTimeout(() => reject(new Error('query timeout')), 10000))
-                        ]);
-                        events = result;
-                        console.log(`[排行榜] 范围 ${range} 块, 找到 ${events.length} 条事件`);
-                        if (events.length > 0 || range <= 5000) break;
-                    } catch (e) {
-                        const errMsg = e.message || '';
-                        console.warn(`[排行榜] 范围 ${range} 失败:`, errMsg.slice(0, 120));
-                        
-                        // 检测节点限制（403错误或其他限制性错误）
-                        if (errMsg.includes('403') || errMsg.includes('rate limit') || errMsg.includes('forbidden') || errMsg.includes('limit exceeded')) {
-                            console.warn('[排行榜] RPC节点限制历史事件查询。将停止尝试并显示友好提示。');
-                            nodeRestricted = true;
-                            break;
+
+                try {
+                    // 使用分页查询函数，替代原来的多范围回退策略
+                    const filter = distributor.filters.BurnProcessed();
+                    console.log('[燃烧排行榜] 开始分页查询...');
+                    
+                    // 尝试大范围查询：200万块
+                    events = await queryPaginated(distributor, filter, 2000000, 20000);
+                    console.log(`[燃烧排行榜] 大范围查询完成，找到 ${events.length} 条事件`);
+                    
+                } catch (e) {
+                    // 处理查询失败
+                    const errMsg = e.message || '';
+                    console.warn('[燃烧排行榜] 分页查询失败:', errMsg.slice(0, 120));
+                    
+                    if (errMsg === 'RPC_NODE_RESTRICTED') {
+                        nodeRestricted = true;
+                    } else if (errMsg.includes('403') || errMsg.includes('rate limit') || errMsg.includes('forbidden') || errMsg.includes('limit exceeded')) {
+                        // 其他形式的RPC限制
+                        nodeRestricted = true;
+                    } else {
+                        // 其他错误，尝试更小的范围
+                        console.log('[燃烧排行榜] 尝试较小范围查询...');
+                        try {
+                            const filter = distributor.filters.BurnProcessed();
+                            events = await queryPaginated(distributor, filter, 100000, 5000); // 10万块范围
+                            console.log(`[燃烧排行榜] 小范围查询完成，找到 ${events.length} 条事件`);
+                        } catch (e2) {
+                            const errMsg2 = e2.message || '';
+                            console.warn('[燃烧排行榜] 小范围查询也失败:', errMsg2.slice(0, 120));
+                            if (errMsg2 === 'RPC_NODE_RESTRICTED' || errMsg2.includes('403') || errMsg2.includes('rate limit')) {
+                                nodeRestricted = true;
+                            }
                         }
-                        continue;
                     }
                 }
 
@@ -2576,32 +2676,44 @@
 
             // 辅助函数：多范围查询事件（避免 RPC 超时）
             async function queryWithFallback(filter, ranges) {
-                let events = [];
+                // 优先使用分页查询
                 for (const range of ranges) {
                     try {
-                        const currentBlock = await provider.getBlockNumber();
-                        const fromBlock = Math.max(0, currentBlock - range);
-                        const result = await Promise.race([
-                            distributor.queryFilter(filter, fromBlock, 'latest'),
-                            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 15000))
-                        ]);
-                        events = result;
-                        console.log(`[inviteStats] 范围 ${range} 块, 找到 ${events.length} 条`);
-                        if (events.length > 0 || range <= 50000) break;
+                        console.log(`[inviteStats] 尝试分页查询，范围: ${range} 块`);
+                        
+                        // 根据范围大小调整分页大小
+                        let pageSize = 20000; // 默认值
+                        if (range <= 50000) pageSize = 5000;  // 小范围使用更小的分页
+                        if (range <= 10000) pageSize = 2000;  // 很小范围使用最小分页
+                        
+                        // 使用分页查询函数
+                        const events = await queryPaginated(distributor, filter, range, pageSize);
+                        console.log(`[inviteStats] 分页查询完成，范围 ${range} 块, 找到 ${events.length} 条`);
+                        
+                        // 如果有事件，或者已经是很小的范围了，就返回结果
+                        if (events.length > 0 || range <= 50000) {
+                            return events;
+                        }
                     } catch (e) {
                         const errMsg = e.message || '';
-                        console.warn(`[inviteStats] 范围 ${range} 失败:`, errMsg.slice(0, 120));
+                        console.warn(`[inviteStats] 分页查询失败，范围 ${range} 块:`, errMsg.slice(0, 120));
                         
                         // 检测节点限制（403错误或其他限制性错误）
-                        if (errMsg.includes('403') || errMsg.includes('rate limit') || errMsg.includes('forbidden') || errMsg.includes('limit exceeded')) {
+                        if (errMsg === 'RPC_NODE_RESTRICTED' || errMsg.includes('403') || errMsg.includes('rate limit') || errMsg.includes('forbidden') || errMsg.includes('limit exceeded')) {
                             console.warn('[inviteStats] RPC节点限制历史事件查询。将停止尝试并抛出错误。');
                             // 抛出特殊错误，以便上层处理
                             throw new Error('RPC_NODE_RESTRICTED');
                         }
+                        
                         // 其他错误继续尝试更小范围
+                        console.log(`[inviteStats] 尝试下一个更小范围...`);
+                        continue;
                     }
                 }
-                return events;
+                
+                // 所有范围都失败了，返回空数组
+                console.warn('[inviteStats] 所有分页查询尝试都失败，返回空数组');
+                return [];
             }
 
             try {
