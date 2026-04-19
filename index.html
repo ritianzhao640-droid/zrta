@@ -2133,6 +2133,7 @@
 
                 // 多级回退策略：从大到小逐步缩小范围（增加更大范围以覆盖早期事件）
                 const ranges = [2000000, 1000000, 500000, 250000, 100000, 50000, 20000, 10000, 5000];
+                let nodeRestricted = false;
                 for (const range of ranges) {
                     try {
                         const fromBlock = Math.max(0, currentBlock - range);
@@ -2145,9 +2146,39 @@
                         console.log(`[排行榜] 范围 ${range} 块, 找到 ${events.length} 条事件`);
                         if (events.length > 0 || range <= 5000) break;
                     } catch (e) {
-                        console.warn(`[排行榜] 范围 ${range} 失败:`, e.message?.slice(0, 80));
+                        const errMsg = e.message || '';
+                        console.warn(`[排行榜] 范围 ${range} 失败:`, errMsg.slice(0, 120));
+                        
+                        // 检测节点限制（403错误或其他限制性错误）
+                        if (errMsg.includes('403') || errMsg.includes('rate limit') || errMsg.includes('forbidden') || errMsg.includes('limit exceeded')) {
+                            console.warn('[排行榜] RPC节点限制历史事件查询。将停止尝试并显示友好提示。');
+                            nodeRestricted = true;
+                            break;
+                        }
                         continue;
                     }
+                }
+
+                if (nodeRestricted) {
+                    // RPC节点限制历史查询，显示友好提示
+                    console.warn(`[燃烧排行榜] RPC节点限制历史事件查询，无法加载排行榜数据。当前区块: ${currentBlock}`);
+                    leaderboardEl.innerHTML = `
+                        <div class="text-center text-gray-400 text-sm py-6">
+                            <div class="text-3xl mb-2">🔒</div>
+                            <div class="font-medium">RPC节点限制历史查询</div>
+                            <div class="text-xs mt-2 max-w-xs mx-auto">
+                                当前RPC节点禁止查询历史事件日志，排行榜无法加载。
+                                <br><br>
+                                <span class="text-blue-300">解决方案：</span>
+                                <ol class="text-left text-xs mt-1 pl-4 space-y-1">
+                                    <li>1. 在MetaMask中切换到支持历史查询的BSC节点</li>
+                                    <li>2. 或使用第三方RPC（如Ankr: <code class="bg-gray-800 px-1 rounded">https://rpc.ankr.com/bsc</code>）</li>
+                                    <li>3. 或联系节点提供商开启历史查询权限</li>
+                                </ol>
+                            </div>
+                            <div class="text-xs mt-3 text-gray-500">总销毁量: ${formatCN(totalBurned, 1)}</div>
+                        </div>`;
+                    return;
                 }
 
                 if (events.length === 0) {
@@ -2158,6 +2189,7 @@
                             <div class="text-3xl mb-2">🔥</div>
                             <div>暂无销毁记录</div>
                             <div class="text-xs mt-1">成为第一个销毁者吧！</div>
+                            <div class="text-xs mt-2 text-gray-500">总销毁量: ${formatCN(totalBurned, 1)}</div>
                         </div>`;
                     return;
                 }
