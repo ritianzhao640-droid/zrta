@@ -700,18 +700,7 @@
                     </div>
                 </div>
                 
-                <!-- 激活门槛进度 -->
-                <div class="rounded-xl p-4 mb-4"
-                     style="background: rgba(255,255,255,0.5);">
-                    <div class="flex justify-between text-sm mb-2">
-                        <span class="text-gray-500">邀请激活门槛</span>
-                        <span class="font-medium" id="inviteThresholdText"><span class="text-pink-600">--</span> / -- REMIX</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill gradient-green" id="inviteThresholdProgress" style="width: 0%"></div>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-2">累计销毁达到 <span id="inviteActivationThresholdDisplay">--</span> REMIX 可激活邀请资格</p>
-                </div>
+                
 
                 <!-- 上级邀请人 / 绑定状态 -->
                 <div id="inviterBindingSection" class="rounded-xl p-4 mb-4 border" style="background: rgba(248,250,252,0.8); border-color: rgba(209,213,219,0.5);">
@@ -1265,8 +1254,7 @@
             userTokenBalance: 0,
             inviter: null,
             hasInviter: false,
-            selfQualified: false,
-            activationThreshold: 0
+            selfQualified: false
         };
 
         // ==================== Web3  provider ====================
@@ -1844,27 +1832,11 @@
                 chainData.inviter = stats.inviter;
                 chainData.hasInviter = stats.hasInviter;
                 chainData.selfQualified = stats.selfQualified;
-                chainData.activationThreshold = stats.activationThresholdValue;
+                // activationThreshold 已弃用，无门槛
 
-                // 更新邀请页 — 用用户自己的累计销毁量（而非上级的 inviterBurnedAmount）
-                // activationThresholdValue 是 18 decimals 的原始值，需要 formatUnits 转换
+                // 更新邀请页 — 无门槛，忽略激活阈值
                 let threshold = 0;
-                try {
-                    const rawThreshold = stats.activationThresholdValue;
-                    // 确保是有效数值再转换（防止合约返回异常大数）
-                    if (rawThreshold && rawThreshold !== 0) {
-                        threshold = parseFloat(ethers.utils.formatUnits(rawThreshold, 18));
-                        // 安全兜底：如果转换后仍然是个天文数字（> 100亿），说明数据源有问题，回退到默认值
-                        if (threshold > 10000000000 || !Number.isFinite(threshold)) {
-                            console.warn('[invite] 阈值异常:', rawThreshold.toString(), '→ 使用默认 100万');
-                            threshold = 1000000;
-                        }
-                    }
-                } catch (e) {
-                    console.warn('[invite] 阈值解析失败，使用默认 100万');
-                    threshold = 1000000;
-                }
-
+                
                 // 使用用户自己的累计销毁量（必须是自己，不是上级的！）
                 // 策略：优先用已加载的 display 值；如果没有则直接从合约读取
                 let myBurned = 0;
@@ -1903,26 +1875,10 @@
                 }
                 // 注意：不再使用 stats.inviterBurnedAmount 作为兜底！
                 // 那是上级（inviter）的累计销毁量，不是用户自己的！
-                console.log('[invite] 进度条 myBurned:', myBurned, 'threshold:', threshold);
-                const progress = threshold > 0 ? Math.min((myBurned / threshold) * 100, 100) : 0;
+                console.log('[invite] 我的累计销毁量:', myBurned);
                 
-                // 使用新 ID 更新进度条和文本
-                const progressEl = document.getElementById('inviteThresholdProgress');
-                if (progressEl) progressEl.style.width = progress + '%';
-                
-                const thresholdTextEl = document.getElementById('inviteThresholdText');
-                if (thresholdTextEl) {
-                    thresholdTextEl.innerHTML = `<span class="text-pink-600">${myBurned.toLocaleString()}</span> / ${threshold.toLocaleString()} REMIX`;
-                }
-                
-                const activationDisplayEl = document.getElementById('inviteActivationThresholdDisplay');
-                if (activationDisplayEl) {
-                    activationDisplayEl.textContent = threshold.toLocaleString();
-                }
-                
-                // 更新激活状态 — 智能判定：链上状态 + 本地计算达标双重检查
-                // 防止 Lens 缓存延迟导致已达标但仍显示"未激活"
-                const isLocallyQualified = myBurned >= threshold && threshold > 0;
+                // 更新激活状态 — 无门槛，所有人都自动符合资格
+                const isLocallyQualified = true; // 无门槛，无需销毁量要求
                 const isChainQualified = !!stats.selfQualified;
                 const isQualified = isChainQualified || isLocallyQualified;
 
@@ -1937,9 +1893,7 @@
                     statusBadge.className = 'px-3 py-1 bg-gray-100 text-gray-500 text-xs rounded-full font-medium';
                 }
 
-                if (isLocallyQualified && !isChainQualified) {
-                    console.log('[invite] 本地判定已激活(销毁达标)，但链上 selfQualified 尚未更新');
-                }
+                
 
                 // ===== 自动填充/显示已绑定上级状态 =====
                 const inviterInput = document.getElementById('inviterAddressInput');
@@ -2105,9 +2059,7 @@
                     communityBurnEl.textContent = burned >= 1000000 ? (burned / 1000000).toFixed(1) + 'M' : burnedFormatted;
                 }
                 
-                // 读取激活门槛
-                const threshold = await distributor.activationThreshold();
-                chainData.activationThreshold = threshold;
+                
                 
                 // 渲染排行榜：从事件日志读取 BurnProcessed 事件，排列前3名
                 await loadBurnLeaderboard(distributor, burned);
