@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -15,7 +15,9 @@
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://zrta.asia">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -358,8 +360,7 @@
             100% { background-position: 200% 0; }
         }
 
-        /* 交互增强（暂时禁用） */
-        /*
+        /* ==================== 交互增强与微交互效果 ==================== */
         .card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -372,9 +373,32 @@
         }
         .btn-primary:hover, .btn-secondary:hover {
             filter: brightness(1.1);
+            transform: translateY(-1px);
         }
-        .bottom-nav-item {
-            transition: color 0.2s ease;
+        .btn-primary:active, .btn-secondary:active {
+            transform: translateY(0);
+            transition-duration: 0.1s;
+        }
+        .btn-primary.loading, .btn-secondary.loading {
+            position: relative;
+            color: transparent !important;
+        }
+        .btn-primary.loading::after, .btn-secondary.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: button-spinner 0.6s linear infinite;
+        }
+        @keyframes button-spinner {
+            to { transform: rotate(360deg); }
         }
         .glass-subtle {
             transition: background-color 0.2s ease;
@@ -383,13 +407,182 @@
             background-color: rgba(255, 255, 255, 0.95);
         }
         input, select, textarea {
-            transition: border-color 0.2s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
         input:focus, select:focus, textarea:focus {
             border-color: #ec4899;
-            ring-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+            outline: none;
         }
-        */
+        input.error, select.error, textarea.error {
+            border-color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+        
+        /* 骨架屏加载动画 */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.4) 25%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.4) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        /* 页面切换过渡动画 */
+        .page {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .page:not(.active) {
+            display: none !important;
+        }
+        .page.active {
+            animation: page-fade-in 0.3s ease;
+        }
+        @keyframes page-fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 数字变化动画 */
+        .number-change {
+            transition: color 0.3s ease;
+        }
+        .number-change.increase {
+            color: #22c55e;
+            animation: pulse-green 0.5s ease;
+        }
+        .number-change.decrease {
+            color: #ef4444;
+            animation: pulse-red 0.5s ease;
+        }
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* ==================== 移动端响应式优化 ==================== */
+        @media (max-width: 640px) {
+            /* 调整字体大小 */
+            body { font-size: 15px; }
+            h1, h2, h3 { font-size: 1.1em; }
+            .text-3xl { font-size: 1.75rem; }
+            .text-2xl { font-size: 1.5rem; }
+            
+            /* 调整内边距 */
+            .card { padding: 1rem !important; }
+            .p-5 { padding: 1rem !important; }
+            .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+            
+            /* 调整网格布局 */
+            .grid-cols-1 { grid-template-columns: 1fr !important; }
+            .sm\\:grid-cols-2 { grid-template-columns: 1fr !important; }
+            .lg\\:grid-cols-3 { grid-template-columns: 1fr !important; }
+            
+            /* 调整按钮大小 */
+            .btn-primary, .btn-secondary { 
+                padding: 0.75rem 1rem !important;
+                min-height: 48px; /* 最小触摸目标大小 */
+            }
+            
+            /* 调整输入框大小 */
+            .input-field {
+                padding: 0.75rem 1rem !important;
+                min-height: 48px;
+            }
+            
+            /* 调整底部导航留出空间 */
+            main#mainContent {
+                padding-bottom: 5rem !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            /* 平板设备优化 */
+            .text-3xl { font-size: 2rem; }
+            .p-5 { padding: 1.25rem !important; }
+        }
+        
+        /* ==================== 底部导航样式 ==================== */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1.5px solid rgba(219, 39, 119, 0.15);
+            box-shadow: 0 -4px 20px rgba(219, 39, 119, 0.08);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 56px;
+            min-width: 56px;
+            flex: 1;
+            text-decoration: none;
+            color: #6b7280;
+        }
+        
+        .nav-item.active {
+            color: #db2777;
+            background: rgba(219, 39, 119, 0.08);
+        }
+        
+        .nav-item:hover:not(.active) {
+            background: rgba(219, 39, 119, 0.04);
+        }
+        
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .nav-pulse {
+            position: relative;
+        }
+        
+        .nav-pulse::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+        
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
     </style>
 </head>
 <body class="text-gray-900">
@@ -1184,62 +1377,2084 @@
         // ==================== 合约配置 ====================
         // ⚠️ 所有地址和 ABI 待新代币部署后回填
         const CONTRACTS = {
-            // === 代币合约 — 等待新代币信息 ===
-            TOKEN: {
-                address: "0x_____________________TOKEN_ADDRESS_____________________",
-                symbol: "CLAIM",
-                decimals: 18,
-                abi: [
-                    // TODO: 填入 Token ABI (balanceOf, dividendContract 等)
-                    { inputs: [{ name: "account", type: "address" }], name: "balanceOf", outputs: [{ type: "uint256" }], stateMutability: "view", type: "function" },
-                    { inputs: [], name: "dividendContract", outputs: [{ type: "address" }], stateMutability: "view", type: "function" }
+            "TOKEN": {
+                "address": "0x379f9E96BDC94572492e3BAC75A5122fFb7E7777",
+                "symbol": "CLAIM",
+                "decimals": 18,
+                "abi": [
+                    {
+                        "inputs": [
+                            {
+                                "name": "account",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "balanceOf",
+                        "outputs": [
+                            {
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "dividendContract",
+                        "outputs": [
+                            {
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    }
                 ]
             },
-            // === Lens 查询接口 ===
-            LENS: {
-                address: "0x_____________________LENS_ADDRESS____________________",
-                abi: []  // TODO: 填入 Lens ABI
+            "VAULT": {
+                "address": "0xC09f04d1DDD278A8a9406CfB6E9C80f2719DB2b0",
+                "abi": [
+                    {
+                        "inputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "constructor"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "AlreadyInitialized",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "Reentrancy",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "TransferFailed",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "Unauthorized",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "chainId",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "UnsupportedChain",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "ZeroAddress",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "ZeroAmount",
+                        "type": "error"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "oldValue",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "newValue",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "AutoStakeThresholdUpdated",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "holder",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "HolderRewardClaimed",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "oldValue",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "newValue",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "MarketingAutoSendThresholdUpdated",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "to",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "MarketingAutoSent",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "to",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "MarketingClaimed",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": false,
+                                "internalType": "address",
+                                "name": "oldWallet",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "address",
+                                "name": "newWallet",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "MarketingWalletUpdated",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "marketingSlis",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "burnPoolSlis",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "holderSlis",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "StakeSplit",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "amountBNB",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "TaxReceived",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "amountBNB",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "slisReceived",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "TaxStaked",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "inviter",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "UserBurned",
+                        "type": "event"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "BPS",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "BURN_POOL_BPS",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "HOLDER_BPS",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "MARKETING_BPS",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "autoStakeThreshold",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "inviter",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "burn",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "burnDistributor",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "burnInfo",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "rawBurned",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "weight",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "inviter",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "hasInviter",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "claim",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "claimBurnReward",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "holder",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "claimFor",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "claimInviteReward",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "to",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "claimMarketing",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "description",
+                        "outputs": [
+                            {
+                                "internalType": "string",
+                                "name": "",
+                                "type": "string"
+                            }
+                        ],
+                        "stateMutability": "pure",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "holderEligibilityOracle",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "holderRewardTracker",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "components": [
+                                    {
+                                        "internalType": "address",
+                                        "name": "taxToken",
+                                        "type": "address"
+                                    },
+                                    {
+                                        "internalType": "address",
+                                        "name": "listaStakeManager",
+                                        "type": "address"
+                                    },
+                                    {
+                                        "internalType": "address",
+                                        "name": "slisBNB",
+                                        "type": "address"
+                                    },
+                                    {
+                                        "internalType": "address",
+                                        "name": "marketingWallet",
+                                        "type": "address"
+                                    },
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "autoStakeThreshold",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "marketingAutoSendThreshold",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "address",
+                                        "name": "burnDistributor",
+                                        "type": "address"
+                                    },
+                                    {
+                                        "internalType": "address",
+                                        "name": "holderEligibilityOracle",
+                                        "type": "address"
+                                    },
+                                    {
+                                        "internalType": "address",
+                                        "name": "holderRewardTracker",
+                                        "type": "address"
+                                    }
+                                ],
+                                "internalType": "struct MEYieldVault.InitParams",
+                                "name": "p",
+                                "type": "tuple"
+                            }
+                        ],
+                        "name": "initialize",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "initialized",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "listaStakeManager",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "marketingAutoSendThreshold",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "marketingWallet",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "overview",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "_listaStakeManager",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint16",
+                                "name": "_marketingSharePercent",
+                                "type": "uint16"
+                            },
+                            {
+                                "internalType": "uint16",
+                                "name": "_holderSharePercent",
+                                "type": "uint16"
+                            },
+                            {
+                                "internalType": "uint16",
+                                "name": "_burnPoolSharePercent",
+                                "type": "uint16"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "_vaultBnbBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "_totalStakedBnb",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "_vaultSlisBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "_myPendingHolderDividend",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "_myPendingBurnDividend",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "_myPendingInviteReward",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "_myCumulativeBurned",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "pendingBurnReward",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "pendingClaim",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "pendingInviteReward",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "pendingMarketingSlis",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "pendingTaxBNB",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "newThreshold",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "setAutoStakeThreshold",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "newThreshold",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "setMarketingAutoSendThreshold",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "newWallet",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "setMarketingWallet",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "slisBNB",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "stakePendingTax",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "ok",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "syncMyHolderAccount",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "taxToken",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalHolderAccumulativeSlis",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalHolderClaimedSlis",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalSlisReceived",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalStakedBNB",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "vaultUISchema",
+                        "outputs": [
+                            {
+                                "components": [
+                                    {
+                                        "internalType": "string",
+                                        "name": "vaultType",
+                                        "type": "string"
+                                    },
+                                    {
+                                        "internalType": "string",
+                                        "name": "description",
+                                        "type": "string"
+                                    },
+                                    {
+                                        "components": [
+                                            {
+                                                "internalType": "string",
+                                                "name": "name",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "internalType": "string",
+                                                "name": "description",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "components": [
+                                                    {
+                                                        "internalType": "string",
+                                                        "name": "name",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "internalType": "string",
+                                                        "name": "fieldType",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "internalType": "string",
+                                                        "name": "description",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "internalType": "uint8",
+                                                        "name": "decimals",
+                                                        "type": "uint8"
+                                                    }
+                                                ],
+                                                "internalType": "struct FieldDescriptor[]",
+                                                "name": "inputs",
+                                                "type": "tuple[]"
+                                            },
+                                            {
+                                                "components": [
+                                                    {
+                                                        "internalType": "string",
+                                                        "name": "name",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "internalType": "string",
+                                                        "name": "fieldType",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "internalType": "string",
+                                                        "name": "description",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "internalType": "uint8",
+                                                        "name": "decimals",
+                                                        "type": "uint8"
+                                                    }
+                                                ],
+                                                "internalType": "struct FieldDescriptor[]",
+                                                "name": "outputs",
+                                                "type": "tuple[]"
+                                            },
+                                            {
+                                                "components": [
+                                                    {
+                                                        "internalType": "string",
+                                                        "name": "tokenType",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "internalType": "string",
+                                                        "name": "amountFieldName",
+                                                        "type": "string"
+                                                    }
+                                                ],
+                                                "internalType": "struct ApproveAction[]",
+                                                "name": "approvals",
+                                                "type": "tuple[]"
+                                            },
+                                            {
+                                                "internalType": "bool",
+                                                "name": "isInputArray",
+                                                "type": "bool"
+                                            },
+                                            {
+                                                "internalType": "bool",
+                                                "name": "isOutputArray",
+                                                "type": "bool"
+                                            },
+                                            {
+                                                "internalType": "bool",
+                                                "name": "isWriteMethod",
+                                                "type": "bool"
+                                            }
+                                        ],
+                                        "internalType": "struct VaultMethodSchema[]",
+                                        "name": "methods",
+                                        "type": "tuple[]"
+                                    }
+                                ],
+                                "internalType": "struct VaultUISchema",
+                                "name": "schema",
+                                "type": "tuple"
+                            }
+                        ],
+                        "stateMutability": "pure",
+                        "type": "function"
+                    },
+                    {
+                        "stateMutability": "payable",
+                        "type": "receive"
+                    }
+                ]
             },
-            // === VaultFactory ===
-            FACTORY: {
-                address: "0x__________________FACTORY_ADDRESS___________________"
+            "BURN_DISTRIBUTOR": {
+                "address": null,
+                "abi": [
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "token_",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "rewardToken_",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "admin_",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "constructor"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "AlreadyInitialized",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "InvalidInviter",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "InvalidInviterChain",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "OnlyVault",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "Reentrancy",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "TransferFailed",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "Unauthorized",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "ZeroAddress",
+                        "type": "error"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "ZeroAmount",
+                        "type": "error"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "inputAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "actualBurnAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "inviter",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "inviterReward",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "inviter2",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "inviter2Reward",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "BurnProcessed",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "BurnRewardAdded",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "BurnRewardClaimed",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "InviteRewardClaimed",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "inviter",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "InviterBound",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "vault",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "VaultInitialized",
+                        "type": "event"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "BPS",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "DEAD",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "L1_BPS",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "L2_BPS",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "MAX_INVITER_HOPS",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "PRECISION",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "accRewardPerWeight",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "admin",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "burnInfo",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "rawBurned",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "weight",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "inviter",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "hasInviter",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "burnWeight",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "inviterCandidate",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "canBindInviter",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "claimBurnRewardFor",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "claimInviteRewardFor",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "cumulativeRawBurned",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "vault_",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "initializeVault",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "inviterCandidate",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "inviteBindingStatus",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "canBind",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "reasonCode",
+                                "type": "uint8"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "inviterOf",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "startUser",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "target",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "isInInviterChain",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "found",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "chainValid",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "notifyReward",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "inviterCandidate",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "onBurn",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "actualBurn",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "l1Reward",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "l2Reward",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "pendingBurn",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "pendingBurnReward",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "pendingInvite",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "pendingInviteReward",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "pendingRewardCarry",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "rewardDebt",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "rewardToken",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "token",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalActualBurned",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalBurnRewardDistributed",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalBurnWeight",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalInviteRewardClaimed",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalInviteRewardDistributed",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "vault",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    }
+                ]
             },
-            // === 金库合约 ===
-            VAULT: {
-                address: "0x_____________________VAULT_ADDRESS___________________"
+            "HOLDER_ELIGIBILITY_ORACLE": {
+                "address": null,
+                "abi": [
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "taxToken_",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "constructor"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "currentTokenBalance",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "eligibleBalanceOf",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "holderDividendContract",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "holderThreshold",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "isHolderEligible",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "officialDividendClaimed",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "officialDividendPending",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "taxToken",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "totalEligibleBalance",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    }
+                ]
             },
-            // === 营销钱包（多签）===
-            MULTISIG: {
-                address: "0x__________________MULTISIG_ADDRESS_________________",
-                displayName: "营销钱包"
+            "MULTISIG": {
+                "address": null,
+                "displayName": "营销钱包"
             },
-            // === Lista 质押管理器 ===
-            LISTA_STAKE_MANAGER: {
-                address: "0x____________LISTA_STAKE_MANAGER_ADDRESS____________"
+            "LISTA_STAKE_MANAGER": {
+                "address": null
             },
-            // === 持币资格预言机 ===
-            HOLDER_ELIGIBILITY_ORACLE: {
-                address: "0x________ELIGIBILITY_ORACLE_ADDRESS________________"
+            "SLIS_BNB": {
+                "address": null
             },
-            // === 持币奖励追踪器 ===
-            HOLDER_REWARD_TRACKER: {
-                address: "0x________REWARD_TRACKER_ADDRESS__________________"
-            },
-
-            // ========== 下方 ABI 区块：等待新代币合约源码后回填 ==========
-
-            // TODO_VAULT_ABI: Vault 合约完整 ABI（从 BscScan 源码导出）
-            VAULT_ABI: [],
-
-            // TODO_BURNDIST_ABI: BurnDistributor 合约 ABI
-            BURN_DISTRIBUTOR: {
-                address: "0x________BURN_DISTRIBUTOR_ADDRESS______________",
-                abi: []
-            },
-
-            // TODO_WBNBDIVIDEND_ABI: WBNB 持币分红合约
-            WBNB_DIVIDEND_ABI: []
+            "HOLDER_REWARD_TRACKER": {
+                "address": null
+            }
         };
+
+        // ==================== 动态地址发现 ====================
+        async function initializeContractAddresses() {
+            try {
+                console.log('[动态地址发现] 开始初始化合约地址...');
+                
+                // 创建Vault合约实例
+                const vaultAddress = CONTRACTS.VAULT.address;
+                const vaultAbi = CONTRACTS.VAULT.abi;
+                const vaultContract = new ethers.Contract(vaultAddress, vaultAbi, provider);
+                
+                // 批量读取地址
+                const [
+                    burnDistributorAddr,
+                    slisBNBAddr,
+                    holderOracleAddr,
+                    marketingWalletAddr,
+                    listaStakeManagerAddr
+                ] = await Promise.all([
+                    vaultContract.burnDistributor(),
+                    vaultContract.slisBNB(),
+                    vaultContract.holderEligibilityOracle(),
+                    vaultContract.marketingWallet(),
+                    vaultContract.listaStakeManager()
+                ]);
+                
+                // 更新CONTRACTS配置
+                CONTRACTS.BURN_DISTRIBUTOR.address = burnDistributorAddr;
+                CONTRACTS.SLIS_BNB.address = slisBNBAddr;
+                CONTRACTS.HOLDER_ELIGIBILITY_ORACLE.address = holderOracleAddr;
+                CONTRACTS.MULTISIG.address = marketingWalletAddr;
+                CONTRACTS.LISTA_STAKE_MANAGER.address = listaStakeManagerAddr;
+                
+                console.log('[动态地址发现] 地址更新完成:');
+                console.log('  - BurnDistributor:', burnDistributorAddr);
+                console.log('  - slisBNB:', slisBNBAddr);
+                console.log('  - HolderEligibilityOracle:', holderOracleAddr);
+                console.log('  - MarketingWallet:', marketingWalletAddr);
+                console.log('  - ListaStakeManager:', listaStakeManagerAddr);
+                
+                return true;
+            } catch (error) {
+                console.error('[动态地址发现] 初始化失败:', error);
+                return false;
+            }
+        }
 
         // ==================== 链上数据缓存 ====================
         let chainData = {
@@ -1559,81 +3774,9 @@
             }
         }
         
-        // 读取 Lens 全局统计
-        async function loadGlobalStats() {
-            if (!provider) return;
-            try {
-                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
-                const stats = await lens.globalStats(CONTRACTS.VAULT.address);
-                
-                chainData.pendingTaxBNB = stats.pendingTaxBNBAmount;
-                chainData.totalStakedBNB = stats.totalStakedBNBAmount;
-                chainData.totalSlisReceived = stats.totalSlisReceivedAmount;
-                
-                // 获取 slisBNB 价格并计算总价值
-                const price = await getSlisBNBPrice();
-                const totalSlis = parseFloat(formatEther(stats.totalSlisReceivedAmount, 4));
-                const totalValue = totalSlis * price;
-                
-                // 更新总质押价值显示
-                const totalValueEl = document.getElementById('totalStakedValue');
-                if (totalValueEl) {
-                    // 调试日志
-                    console.log('[总质押价值] price:', price, 'totalSlis:', totalSlis, 'totalValue:', totalValue, 'isNaN:', isNaN(totalValue));
-                    if (isNaN(totalValue) || totalValue <= 0) {
-                        totalValueEl.textContent = '--';
-                        console.warn('[总质押价值] 计算值异常，显示为 --');
-                    } else {
-                        totalValueEl.textContent = '$' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    }
-                }
-                
-                // 更新 slisBNB 数量显示
-                const totalSlisEl = document.getElementById('totalSlisAmount');
-                if (totalSlisEl) {
-                    // 调试日志
-                    console.log('[总质押slisBNB] raw:', stats.totalSlisReceivedAmount, 'parsed:', totalSlis, 'isNaN:', isNaN(totalSlis));
-                    if (isNaN(totalSlis) || totalSlis <= 0) {
-                        totalSlisEl.textContent = '≈ -- slisBNB';
-                    } else {
-                        totalSlisEl.textContent = `≈ ${totalSlis.toLocaleString('en-US', { maximumFractionDigits: 2 })} slisBNB`;
-                    }
-                }
-                
-                // 更新 UI - 待质押 BNB
-                const pendingBnbEl = document.getElementById('pendingBnb');
-                if (pendingBnbEl) {
-                    pendingBnbEl.textContent = formatEther(stats.pendingTaxBNBAmount, 4) + ' BNB';
-                }
-                
-                // 更新触发质押区域的进度文本
-                const progressTextEl = document.getElementById('stakeProgressText');
-                if (progressTextEl) {
-                    progressTextEl.textContent = `当前: ${formatEther(stats.pendingTaxBNBAmount, 4)} BNB / 阈值: ${STAKE_CONFIG.autoThreshold} BNB`;
-                }
-                
-                // 检查质押阈值
-                STAKE_CONFIG.pendingBnb = parseFloat(formatEther(stats.pendingTaxBNBAmount, 4));
-                checkStakeThreshold();
-            } catch (e) {
-                console.error('加载全局统计失败:', e);
-            }
-        }
 
-        // 读取 Lens 销毁统计（仅读取数据到 chainData，不更新UI，避免竞态条件）
-        async function loadBurnStats() {
-            if (!provider) return;
-            try {
-                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
-                const stats = await lens.burnGlobalStats(CONTRACTS.VAULT.address);
-                
-                chainData.totalBurned = stats.totalActualBurnedAmount;
-                // 注意：UI 更新统一由 loadBurnDistributorStats 负责
-                
-            } catch (e) {
-                console.error('加载销毁统计失败:', e);
-            }
-        }
+
+
 
         // 读取用户统计
         async function loadUserStats() {
@@ -3026,6 +5169,161 @@
             });
         }
 
+        // ==================== 新版数据读取函数（基于Vault） ====================
+        async function loadGlobalStats() {
+            try {
+                console.log('[loadGlobalStats] 通过Vault.overview()加载全局数据');
+                const vaultAddress = CONTRACTS.VAULT.address;
+                const vaultAbi = CONTRACTS.VAULT.abi;
+                const vaultContract = new ethers.Contract(vaultAddress, vaultAbi, provider);
+                
+                // 调用overview聚合函数
+                const overviewResult = await vaultContract.overview();
+                console.log('[loadGlobalStats] overview结果:', overviewResult);
+                
+                // 解构结果（根据ABI顺序）
+                const [
+                    listaStakeManager,
+                    marketingSharePercent,
+                    holderSharePercent,
+                    burnPoolSharePercent,
+                    vaultBnbBalance,
+                    totalStakedBnb,
+                    vaultSlisBalance,
+                    myPendingHolderDividend,
+                    myPendingBurnDividend,
+                    myPendingInviteReward,
+                    myCumulativeBurned
+                ] = overviewResult;
+                
+                // 更新chainData
+                chainData.listaStakeManager = listaStakeManager;
+                chainData.marketingSharePercent = marketingSharePercent;
+                chainData.holderSharePercent = holderSharePercent;
+                chainData.burnPoolSharePercent = burnPoolSharePercent;
+                chainData.vaultBnbBalance = vaultBnbBalance;
+                chainData.totalStakedBnb = totalStakedBnb;
+                chainData.vaultSlisBalance = vaultSlisBalance;
+                chainData.myPendingHolderDividend = myPendingHolderDividend;
+                chainData.myPendingBurnDividend = myPendingBurnDividend;
+                chainData.myPendingInviteReward = myPendingInviteReward;
+                chainData.myCumulativeBurned = myCumulativeBurned;
+                
+                // 计算总质押量（BNB）和总slis余额
+                chainData.totalStakedBNB = totalStakedBnb;
+                chainData.totalSlisReceived = vaultSlisBalance;
+                
+                console.log('[loadGlobalStats] 全局数据更新完成');
+                return true;
+            } catch (error) {
+                console.error('[loadGlobalStats] 加载失败:', error);
+                return false;
+            }
+        }
+
+        // ==================== 新版数据读取函数：销毁统计（基于BurnDistributor） ====================
+        async function loadBurnStats() {
+            try {
+                console.log('[loadBurnStats] 通过BurnDistributor加载销毁统计');
+                const distributorAddress = CONTRACTS.BURN_DISTRIBUTOR.address;
+                if (!distributorAddress) {
+                    console.warn('[loadBurnStats] BurnDistributor地址未初始化，跳过');
+                    return false;
+                }
+                const distributorAbi = CONTRACTS.BURN_DISTRIBUTOR.abi;
+                const distributorContract = new ethers.Contract(distributorAddress, distributorAbi, provider);
+                
+                // 并行读取所有关键数据
+                const [
+                    totalActualBurned,
+                    totalBurnWeight,
+                    totalBurnRewardDistributed,
+                    totalInviteRewardDistributed
+                ] = await Promise.all([
+                    distributorContract.totalActualBurned(),
+                    distributorContract.totalBurnWeight(),
+                    distributorContract.totalBurnRewardDistributed(),
+                    distributorContract.totalInviteRewardDistributed()
+                ]);
+                
+                // 更新chainData（保持与旧字段兼容）
+                chainData.totalBurned = totalActualBurned;
+                chainData.totalBurnWeight = totalBurnWeight;
+                chainData.totalBurnRewardDistributed = totalBurnRewardDistributed;
+                chainData.totalInviteRewardDistributed = totalInviteRewardDistributed;
+                
+                console.log('[loadBurnStats] 销毁统计更新完成');
+                return true;
+            } catch (error) {
+                console.error('[loadBurnStats] 加载失败:', error);
+                return false;
+            }
+        }
+
+        // ==================== 新版数据读取函数：用户数据（基于Vault和Oracle） ====================
+        async function loadUserStats() {
+            try {
+                console.log('[loadUserStats] 加载用户数据');
+                if (!userAddress) {
+                    console.log('[loadUserStats] 用户未连接钱包，跳过');
+                    return false;
+                }
+
+                const vaultAddress = CONTRACTS.VAULT.address;
+                const vaultAbi = CONTRACTS.VAULT.abi;
+                const vaultContract = new ethers.Contract(vaultAddress, vaultAbi, provider);
+
+                // 并行读取Vault中的用户数据
+                const [
+                    pendingClaim,
+                    pendingBurnReward,
+                    pendingInviteReward,
+                    burnInfoResult
+                ] = await Promise.all([
+                    vaultContract.pendingClaim(userAddress),
+                    vaultContract.pendingBurnReward(userAddress),
+                    vaultContract.pendingInviteReward(userAddress),
+                    vaultContract.burnInfo(userAddress)
+                ]);
+
+                // 解析burnInfo结果（返回元组）
+                const [rawBurned, weight, inviter, hasInviter] = burnInfoResult;
+
+                // 读取HolderEligibilityOracle的官方分红数据
+                let officialDividendPending = ethers.BigNumber.from(0);
+                let officialDividendClaimed = ethers.BigNumber.from(0);
+                let isHolderEligible = false;
+                const oracleAddress = CONTRACTS.HOLDER_ELIGIBILITY_ORACLE.address;
+                if (oracleAddress) {
+                    const oracleAbi = CONTRACTS.HOLDER_ELIGIBILITY_ORACLE.abi;
+                    const oracleContract = new ethers.Contract(oracleAddress, oracleAbi, provider);
+                    [officialDividendPending, officialDividendClaimed, isHolderEligible] = await Promise.all([
+                        oracleContract.officialDividendPending(userAddress),
+                        oracleContract.officialDividendClaimed(userAddress),
+                        oracleContract.isHolderEligible(userAddress)
+                    ]);
+                }
+
+                // 更新chainData中的用户字段
+                chainData.myPendingClaim = pendingClaim;                     // slisBNB分红（项目holder分红）
+                chainData.myPendingBurnReward = pendingBurnReward;           // 销毁奖励
+                chainData.myPendingInviteReward = pendingInviteReward;       // 邀请奖励
+                chainData.myCumulativeBurned = rawBurned;                    // 用户累计销毁量（原始）
+                chainData.myBurnWeight = weight;                             // 用户销毁权重
+                chainData.myInviter = inviter;                               // 邀请人地址
+                chainData.hasInviter = hasInviter;                           // 是否有邀请人
+                chainData.officialDividendPending = officialDividendPending; // 官方分红（WBNB/BNB）待领取
+                chainData.officialDividendClaimed = officialDividendClaimed; // 官方分红已领取
+                chainData.isHolderEligible = isHolderEligible;               // 是否符合holder条件
+
+                console.log('[loadUserStats] 用户数据更新完成');
+                return true;
+            } catch (error) {
+                console.error('[loadUserStats] 加载失败:', error);
+                return false;
+            }
+        }
+
         // ==================== 核心刷新函数 — 移动端极速版 ====================
         async function refreshAllData() {
             if (_isRefreshing) return;
@@ -3039,6 +5337,16 @@
 
             try {
                 // ====== 第一波：极速首屏数据（< 1秒） ======
+                // 确保合约地址已初始化
+                if (typeof window._addressesInitialized === 'undefined') {
+                    window._addressesInitialized = false;
+                }
+                if (!window._addressesInitialized) {
+                    const initialized = await initializeContractAddresses();
+                    if (initialized) {
+                        window._addressesInitialized = true;
+                    }
+                }
                 // 这些都是单次 eth_call，BSC 响应很快（~200ms 每个）
                 const [globalRes, burnRes, supplyRes] = await Promise.allSettled([
                     loadGlobalStats(),
@@ -4061,6 +6369,117 @@
                 }
             } catch (error) {
                 console.error('页面初始化失败:', error);
+            }
+        });
+    </script>
+
+    <!-- ==================== 底部导航栏 ==================== -->
+    <nav class="bottom-navigation" id="bottomNav">
+        <a href="javascript:void(0)" class="nav-item active" data-page="overview" id="nav-overview" aria-current="page">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            <span class="nav-label">概览</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-item" data-page="rewards" id="nav-rewards">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="nav-label">收益</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-item" data-page="burn" id="nav-burn">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
+            </svg>
+            <span class="nav-label">销毁</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-item" data-page="invite" id="nav-invite">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <span class="nav-label">邀请</span>
+        </a>
+    </nav>
+
+    <!-- 底部导航脚本 -->
+    <script>
+        // 页面切换函数
+        function switchPage(pageId) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page').forEach(el => {
+                el.classList.remove('active');
+            });
+            // 显示目标页面
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // 更新导航项状态
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+                el.removeAttribute('aria-current');
+            });
+            const navItem = document.getElementById('nav-' + pageId);
+            if (navItem) {
+                navItem.classList.add('active');
+                navItem.setAttribute('aria-current', 'page');
+            }
+            
+            // 更新页面标题
+            const pageTitles = {
+                overview: 'CLAIM生态中心',
+                rewards: '我的收益',
+                burn: '销毁CLAIM',
+                invite: '邀请系统'
+            };
+            const appTitle = document.getElementById('appTitle');
+            if (appTitle && pageTitles[pageId]) {
+                appTitle.textContent = pageTitles[pageId];
+            }
+            
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 触发数据刷新（如果是收益页）
+            if (pageId === 'rewards' && typeof refreshAllData === 'function') {
+                setTimeout(() => refreshAllData(), 300);
+            }
+        }
+        
+        // 初始化底部导航事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    if (page) {
+                        switchPage(page);
+                    }
+                });
+            });
+            
+            // 检测当前活动页面并高亮对应导航项
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                const pageId = activePage.id.replace('page-', '');
+                const navItem = document.getElementById('nav-' + pageId);
+                if (navItem) {
+                    navItem.classList.add('active');
+                }
+            }
+            
+            // 移动端优化：隐藏底部导航当键盘弹出时
+            const bottomNav = document.getElementById('bottomNav');
+            if (bottomNav) {
+                window.addEventListener('resize', function() {
+                    if (window.innerHeight < 500) {
+                        bottomNav.style.display = 'none';
+                    } else {
+                        bottomNav.style.display = 'flex';
+                    }
+                });
             }
         });
     </script>
