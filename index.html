@@ -5407,6 +5407,14 @@
                     loadBurnStats(),       // 只读取 Lens 数据到 chainData
                     loadTokenSupply()
                 ]);
+                
+                // 调试日志：检查数据加载结果
+                console.log('[debug] globalRes:', globalRes.status, globalRes.value, globalRes.reason);
+                console.log('[debug] burnRes:', burnRes.status, burnRes.value, burnRes.reason);
+                console.log('[debug] supplyRes:', supplyRes.status, supplyRes.value, supplyRes.reason);
+                console.log('[debug] chainData.totalStakedBNB:', chainData.totalStakedBNB ? ethers.utils.formatEther(chainData.totalStakedBNB) : 'undefined');
+                console.log('[debug] chainData.totalSlisReceived:', chainData.totalSlisReceived ? ethers.utils.formatEther(chainData.totalSlisReceived) : 'undefined');
+                console.log('[debug] chainData.totalBurned:', chainData.totalBurned ? ethers.utils.formatEther(chainData.totalBurned) : 'undefined');
 
                 // 营销钱包也并行（Lens 单次调用，很快）
                 const marketingPromise = loadMarketingStats().catch(e => console.warn('marketingStats:', e.message));
@@ -5422,9 +5430,38 @@
                 _clearSkeletons();
 
                 // 更新总览页关键数据
+                // 1. 总燃烧量
                 const totalBurnedEl = document.getElementById('totalBurnedAmount');
-                if (totalBurnedEl && chainData.totalBurned > 0) {
-                    totalBurnedEl.textContent = formatCN(parseFloat(ethers.utils.formatEther(chainData.totalBurned)), 0);
+                if (totalBurnedEl) {
+                    if (chainData.totalBurned !== undefined && chainData.totalBurned !== null) {
+                        totalBurnedEl.textContent = formatCN(parseFloat(ethers.utils.formatEther(chainData.totalBurned)), 0);
+                    } else {
+                        totalBurnedEl.textContent = '--';
+                    }
+                }
+                
+                // 2. 总质押价值（BNB）和 slisBNB 数量
+                const totalStakedValueEl = document.getElementById('totalStakedValue');
+                const totalSlisAmountEl = document.getElementById('totalSlisAmount');
+                
+                // 显示总质押价值（BNB）
+                if (totalStakedValueEl) {
+                    if (chainData.totalStakedBNB !== undefined && chainData.totalStakedBNB !== null) {
+                        const bnbAmount = parseFloat(ethers.utils.formatEther(chainData.totalStakedBNB));
+                        totalStakedValueEl.textContent = formatCN(bnbAmount, 2);
+                    } else {
+                        totalStakedValueEl.textContent = '--';
+                    }
+                }
+                
+                // 显示 slisBNB 数量
+                if (totalSlisAmountEl) {
+                    if (chainData.totalSlisReceived !== undefined && chainData.totalSlisReceived !== null) {
+                        const slisAmount = parseFloat(ethers.utils.formatEther(chainData.totalSlisReceived));
+                        totalSlisAmountEl.textContent = `≈ ${formatCN(slisAmount, 2)} slisBNB`;
+                    } else {
+                        totalSlisAmountEl.textContent = '≈ -- slisBNB';
+                    }
                 }
 
                 console.log(`[perf] 首屏数据 ${(performance.now() - t0).toFixed(0)}ms`);
