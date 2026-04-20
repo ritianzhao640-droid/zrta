@@ -5700,6 +5700,23 @@
         // 公告系统使用的全局变量（由 refreshAllData 更新）
         let CURRENT_TOTAL_BURN = 0;
         let TODAY_BURN = 0;
+        
+        // 公告配置
+        const ANNOUNCEMENTS = {
+            milestones: [
+                { threshold: 1000000, title: "首个百万销毁", message: "社区共同达成首个100万CLAIM销毁里程碑！" },
+                { threshold: 5000000, title: "五百万销毁", message: "销毁量突破500万CLAIM，通缩效应显著增强！" },
+                { threshold: 10000000, title: "千万销毁", message: "历史性时刻！总销毁量突破1000万CLAIM！" }
+            ],
+            dailyMilestones: [
+                { threshold: 10000, title: "日销毁破万", message: "今日销毁量突破10,000 CLAIM" },
+                { threshold: 50000, title: "日销毁五万", message: "今日销毁量突破50,000 CLAIM" },
+                { threshold: 100000, title: "日销毁十万", message: "今日销毁量突破100,000 CLAIM" }
+            ],
+            manual: [
+                { title: "欢迎来到CLAIM", message: "这是基于BSC链的DeFi质押平台，提供slisBNB/WBNB分红、销毁奖励和邀请奖励。", date: "2026-04-21", isNew: true }
+            ]
+        };
 
         // 生成公告列表
         function generateAnnouncements() {
