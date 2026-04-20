@@ -6,10 +6,10 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Claim</title>
-    <meta name="description" content="Claim - 基于BSC链的DeFi质押平台，提供slisBNB/WBNB分红、销毁奖励、邀请奖励和排行榜功能。">
-    <meta name="keywords" content="DeFi, BSC, 质押, 分红, 销毁奖励, 邀请奖励, CLAIM代币">
-    <meta property="og:title" content="Claim">
+    <title>生活</title>
+    <meta name="description" content="生活 - 基于BSC链的DeFi质押平台，提供slisBNB/WBNB分红、销毁奖励、邀请奖励和排行榜功能。">
+    <meta name="keywords" content="DeFi, BSC, 质押, 分红, 销毁奖励, 邀请奖励, 生活代币">
+    <meta property="og:title" content="生活">
     <meta property="og:description" content="Claim - 基于BSC链的DeFi质押平台">
     <meta property="og:url" content="https://zrta.asia">
     <meta property="og:type" content="website">
@@ -595,7 +595,7 @@
                 <div class="w-9 h-9 rounded-xl gradient-green flex items-center justify-center shadow-lg shadow-green-500/25">
                     <span id="tokenLogoSymbol" class="text-white font-bold text-xs">ME</span>
                 </div>
-                <span id="appTitle" class="font-bold text-lg gradient-green-text">CLAIM生态中心</span>
+                <span id="appTitle" class="font-bold text-lg gradient-green-text">生活生态中心</span>
             </div>
             <div class="flex items-center gap-2">
                 <!-- 手动刷新按钮 -->
@@ -647,7 +647,7 @@
                     <span class="px-2 py-1 bg-pink-100 text-pink-600 text-xs rounded-full font-medium">链上实时</span>
                 </div>
                 <div class="text-3xl font-bold text-pink-600 mb-1" id="totalBurnedAmount">--</div>
-                <div class="text-sm text-gray-400" id="burnTokenSymbol">CLAIM</div>
+                <div class="text-sm text-gray-400" id="burnTokenSymbol">生活</div>
                 <div class="mt-3 progress-bar">
                     <div class="progress-fill gradient-pink" id="burnProgressBar" style="width: 0%"></div>
                 </div>
@@ -675,7 +675,7 @@
                     <span class="text-sm text-gray-600 flex-1">WBNB 持币分红</span>
                     <span class="font-semibold text-blue-600">1%</span>
                 </div>
-                <p class="text-xs text-blue-500 mb-3 -mt-2">🔒 持币满 100 万 CLAIM 达成资格 · 来自 1% 税收分配</p>
+                <p class="text-xs text-blue-500 mb-3 -mt-2">🔒 持币满 100 万 生活 达成资格 · 来自 1% 税收分配</p>
 
                 <!-- slisBNB 三分分配 -->
                 <div class="flex items-center gap-4 mt-2">
@@ -734,7 +734,7 @@
                         <span class="text-xs text-gray-500">代币持有</span>
                     </div>
                     <div class="text-xl font-bold text-gray-800" id="rewardTokenBalance">--</div>
-                    <div class="text-xs text-gray-400 mt-0.5">CLAIM</div>
+                    <div class="text-xs text-gray-400 mt-0.5">生活</div>
                 </div>
                 <div class="card p-4">
                     <div class="flex items-center gap-2 mb-2">
@@ -1373,13 +1373,23 @@
         });
 
         // ==================== 合约配置 ====================
-        
-        // ==================== 合约配置 ====================
-        // ⚠️ 所有地址和 ABI 待新代币部署后回填
+        // ⚠️ 数据标记说明：
+        // 1. 代币信息标记：更新 TOKEN 中的 address、symbol、name、decimals
+        // 2. ABI 数据标记：从新部署的合约获取完整的 ABI 并替换
+        // 3. 地址标记：VAULT 地址不变，其他地址通过动态发现获取
+        // 4. CLAIM 代币数据：代币符号为 "CLAIM"，显示名称为 "生活"
+        // 下次迭代更新时，只需修改以下标记的数据：
+        //   - TOKEN.address: 新代币合约地址
+        //   - TOKEN.symbol: 新代币符号
+        //   - TOKEN.name: 新代币显示名称
+        //   - TOKEN.abi: 新代币完整 ABI
+        //   - VAULT.abi: 新 Vault 完整 ABI
+        // 其他合约地址通过 initializeContractAddresses() 动态发现
         const CONTRACTS = {
             "TOKEN": {
                 "address": "0x379f9E96BDC94572492e3BAC75A5122fFb7E7777",
                 "symbol": "CLAIM",
+                "name": "生活",
                 "decimals": 18,
                 "abi": [
                     {
@@ -3782,7 +3792,7 @@
         async function loadUserStats() {
             if (!provider || !userAddress) return;
             try {
-                const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, provider);
+                const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT.abi, provider);
 
                 // ====== 方法1: Vault 合约直接查询（实时）======
                 
@@ -3841,15 +3851,28 @@
                 //     console.warn('[overview] 读取失败:', e2.message?.slice(0, 80));
                 // }
 
-                // ====== 方法3: Lens 缓存数据（辅助：tokenBalance/cumulativeBurned/burnWeight）======
-                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
-                const stats = await lens.userStats(CONTRACTS.VAULT.address, userAddress);
-                chainData.userBurned = stats.cumulativeBurned;
-                chainData.burnWeight = stats.burnWeightValue;
-                chainData.userTokenBalance = stats.tokenBalance;
+                // ====== 方法3: 替代 Lens 的数据获取（tokenBalance/cumulativeBurned/burnWeight）======
+                // 1. 从 TOKEN 合约获取用户代币余额
+                try {
+                    const tokenAbi = [{"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"type":"uint256"}],"stateMutability":"view","type":"function"}];
+                    const token = new ethers.Contract(CONTRACTS.TOKEN.address, tokenAbi, provider);
+                    chainData.userTokenBalance = await token.balanceOf(userAddress);
+                } catch(e) {
+                    console.warn('获取用户代币余额失败:', e.message?.slice(0, 60));
+                }
+                
+                // 2. 从 Vault.burnInfo 获取用户销毁数据和权重
+                try {
+                    const burnInfoResult = await vault.burnInfo(userAddress);
+                    // burnInfo 返回: [rawBurned, weight, inviter, hasInviter]
+                    chainData.userBurned = burnInfoResult[0]; // rawBurned
+                    chainData.burnWeight = burnInfoResult[1]; // weight
+                } catch(e) {
+                    console.warn('获取用户销毁数据失败:', e.message?.slice(0, 60));
+                }
 
-                // Lens 持币分红值也打出来
-                console.log(`[对比] 持币分红-Lens: ${ethers.utils.formatEther(stats.pendingHolderRewardAmount || 0)} | 燃烧分红-Lens: ${ethers.utils.formatEther(stats.pendingBurnRewardAmount || 0)} | 邀请返佣-Lens: ${ethers.utils.formatEther(stats.pendingInviteRewardAmount || 0)}`);
+                // 对比日志
+                console.log(`[对比] 用户代币余额: ${ethers.utils.formatEther(chainData.userTokenBalance || 0)} | 累计销毁: ${ethers.utils.formatEther(chainData.userBurned || 0)} | 销毁权重: ${ethers.utils.formatEther(chainData.burnWeight || 0)}`);
 
                 // ====== WBNB 持币分红资格检查 + 奖励读取 — 通过独立分红合约读取 minimumShareBalance 和 withdrawableDividends =====
                 try {
@@ -4010,37 +4033,44 @@
             }
         }
 
-        // 读取邀请统计
+        // 读取邀请统计 - 使用 Vault.burnInfo() 获取邀请数据
         async function loadInviteStats() {
             if (!provider || !userAddress) return;
             try {
-                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
-                const stats = await lens.inviteStats(CONTRACTS.VAULT.address, userAddress);
+                // 使用 Vault 合约的 burnInfo 函数获取邀请数据
+                const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT.abi, provider);
+                const burnInfoResult = await vault.burnInfo(userAddress);
+                
+                // burnInfo 返回: [rawBurned, weight, inviter, hasInviter]
+                const rawBurned = burnInfoResult[0];
+                const weight = burnInfoResult[1];
+                const inviter = burnInfoResult[2];
+                const hasInviter = burnInfoResult[3];
 
-                chainData.inviter = stats.inviter;
-                chainData.hasInviter = stats.hasInviter;
+                chainData.inviter = inviter;
+                chainData.hasInviter = hasInviter;
                 chainData.selfQualified = true; // 无门槛，始终为 true
 
                 // 更新邀请页 — 无门槛，忽略激活阈值
-                console.log(`[invite] inviter=${stats.inviter?.slice(0,6)}..., hasInviter=${stats.hasInviter}, 无门槛模式`);
+                console.log(`[invite] inviter=${inviter?.slice(0,6)}..., hasInviter=${hasInviter}, 无门槛模式`);
 
                 // ===== 自动填充/显示已绑定上级状态（无门槛） =====
                 const inviterInput = document.getElementById('inviterAddressInput');
                 const inviterLabel = document.getElementById('inviterLabel');
                 const inviterHint = document.getElementById('inviterHint');
 
-                if (stats.hasInviter && stats.inviter && stats.inviter !== ethers.constants.AddressZero) {
+                if (hasInviter && inviter && inviter !== ethers.constants.AddressZero) {
                     // 已有链上绑定的上级 → 显示并锁定
-                    chainData.inviter = stats.inviter;
+                    chainData.inviter = inviter;
                     if (inviterInput && !inviterInput.value) {
-                        inviterInput.value = stats.inviter;
+                        inviterInput.value = inviter;
                     }
                     if (inviterLabel) {
                         inviterLabel.textContent = '已绑定上级';
                         inviterLabel.className = 'text-sm text-mint-600 mb-2 block font-medium';
                     }
                     if (inviterHint) {
-                        inviterHint.textContent = `✓ 已绑定: ${stats.inviter.slice(0, 6)}...${stats.inviter.slice(-4)} · 销毁时自动享受返佣`;
+                        inviterHint.textContent = `✓ 已绑定: ${inviter.slice(0, 6)}...${inviter.slice(-4)} · 销毁时自动享受返佣`;
                         inviterHint.className = 'text-xs text-mint-500 mt-2';
                     }
                     
@@ -4053,7 +4083,7 @@
                         inviterLabel.className = 'text-sm text-gray-500 mb-2 block';
                     }
                     if (inviterHint) {
-                        inviterHint.textContent = '填写邀请人可获得 CLAIM 代币返佣奖励（L1:10% / L2:5%）';
+                        inviterHint.textContent = '填写邀请人可获得 生活 代币返佣奖励（L1:10% / L2:5%）';
                         inviterHint.className = 'text-xs text-gray-400 mt-2';
                     }
                     syncInviteBindStateToRewards();
@@ -4061,44 +4091,54 @@
 
             } catch (e) {
                 console.error('加载邀请统计失败:', e);
+                // 尝试从 BurnDistributor 直接读取（备用方案）
+                try {
+                    if (CONTRACTS.BURN_DISTRIBUTOR && CONTRACTS.BURN_DISTRIBUTOR.address) {
+                        const burnDistributor = new ethers.Contract(CONTRACTS.BURN_DISTRIBUTOR.address, CONTRACTS.BURN_DISTRIBUTOR.abi, provider);
+                        // 根据 BurnDistributor ABI 调用相应函数
+                        // 这里需要根据实际 ABI 调整
+                        console.warn('尝试从 BurnDistributor 读取邀请数据...');
+                    }
+                } catch (fallbackError) {
+                    console.error('备用方案也失败:', fallbackError);
+                }
             }
         }
 
-        // 读取营销钱包统计
-        // 读取营销钱包 slisBNB 余额（Lens + ERC20 双重保障）
+        // 读取营销钱包 slisBNB 余额 - 使用动态发现的地址
         async function loadMarketingStats() {
             if (!provider) return;
             try {
-                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
-                const stats = await lens.marketingStats(CONTRACTS.VAULT.address);
-
-                const el = document.getElementById('marketingSlisBalance');
-                const balance = parseFloat(ethers.utils.formatEther(stats.marketingWalletBalance || 0));
-
-                if (el) {
-                    if (balance < 0.0001 && balance > 0) {
-                        el.textContent = '<0.0001';
-                    } else {
-                        el.textContent = formatEther(stats.marketingWalletBalance, 4);
-                    }
-                }
-
-                await updateMarketingUsdValue();
-
-            } catch (e) {
-                console.warn('Lens marketingStats 失败，尝试直接读取 ERC20 余额:', e);
+                // 直接使用更新后的 _fallbackMarketingSlis 逻辑
                 await _fallbackMarketingSlis();
+            } catch (e) {
+                console.error('加载营销钱包统计失败:', e);
+                const el = document.getElementById('marketingSlisBalance');
+                if (el) el.textContent = '获取失败';
             }
         }
 
-        // 兜底：通过 ERC20 balanceOf 直接查询多签钱包的 slisBNB 持有量
+        // 读取营销钱包 slisBNB 余额 - 使用动态发现的地址
         async function _fallbackMarketingSlis() {
             if (!provider) return;
             try {
-                // TODO_CLAIM_SLISBNB: slisBNB 代币地址（需与上方 CONTRACTS 保持一致）
-                const SLIS_BNB_ADDRESS = '0x________________SLIS_BNB_ADDRESS___________';
+                // 检查是否已初始化地址
+                if (!CONTRACTS.SLIS_BNB || !CONTRACTS.SLIS_BNB.address) {
+                    console.warn('SLIS_BNB 地址未初始化，尝试动态发现...');
+                    const initialized = await initializeContractAddresses();
+                    if (!initialized || !CONTRACTS.SLIS_BNB.address) {
+                        throw new Error('SLIS_BNB 地址初始化失败');
+                    }
+                }
+                
                 const erc20Abi = [{"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"type":"uint256"}],"stateMutability":"view","type":"function"}];
-                const slisToken = new ethers.Contract(SLIS_BNB_ADDRESS, erc20Abi, provider);
+                const slisToken = new ethers.Contract(CONTRACTS.SLIS_BNB.address, erc20Abi, provider);
+                
+                // 检查营销钱包地址
+                if (!CONTRACTS.MULTISIG || !CONTRACTS.MULTISIG.address) {
+                    throw new Error('营销钱包地址未初始化');
+                }
+                
                 const balance = await slisToken.balanceOf(CONTRACTS.MULTISIG.address);
 
                 const el = document.getElementById('marketingSlisBalance');
@@ -4111,8 +4151,9 @@
                     }
                 }
                 await updateMarketingUsdValue();
+                console.log('[营销钱包] slisBNB 余额加载成功:', formatEther(balance, 4));
             } catch (e2) {
-                console.error('ERC20 兜底读取也失败:', e2);
+                console.error('读取营销钱包 slisBNB 余额失败:', e2);
                 const el = document.getElementById('marketingSlisBalance');
                 if (el) el.textContent = '获取失败';
             }
@@ -4753,10 +4794,15 @@
             // 检查二节点互绑
             if (provider && userAddress) {
                 try {
-                    const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
-                    const targetStats = await lens.inviteStats(CONTRACTS.VAULT.address, val);
-                    if (targetStats.hasInviter && targetStats.inviter &&
-                        targetStats.inviter.toLowerCase() === userAddress.toLowerCase()) {
+                    // 使用 Vault.burnInfo() 获取目标地址的邀请信息
+                    const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT.abi, provider);
+                    const burnInfoResult = await vault.burnInfo(val);
+                    // burnInfo 返回: [rawBurned, weight, inviter, hasInviter]
+                    const hasInviter = burnInfoResult[3];
+                    const inviter = burnInfoResult[2];
+                    
+                    if (hasInviter && inviter && inviter !== ethers.constants.AddressZero &&
+                        inviter.toLowerCase() === userAddress.toLowerCase()) {
                         showToast('❌ 禁止互绑：对方的上级已经是您', 'error', 3000);
                         return;
                     }
@@ -4807,12 +4853,16 @@
                 return;
             }
 
-            // 检查2: 不能二节点互绑 — 读取对方 inviter 是否是自己
+            // 检查2: 不能二节点互绑 — 使用 Vault.burnInfo() 读取对方 inviter 是否是自己
             try {
-                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
-                const targetStats = await lens.inviteStats(CONTRACTS.VAULT.address, val);
-                if (targetStats.hasInviter && targetStats.inviter &&
-                    targetStats.inviter.toLowerCase() === userAddress.toLowerCase()) {
+                const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT.abi, provider);
+                const burnInfoResult = await vault.burnInfo(val);
+                // burnInfo 返回: [rawBurned, weight, inviter, hasInviter]
+                const hasInviter = burnInfoResult[3];
+                const inviter = burnInfoResult[2];
+                
+                if (hasInviter && inviter && inviter !== ethers.constants.AddressZero &&
+                    inviter.toLowerCase() === userAddress.toLowerCase()) {
                     showToast('❌ 禁止互绑：对方的上级已经是您', 'error', 3000);
                     return;
                 }
@@ -4859,14 +4909,18 @@
             visited.add(startAddr.toLowerCase());
 
             try {
-                const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
-                const stats = await lens.inviteStats(CONTRACTS.VAULT.address, startAddr);
+                // 使用 Vault.burnInfo() 获取邀请信息
+                const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT.abi, provider);
+                const burnInfoResult = await vault.burnInfo(startAddr);
+                // burnInfo 返回: [rawBurned, weight, inviter, hasInviter]
+                const hasInviter = burnInfoResult[3];
+                const inviter = burnInfoResult[2];
                 
-                if (stats.hasInviter && stats.inviter && stats.inviter !== ethers.constants.AddressZero) {
-                    if (stats.inviter.toLowerCase() === targetAddr.toLowerCase()) {
+                if (hasInviter && inviter && inviter !== ethers.constants.AddressZero) {
+                    if (inviter.toLowerCase() === targetAddr.toLowerCase()) {
                         return true; // 发现环！
                     }
-                    return await checkUpstreamCycle(stats.inviter, targetAddr, visited, depth + 1);
+                    return await checkUpstreamCycle(inviter, targetAddr, visited, depth + 1);
                 }
                 return false;
             } catch(e) {
@@ -5722,7 +5776,7 @@
                 const addrMap = {
                     contractVaultAddr: CONTRACTS.VAULT.address,
                     contractBurnDistAddr: CONTRACTS.BURN_DISTRIBUTOR.address,
-                    contractLensAddr: CONTRACTS.LENS.address,
+                    // contractLensAddr: CONTRACTS.LENS.address, // 已移除 LENS 合约
                     contractTokenAddr: CONTRACTS.TOKEN.address,
                     contractMultisigAddr: CONTRACTS.MULTISIG.address,
                     contractOracleAddr: CONTRACTS.HOLDER_ELIGIBILITY_ORACLE.address,
@@ -5791,15 +5845,38 @@
                             }
                         } catch(e) {}
                         
-                        // 从 Lens marketingStats 填充营销参数（补充）
-                        const lens = new ethers.Contract(CONTRACTS.LENS.address, CONTRACTS.LENS.abi, provider);
-                        const mStats = await lens.marketingStats(CONTRACTS.VAULT.address);
-                        
-                        setVal('vaultSlisBalance', formatEther(mStats.marketingWalletBalance || 0, 2));
-                        setVal('vaultPendingMarketing', formatEther(mStats.pendingMarketingAmount || 0, 2));
-                        
-                        const mkInfo = `${mStats.marketingWalletAddr?.slice(0,8)}... | 阈值: ${ethers.utils.formatEther(mStats.marketingAutoSendThresholdValue||0)} slis | 自动发送: ${mStats.marketingAutoSendEnabled ? 'ON' : 'OFF'} | 占比: ${mStats.marketingSharePercent}%`;
-                        setVal('vaultMarketingInfo', mkInfo);
+                        // 从 Vault 和营销钱包获取营销参数（替代 Lens）
+                        try {
+                            // 获取营销钱包地址
+                            const marketingWalletAddr = await v.marketingWallet();
+                            // 获取营销钱包 slisBNB 余额
+                            if (CONTRACTS.SLIS_BNB && CONTRACTS.SLIS_BNB.address) {
+                                const erc20Abi = [{"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"type":"uint256"}],"stateMutability":"view","type":"function"}];
+                                const slisToken = new ethers.Contract(CONTRACTS.SLIS_BNB.address, erc20Abi, provider);
+                                const marketingWalletBalance = await slisToken.balanceOf(marketingWalletAddr);
+                                setVal('vaultSlisBalance', formatEther(marketingWalletBalance || 0, 2));
+                            }
+                            
+                            // 获取营销自动发送阈值
+                            const marketingAutoSendThreshold = await v.marketingAutoSendThreshold();
+                            // 获取营销自动发送是否启用（如果有相应函数）
+                            let marketingAutoSendEnabled = false;
+                            try {
+                                marketingAutoSendEnabled = await v.marketingAutoSendEnabled();
+                            } catch(e) {}
+                            
+                            // 获取营销份额百分比
+                            const marketingSharePercent = await v.MARKETING_BPS();
+                            const marketingSharePercentFormatted = marketingSharePercent ? marketingSharePercent.div(100).toString() : '0';
+                            
+                            const mkInfo = `${marketingWalletAddr?.slice(0,8)}... | 阈值: ${ethers.utils.formatEther(marketingAutoSendThreshold||0)} slis | 自动发送: ${marketingAutoSendEnabled ? 'ON' : 'OFF'} | 占比: ${marketingSharePercentFormatted}%`;
+                            setVal('vaultMarketingInfo', mkInfo);
+                            
+                            // pendingMarketingAmount 可能需要从其他函数获取
+                            setVal('vaultPendingMarketing', '--');
+                        } catch(e) {
+                            console.warn('[statsPage] 营销参数获取失败:', e.message?.slice(0, 60));
+                        }
                     }
                 } catch(e) {
                     console.warn('[statsPage] 金库状态填充失败:', e.message?.slice(0, 60));
