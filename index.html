@@ -394,7 +394,7 @@
 </head>
 <body class="text-gray-900">
     <!-- 版本标记: 20260420-0957 -->
-    <div id="versionBadge" style="position:fixed;top:42px;right:8px;z-index:9999;background:#22c55e;color:white;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;opacity:0.85;">v2026.04.20c</div>
+    <div id="versionBadge" style="position:fixed;top:42px;right:8px;z-index:9999;background:#22c55e;color:white;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;opacity:0.85;">v2026.04.20d</div>
     <!-- 顶部状态栏 -->
     <header class="fixed top-0 left-0 right-0 glass-header z-50">
         <div class="flex items-center justify-between px-4 py-3">
@@ -930,6 +930,14 @@
                         <span class="font-mono text-gray-700" id="contractBurnDistAddr">--</span>
                     </div>
                     <div class="flex justify-between">
+                        <span class="text-gray-500">EligibilityOracle</span>
+                        <span class="font-mono text-gray-700" id="contractOracleAddr">--</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">RewardTracker</span>
+                        <span class="font-mono text-gray-700" id="contractTrackerAddr">--</span>
+                    </div>
+                    <div class="flex justify-between">
                         <span class="text-gray-500">多签钱包</span>
                         <span class="font-mono text-gray-700" id="contractMultisigAddr">--</span>
                     </div>
@@ -1220,6 +1228,16 @@
             LISTA_STAKE_MANAGER: {
                 address: "0x89B2eB59C6B77c244407DEFA926A97c01fE9486A"
             },
+            // 持币资格预言机 — 2026-04-20 链上验证
+            // TODO_CLAIM_ELIGIBILITY_ORACLE
+            HOLDER_ELIGIBILITY_ORACLE: {
+                address: "0xde65e07e01b58502d97ceec8510b48262a3959d6"
+            },
+            // 持币奖励追踪器 — 2026-04-20 链上验证
+            // TODO_CLAIM_REWARD_TRACKER
+            HOLDER_REWARD_TRACKER: {
+                address: "0x1ad586b1521938bc9f716851d6fa571d9f7543ec"
+            },
             // Claim Vault 完整 ABI（基于 BSC 链上已验证字节码）
             // 来源：合约源码导出，包含所有 view/write 方法
             VAULT_ABI: [
@@ -1265,9 +1283,10 @@
                 {"inputs":[],"name":"initialized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
                 // 注意：vaultUISchema 已移除（ABI 嵌套结构过深导致 JS 解析问题，该函数仅用于 UI 元数据展示，不影响业务逻辑）
             ],
-            // 燃烧分销合约（邀请返佣与燃烧分红）
+            // 燃烧分销合约（邀请返佣与燃烧分红）— 2026-04-20 链上验证
+            // TODO_CLAIM_BURNDIST: BurnDistributor 合约地址
             BURN_DISTRIBUTOR: {
-                address: "0x4d2e6eAAbaA95610136562ff59463d47Fd836620",
+                address: "0x357af8dd92a4cb3461174af49b1eed7a0fdaaa3b",
                 abi: [
                     // === 统计数据 ===
                     {"inputs":[],"name":"totalInviteRewardDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
@@ -3552,7 +3571,9 @@
                     contractBurnDistAddr: CONTRACTS.BURN_DISTRIBUTOR.address,
                     contractLensAddr: CONTRACTS.LENS.address,
                     contractTokenAddr: CONTRACTS.TOKEN.address,
-                    contractMultisigAddr: CONTRACTS.MULTISIG.address
+                    contractMultisigAddr: CONTRACTS.MULTISIG.address,
+                    contractOracleAddr: CONTRACTS.HOLDER_ELIGIBILITY_ORACLE.address,
+                    contractTrackerAddr: CONTRACTS.HOLDER_REWARD_TRACKER.address
                 };
                 for (const [id, addr] of Object.entries(addrMap)) {
                     const el = document.getElementById(id);
