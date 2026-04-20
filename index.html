@@ -394,7 +394,7 @@
 </head>
 <body class="text-gray-900">
     <!-- 版本标记: 20260420-0957 -->
-    <div id="versionBadge" style="position:fixed;top:42px;right:8px;z-index:9999;background:#22c55e;color:white;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;opacity:0.85;">v2026.04.20d</div>
+    <div id="versionBadge" style="position:fixed;top:42px;right:8px;z-index:9999;background:#22c55e;color:white;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;opacity:0.85;">v2026.04.20e</div>
     <!-- 顶部状态栏 -->
     <header class="fixed top-0 left-0 right-0 glass-header z-50">
         <div class="flex items-center justify-between px-4 py-3">
@@ -1180,223 +1180,66 @@
         });
 
         // ==================== 合约配置 ====================
+        
+        // ==================== 合约配置 ====================
+        // ⚠️ 所有地址和 ABI 待新代币部署后回填
         const CONTRACTS = {
-            // 代币合约 - CLAIM
+            // === 代币合约 — 等待新代币信息 ===
             TOKEN: {
-                address: "0x512b88caae01ab1427db0d65f098730810667777",
+                address: "0x_____________________TOKEN_ADDRESS_____________________",
                 symbol: "CLAIM",
                 decimals: 18,
                 abi: [
-                    {
-                        inputs: [{ internalType: "address", name: "account", type: "address" }],
-                        name: "balanceOf",
-                        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-                        stateMutability: "view",
-                        type: "function"
-                    },
-                    {
-                        inputs: [],
-                        name: "dividendContract",
-                        outputs: [{ internalType: "address", name: "", type: "address" }],
-                        stateMutability: "view",
-                        type: "function"
-                    }
+                    // TODO: 填入 Token ABI (balanceOf, dividendContract 等)
+                    { inputs: [{ name: "account", type: "address" }], name: "balanceOf", outputs: [{ type: "uint256" }], stateMutability: "view", type: "function" },
+                    { inputs: [], name: "dividendContract", outputs: [{ type: "address" }], stateMutability: "view", type: "function" }
                 ]
             },
-            // Lens 查询接口 — 新地址
-            // TODO_LENS_ABI: 如 Lens ABI 有变更，请更新下方 abi 字段
+            // === Lens 查询接口 ===
             LENS: {
-                address: "0x6F485259ffceF40218b60DdC36275B76A07BE7Dd",
-                abi: [{"inputs":[{"internalType":"address","name":"vault","type":"address"}],"name":"burnGlobalStats","outputs":[{"internalType":"uint256","name":"totalActualBurnedAmount","type":"uint256"},{"internalType":"uint256","name":"totalBurnWeightValue","type":"uint256"},{"internalType":"uint256","name":"totalInviteRewardDistributedAmount","type":"uint256"},{"internalType":"uint256","name":"totalBurnRewardDistributedAmount","type":"uint256"},{"internalType":"uint256","name":"activationThresholdValue","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"vault","type":"address"}],"name":"globalStats","outputs":[{"internalType":"uint256","name":"vaultBnbBalance","type":"uint256"},{"internalType":"uint256","name":"vaultSlisBalance","type":"uint256"},{"internalType":"uint256","name":"pendingTaxBNBAmount","type":"uint256"},{"internalType":"uint256","name":"totalStakedBNBAmount","type":"uint256"},{"internalType":"uint256","name":"totalSlisReceivedAmount","type":"uint256"},{"internalType":"uint256","name":"pendingMarketingSlisAmount","type":"uint256"},{"internalType":"uint256","name":"pendingHolderSlisAmount","type":"uint256"},{"internalType":"uint256","name":"totalHolderForwardedAmount","type":"uint256"},{"internalType":"uint256","name":"totalActualBurnedAmount","type":"uint256"},{"internalType":"uint256","name":"totalInviteRewardDistributedAmount","type":"uint256"},{"internalType":"uint256","name":"totalBurnRewardDistributedAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"vault","type":"address"},{"internalType":"address","name":"user","type":"address"}],"name":"inviteStats","outputs":[{"internalType":"address","name":"inviter","type":"address"},{"internalType":"bool","name":"hasInviter","type":"bool"},{"internalType":"bool","name":"inviterQualified","type":"bool"},{"internalType":"uint256","name":"inviterBurnedAmount","type":"uint256"},{"internalType":"bool","name":"selfQualified","type":"bool"},{"internalType":"uint256","name":"activationThresholdValue","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"vault","type":"address"}],"name":"marketingStats","outputs":[{"internalType":"address","name":"marketingWalletAddr","type":"address"},{"internalType":"uint256","name":"pendingMarketingAmount","type":"uint256"},{"internalType":"uint256","name":"marketingWalletBalance","type":"uint256"},{"internalType":"uint256","name":"marketingAutoSendThresholdValue","type":"uint256"},{"internalType":"bool","name":"marketingAutoSendEnabled","type":"bool"},{"internalType":"uint16","name":"marketingSharePercent","type":"uint16"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"vault","type":"address"},{"internalType":"address","name":"user","type":"address"}],"name":"userStats","outputs":[{"internalType":"uint256","name":"tokenBalance","type":"uint256"},{"internalType":"uint256","name":"pendingHolderRewardAmount","type":"uint256"},{"internalType":"uint256","name":"pendingBurnRewardAmount","type":"uint256"},{"internalType":"uint256","name":"pendingInviteRewardAmount","type":"uint256"},{"internalType":"uint256","name":"cumulativeBurned","type":"uint256"},{"internalType":"uint256","name":"burnWeightValue","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"}],"stateMutability":"view","type":"function"}]
+                address: "0x_____________________LENS_ADDRESS____________________",
+                abi: []  // TODO: 填入 Lens ABI
             },
-            // VaultFactory
+            // === VaultFactory ===
             FACTORY: {
-                address: "0x55EC175Ab2f506ACb52E106b88B9707BF70230AA"
+                address: "0x__________________FACTORY_ADDRESS___________________"
             },
-            // 金库地址 — 新地址
-            // TODO_CLAIM_VAULT_ABI: 如 Vault ABI 有变更，请更新下方 VAULT_ABI 字段
+            // === 金库合约 ===
             VAULT: {
-                address: "0x2E42E7100BE260C415b33Cf349eC8dAC2163d21E"
+                address: "0x_____________________VAULT_ADDRESS___________________"
             },
-            // 营销钱包（多签）
+            // === 营销钱包（多签）===
             MULTISIG: {
-                address: "0xf25635ec0f3ca460043d9f2abb49caacaa0328e6",
+                address: "0x__________________MULTISIG_ADDRESS_________________",
                 displayName: "营销钱包"
             },
-            // Lista 质押管理器
-            // TODO_CLAIM_LISTA: listaStakeManager 合约地址
+            // === Lista 质押管理器 ===
             LISTA_STAKE_MANAGER: {
-                address: "0x89B2eB59C6B77c244407DEFA926A97c01fE9486A"
+                address: "0x____________LISTA_STAKE_MANAGER_ADDRESS____________"
             },
-            // 持币资格预言机 — 2026-04-20 链上验证
-            // TODO_CLAIM_ELIGIBILITY_ORACLE
+            // === 持币资格预言机 ===
             HOLDER_ELIGIBILITY_ORACLE: {
-                address: "0xde65e07e01b58502d97ceec8510b48262a3959d6"
+                address: "0x________ELIGIBILITY_ORACLE_ADDRESS________________"
             },
-            // 持币奖励追踪器 — 2026-04-20 链上验证
-            // TODO_CLAIM_REWARD_TRACKER
+            // === 持币奖励追踪器 ===
             HOLDER_REWARD_TRACKER: {
-                address: "0x1ad586b1521938bc9f716851d6fa571d9f7543ec"
+                address: "0x________REWARD_TRACKER_ADDRESS__________________"
             },
-            // Claim Vault 完整 ABI（基于 BSC 链上已验证字节码）
-            // 来源：合约源码导出，包含所有 view/write 方法
-            VAULT_ABI: [
-                // === 核心写入操作 ===
-                {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},
-                {"inputs":[],"name":"claim","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
-                {"inputs":[],"name":"claimBurnReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
-                {"inputs":[{"internalType":"address","name":"holder","type":"address"}],"name":"claimFor","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
-                {"inputs":[],"name":"claimInviteReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
-                {"inputs":[{"internalType":"address","name":"to","type":"address"}],"name":"claimMarketing","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
-                {"inputs":[],"name":"stakePendingTax","outputs":[{"internalType":"bool","name":"ok","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-                {"inputs":[],"name":"syncMyHolderAccount","outputs":[],"stateMutability":"nonpayable","type":"function"},
 
-                // === View: 用户相关 ===
-                {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingClaim","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            // ========== 下方 ABI 区块：等待新代币合约源码后回填 ==========
 
-                // === View: 全局统计 ===
-                {"inputs":[],"name":"pendingTaxBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"pendingMarketingSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"totalStakedBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"totalSlisReceived","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"totalHolderAccumulativeSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"totalHolderClaimedSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            // TODO_VAULT_ABI: Vault 合约完整 ABI（从 BscScan 源码导出）
+            VAULT_ABI: [],
 
-                // === View: 配置参数 ===
-                {"inputs":[],"name":"BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"BURN_POOL_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"MARKETING_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"autoStakeThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"marketingAutoSendThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-
-                // === View: 合约地址引用 ===
-                {"inputs":[],"name":"burnDistributor","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"holderEligibilityOracle","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"holderRewardTracker","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"listaStakeManager","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"marketingWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"slisBNB","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-                {"inputs":[],"name":"taxToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-
-                // === View: 元信息 ===
-                {"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},
-                {"inputs":[],"name":"initialized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
-                // 注意：vaultUISchema 已移除（ABI 嵌套结构过深导致 JS 解析问题，该函数仅用于 UI 元数据展示，不影响业务逻辑）
-            ],
-            // 燃烧分销合约（邀请返佣与燃烧分红）— 2026-04-20 链上验证
-            // TODO_CLAIM_BURNDIST: BurnDistributor 合约地址
+            // TODO_BURNDIST_ABI: BurnDistributor 合约 ABI
             BURN_DISTRIBUTOR: {
-                address: "0x357af8dd92a4cb3461174af49b1eed7a0fdaaa3b",
-                abi: [
-                    // === 统计数据 ===
-                    {"inputs":[],"name":"totalInviteRewardDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                    {"inputs":[],"name":"totalBurnRewardDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                    {"inputs":[],"name":"totalActualBurned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                    {"inputs":[],"name":"activationThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                    // === 用户销毁数据 ===
-                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"cumulativeRawBurned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"burnInfo","outputs":[
-                        {"internalType":"uint256","name":"rawBurned","type":"uint256"},
-                        {"internalType":"uint256","name":"weight","type":"uint256"},
-                        {"internalType":"address","name":"inviter","type":"address"},
-                        {"internalType":"bool","name":"inviterQualified","type":"bool"}
-                    ],"stateMutability":"view","type":"function"},
-                    {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userBurnInfo","outputs":[
-                        {"internalType":"uint256","name":"rawBurned","type":"uint256"},
-                        {"internalType":"uint256","name":"burnWeight","type":"uint256"}
-                    ],"stateMutability":"view","type":"function"},
-                    // === 燃烧奖励 ===（注意：pendingBurnReward 应通过 VAULT 合约调用）
-                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingBurnReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                    // === 邀请返佣 ===
-                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingInviteReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-                    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"claimInviteRewardFor","outputs":[],"stateMutability":"nonpayable","type":"function"},
-                    // === 事件 ===
-                    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"inputAmount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"actualBurnAmount","type":"uint256"},{"indexed":true,"internalType":"address","name":"inviter","type":"address"},{"indexed":false,"internalType":"uint256","name":"inviterReward","type":"uint256"},{"indexed":true,"internalType":"address","name":"inviter2","type":"address"},{"indexed":false,"internalType":"uint256","name":"inviter2Reward","type":"uint256"}],"name":"BurnProcessed","type":"event"}
-                ]
+                address: "0x________BURN_DISTRIBUTOR_ADDRESS______________",
+                abi: []
             },
-            // WBNB 持币分红 (1%) 合约 ABI — 通过 vault.holderRewardTracker() 获取地址
-            WBNB_DIVIDEND_ABI: [
-              {
-                inputs: [{ internalType: "address", name: "user", type: "address" }],
-                name: "withdrawableDividends",
-                outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-                stateMutability: "view",
-                type: "function",
-              },
-              {
-                inputs: [],
-                name: "withdrawDividends",
-                outputs: [{ internalType: "bool", name: "success", type: "bool" }],
-                stateMutability: "nonpayable",
-                type: "function",
-              },
-              {
-                inputs: [],
-                name: "minimumShareBalance",
-                outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-                stateMutability: "view",
-                type: "function",
-              }
-            ]
+
+            // TODO_WBNBDIVIDEND_ABI: WBNB 持币分红合约
+            WBNB_DIVIDEND_ABI: []
         };
-
-        // ==================== 公告配置 ====================
-        const ANNOUNCEMENTS = {
-            milestones: [
-                { threshold: 10000000, title: "累计销毁突破 1000万 CLAIM", message: "社区销毁热情高涨，销毁分红池持续扩大" },
-                { threshold: 20000000, title: "累计销毁突破 2000万 CLAIM", message: "销毁里程碑达成，感谢所有参与者" },
-                { threshold: 30000000, title: "累计销毁突破 3000万 CLAIM", message: "社区共识不断增强，CLAIM 通缩加速" },
-                { threshold: 40000000, title: "累计销毁突破 4000万 CLAIM", message: "销毁量创新高，持币者收益稳步增长" },
-                { threshold: 50000000, title: "累计销毁突破 5000万 CLAIM", message: "halfway to the moon! 销毁过半目标" },
-                { threshold: 60000000, title: "累计销毁突破 6000万 CLAIM", message: "里程碑达成！社区力量无可阻挡" },
-            ],
-            dailyMilestones: [
-                { threshold: 1000000, title: "今日销毁突破 100万 CLAIM", message: "单日销毁量创新高" },
-            ],
-            manual: [
-                { date: "2026-04-18", title: "Claim V2 正式上线", message: "新增 Lens 查询合约，优化 Gas 费用，邀请系统全面开放", isNew: true },
-            ]
-        };
-
-        // ==================== Dividend 地址解析工具 ====================
-        async function resolveDividendAddress(providerOrSigner) {
-          try {
-            const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT_ABI, providerOrSigner);
-            const divAddr = await vault.holderRewardTracker();
-            if (divAddr && divAddr !== ethers.constants.AddressZero) return divAddr;
-          } catch (e) {
-            console.warn("[resolveDividendAddress] vault.holderRewardTracker failed:", e.message);
-          }
-
-          try {
-            // fallback: 从 token 合约读取 dividendContract
-            const token = new ethers.Contract(CONTRACTS.TOKEN.address, CONTRACTS.TOKEN.abi, providerOrSigner);
-            const divAddr2 = await token.dividendContract();
-            if (divAddr2 && divAddr2 !== ethers.constants.AddressZero) return divAddr2;
-          } catch (e) {
-            console.warn("[resolveDividendAddress] token.dividendContract failed:", e.message);
-          }
-
-          return ethers.constants.AddressZero;
-        }
-
-        
-
-        // ==================== WBNB 持币分红读取工具 ====================
-        async function loadHolderWbnbReward(provider, userAddress) {
-  try {
-    const divAddr = await resolveDividendAddress(provider);
-    if (!divAddr || divAddr === ethers.constants.AddressZero) {
-      return ethers.BigNumber.from(0);
-    }
-
-    const divContract = new ethers.Contract(divAddr, WBNB_DIVIDEND_ABI, provider);
-    return await divContract.withdrawableDividends(userAddress);
-  } catch (e) {
-    console.warn("[holderWbnb] load failed:", e.message);
-    return ethers.BigNumber.from(0);
-  }
-}
 
         // ==================== 链上数据缓存 ====================
         let chainData = {
@@ -1693,7 +1536,8 @@
             }
 
             try {
-                const SLIS_BNB_ADDRESS = '0xb0b84d294e0c75a6abe60171b70edeb2efd14a1b';
+                // TODO_CLAIM_SLISBNB: slisBNB 代币地址
+                const SLIS_BNB_ADDRESS = '0x________________SLIS_BNB_ADDRESS___________';
                 try {
                     const priceResp = await fetch(`https://api.geckoterminal.com/api/v2/simple/networks/bsc/token_price/${SLIS_BNB_ADDRESS}`, { signal: AbortSignal.timeout(5000) });
                     const priceData = await priceResp.json();
@@ -2108,8 +1952,8 @@
         async function _fallbackMarketingSlis() {
             if (!provider) return;
             try {
-                // TODO_CLAIM_SLISBNB: slisBNB 代币地址
-                const SLIS_BNB_ADDRESS = '0xB0b84D294e0C75A6abe60171b70edEb2EFd14A1B';
+                // TODO_CLAIM_SLISBNB: slisBNB 代币地址（需与上方 CONTRACTS 保持一致）
+                const SLIS_BNB_ADDRESS = '0x________________SLIS_BNB_ADDRESS___________';
                 const erc20Abi = [{"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"type":"uint256"}],"stateMutability":"view","type":"function"}];
                 const slisToken = new ethers.Contract(SLIS_BNB_ADDRESS, erc20Abi, provider);
                 const balance = await slisToken.balanceOf(CONTRACTS.MULTISIG.address);
@@ -2600,7 +2444,8 @@
                     const slisBalEl = document.getElementById('rewardSlisBalance');
                     if (slisBalEl) {
                         try {
-                            const SLIS_BNB_ADDRESS = '0xB0b84D294e0C75A6abe60171b70edEb2EFd14A1B';
+                            // TODO_CLAIM_SLISBNB: slisBNB 代币地址
+                            const SLIS_BNB_ADDRESS = '0x________________SLIS_BNB_ADDRESS___________';
                             const erc20Abi = [{'inputs':[{'name':'','type':'address'}],'name':'balanceOf','outputs':[{'type':'uint256'}],'stateMutability':'view','type':'function'}];
                             const slisToken = new ethers.Contract(SLIS_BNB_ADDRESS, erc20Abi, provider);
                             const rawSlis = await slisToken.balanceOf(userAddress);
