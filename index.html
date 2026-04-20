@@ -6,11 +6,11 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>MEYieldVault</title>
-    <meta name="description" content="MEYieldVault - 基于BSC链的DeFi质押平台，提供SLIS-BNB/WBNB分红、销毁奖励、邀请奖励和排行榜功能。">
-    <meta name="keywords" content="DeFi, BSC, 质押, 分红, 销毁奖励, 邀请奖励, ZRTA代币">
-    <meta property="og:title" content="MEYieldVault">
-    <meta property="og:description" content="MEYieldVault - 基于BSC链的DeFi质押平台">
+    <title>Claim</title>
+    <meta name="description" content="Claim - 基于BSC链的DeFi质押平台，提供slisBNB/WBNB分红、销毁奖励、邀请奖励和排行榜功能。">
+    <meta name="keywords" content="DeFi, BSC, 质押, 分红, 销毁奖励, 邀请奖励, CLAIM代币">
+    <meta property="og:title" content="Claim">
+    <meta property="og:description" content="Claim - 基于BSC链的DeFi质押平台">
     <meta property="og:url" content="https://zrta.asia">
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://zrta.asia">
@@ -394,7 +394,7 @@
 </head>
 <body class="text-gray-900">
     <!-- 版本标记: 20260420-0957 -->
-    <div id="versionBadge" style="position:fixed;top:42px;right:8px;z-index:9999;background:#22c55e;color:white;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;opacity:0.85;">v2026.04.20b</div>
+    <div id="versionBadge" style="position:fixed;top:42px;right:8px;z-index:9999;background:#22c55e;color:white;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;opacity:0.85;">v2026.04.20c</div>
     <!-- 顶部状态栏 -->
     <header class="fixed top-0 left-0 right-0 glass-header z-50">
         <div class="flex items-center justify-between px-4 py-3">
@@ -402,7 +402,7 @@
                 <div class="w-9 h-9 rounded-xl gradient-green flex items-center justify-center shadow-lg shadow-green-500/25">
                     <span id="tokenLogoSymbol" class="text-white font-bold text-xs">ME</span>
                 </div>
-                <span id="appTitle" class="font-bold text-lg gradient-green-text">ZRTA生态中心</span>
+                <span id="appTitle" class="font-bold text-lg gradient-green-text">CLAIM生态中心</span>
             </div>
             <div class="flex items-center gap-2">
                 <!-- 手动刷新按钮 -->
@@ -454,7 +454,7 @@
                     <span class="px-2 py-1 bg-pink-100 text-pink-600 text-xs rounded-full font-medium">链上实时</span>
                 </div>
                 <div class="text-3xl font-bold text-pink-600 mb-1" id="totalBurnedAmount">--</div>
-                <div class="text-sm text-gray-400" id="burnTokenSymbol">ZRTA</div>
+                <div class="text-sm text-gray-400" id="burnTokenSymbol">CLAIM</div>
                 <div class="mt-3 progress-bar">
                     <div class="progress-fill gradient-pink" id="burnProgressBar" style="width: 0%"></div>
                 </div>
@@ -482,7 +482,7 @@
                     <span class="text-sm text-gray-600 flex-1">WBNB 持币分红</span>
                     <span class="font-semibold text-blue-600">1%</span>
                 </div>
-                <p class="text-xs text-blue-500 mb-3 -mt-2">🔒 持币满 100 万 ZRTA 达成资格 · 来自 1% 税收分配</p>
+                <p class="text-xs text-blue-500 mb-3 -mt-2">🔒 持币满 100 万 CLAIM 达成资格 · 来自 1% 税收分配</p>
 
                 <!-- slisBNB 三分分配 -->
                 <div class="flex items-center gap-4 mt-2">
@@ -541,7 +541,7 @@
                         <span class="text-xs text-gray-500">代币持有</span>
                     </div>
                     <div class="text-xl font-bold text-gray-800" id="rewardTokenBalance">--</div>
-                    <div class="text-xs text-gray-400 mt-0.5">ZRTA</div>
+                    <div class="text-xs text-gray-400 mt-0.5">CLAIM</div>
                 </div>
                 <div class="card p-4">
                     <div class="flex items-center gap-2 mb-2">
@@ -641,15 +641,15 @@
                 </div>
             </div>
 
-            <!-- D. 邀请奖励（本代币 ZRTA）— 绑定状态 + 待领邀请奖励 + claimInviteReward -->
+            <!-- D. 邀请奖励（本代币 CLAIM）— 绑定状态 + 待领邀请奖励 + claimInviteReward -->
             <div class="card p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-xl bg-mint-100 flex items-center justify-center">
                         <svg class="w-5 h-5 text-mint-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
                     <div>
-                        <div class="font-semibold text-gray-800">邀请奖励（本代币 ZRTA）</div>
-                        <div class="text-xs text-gray-500">🎁 邀请奖励固定发放 ZRTA 代币，无门槛绑定</div>
+                        <div class="font-semibold text-gray-800">邀请奖励（本代币 CLAIM）</div>
+                        <div class="text-xs text-gray-500">🎁 邀请奖励固定发放 CLAIM 代币，无门槛绑定</div>
                     </div>
                 </div>
 
@@ -681,7 +681,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <div class="text-2xl font-bold text-mint-600" id="inviteRewardAmount">--</div>
-                        <div class="text-xs text-gray-400">待领取邀请奖励 (ZRTA)</div>
+                        <div class="text-xs text-gray-400">待领取邀请奖励 (CLAIM)</div>
                     </div>
                     <button onclick="claimReward('invite', event)" class="btn-secondary px-5 py-2 text-sm">领取</button>
                 </div>
@@ -697,10 +697,10 @@
                         <label class="text-sm text-gray-500 mb-2 block">销毁数量</label>
                         <div class="relative">
                             <input type="number" id="burnAmount" placeholder="0.00" class="input-field w-full px-4 py-4 text-lg font-semibold" oninput="updateBurnPreview()">
-                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">ZRTA</span>
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">CLAIM</span>
                         </div>
                         <div class="flex justify-between mt-2 text-xs text-gray-400">
-                            <span>余额: <span id="burnTokenBalance">--</span> ZRTA</span>
+                            <span>余额: <span id="burnTokenBalance">--</span> CLAIM</span>
                             <button class="text-pink-500 font-medium" onclick="setMaxBurn()">最大</button>
                         </div>
                     </div>
@@ -716,15 +716,15 @@
                          style="background: rgba(255,255,255,0.5);">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-500">实际销毁</span>
-                            <span class="font-semibold" id="previewBurn">0 ZRTA</span>
+                            <span class="font-semibold" id="previewBurn">0 CLAIM</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-500">L1 邀请返佣 (10%)</span>
-                            <span class="font-semibold text-mint-600" id="previewL1">0 ZRTA</span>
+                            <span class="font-semibold text-mint-600" id="previewL1">0 CLAIM</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-500">L2 邀请返佣 (5%)</span>
-                            <span class="font-semibold text-pink-600" id="previewL2">0 ZRTA</span>
+                            <span class="font-semibold text-pink-600" id="previewL2">0 CLAIM</span>
                         </div>
                         <div class="border-t border-gray-200 pt-3 flex justify-between">
                             <span class="text-gray-500">销毁后预估权重提升</span>
@@ -743,7 +743,7 @@
                     <div class="bg-pink-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">累计销毁</div>
                     <div class="text-xl font-bold text-pink-600" id="myCumulativeBurn">--</div>
-                    <div class="text-xs text-gray-400">ZRTA</div>
+                    <div class="text-xs text-gray-400">CLAIM</div>
                     </div>
                     <div class="bg-mint-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">销毁权重</div>
@@ -768,7 +768,7 @@
                         <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                         <div class="text-sm text-amber-800">
                             <p class="font-medium mb-1">无门槛邀请</p>
-                            <p class="text-xs leading-relaxed">所有用户均可绑定上级享受返佣，无需任何销毁要求。邀请奖励固定发放 ZRTA 本代币。一旦成功燃烧将终身绑定上级地址，无法更改。</p>
+                            <p class="text-xs leading-relaxed">所有用户均可绑定上级享受返佣，无需任何销毁要求。邀请奖励固定发放 CLAIM 本代币。一旦成功燃烧将终身绑定上级地址，无法更改。</p>
                             <p class="text-xs mt-1 font-medium text-red-600">⚠️ 禁止自己绑自己、禁止二节点互绑、禁止上游环</p>
                         </div>
                     </div>
@@ -836,7 +836,7 @@
                     </div>
                     <div class="flex items-center justify-between mt-1">
                         <div class="text-2xl font-bold gradient-green-text" id="invitePendingReward">--</div>
-                        <div class="text-xs text-gray-400">ZRTA 本代币 · 下级销毁产生</div>
+                        <div class="text-xs text-gray-400">CLAIM 本代币 · 下级销毁产生</div>
                     </div>
                 </div>
 
@@ -845,12 +845,12 @@
                             <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-xs font-bold">L1</div>
                             <div>
                                 <div class="text-sm font-medium">直接邀请奖励</div>
-                                <div class="text-xs text-gray-400">10% 销毁金额 (ZRTA)</div>
+                                <div class="text-xs text-gray-400">10% 销毁金额 (CLAIM)</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-pink-600" id="l1RewardAmount">--</div>
-                            <div class="text-xs text-gray-400">ZRTA</div>
+                            <div class="text-xs text-gray-400">CLAIM</div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between p-3 glass-subtle rounded-xl">
@@ -858,12 +858,12 @@
                             <div class="w-8 h-8 rounded-full bg-mint-100 flex items-center justify-center text-mint-600 text-xs font-bold">L2</div>
                             <div>
                                 <div class="text-sm font-medium">间接邀请奖励</div>
-                                <div class="text-xs text-gray-400">5% 销毁金额 (ZRTA)</div>
+                                <div class="text-xs text-gray-400">5% 销毁金额 (CLAIM)</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-mint-600" id="l2RewardAmount">--</div>
-                            <div class="text-xs text-gray-400">ZRTA</div>
+                            <div class="text-xs text-gray-400">CLAIM</div>
                         </div>
                     </div>
                 </div>
@@ -878,9 +878,7 @@
                     <div class="bg-pink-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">总销毁量</div>
                         <div class="text-lg font-bold text-pink-600" id="statsTotalBurn">--</div>
-                        <div class="text-xs text-gray-400">ZRTA</div>
-                    </div>
-                    <div class="bg-mint-50 rounded-xl p-4">
+                        <div class="text-xs text-gray-400">CLAIM</div>
                         <div class="text-xs text-gray-500 mb-1">总奖励发放</div>
                         <div class="text-lg font-bold text-mint-600" id="statsTotalReward">--</div>
                         <div class="text-xs text-gray-400">slisBNB</div>
@@ -916,11 +914,11 @@
                 <h3 class="font-semibold text-gray-800 mb-4">合约信息</h3>
                 <div class="space-y-3 text-sm mb-5">
                     <div class="flex justify-between">
-                        <span class="text-gray-500">MEYieldVault (金库)</span>
+                        <span class="text-gray-500">Claim Vault (金库)</span>
                         <span class="font-mono text-gray-700" id="contractVaultAddr">--</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-500">Token (ZRTA)</span>
+                        <span class="text-gray-500">Token (CLAIM)</span>
                         <span class="font-mono text-gray-700" id="contractTokenAddr">--</span>
                     </div>
                     <div class="flex justify-between">
@@ -1030,11 +1028,11 @@
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">3.</span>
-                            <span><strong>四类收益独立：</strong>项目 slisBNB 持币分红、官方 WBNB/BNB 分红、燃烧奖励、邀请奖励(ZRTA) 严格分开</span>
+                            <span><strong>四类收益独立：</strong>项目 slisBNB 持币分红、官方 WBNB/BNB 分红、燃烧奖励、邀请奖励(CLAIM) 严格分开</span>
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">4.</span>
-                            <span><strong>燃烧返佣：</strong>销毁 ZRTA 时，L1 邀请人得 10%，L2 得 5%（本代币），剩余 85% 真正销毁</span>
+                            <span><strong>燃烧返佣：</strong>销毁 CLAIM 时，L1 邀请人得 10%，L2 得 5%（本代币），剩余 85% 真正销毁</span>
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">5.</span>
@@ -1052,7 +1050,7 @@
                         </div>
                         <div class="flex-1">
                             <div class="font-medium text-sm">Twitter / X</div>
-                            <div class="text-xs text-gray-400">@MEYieldVault</div>
+                            <div class="text-xs text-gray-400">@ClaimVault</div>
                         </div>
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </a>
@@ -1175,10 +1173,10 @@
 
         // ==================== 合约配置 ====================
         const CONTRACTS = {
-            // 代币合约 - ZRTA
+            // 代币合约 - CLAIM
             TOKEN: {
                 address: "0x512b88caae01ab1427db0d65f098730810667777",
-                symbol: "ZRTA",
+                symbol: "CLAIM",
                 decimals: 18,
                 abi: [
                     {
@@ -1208,7 +1206,7 @@
                 address: "0x55EC175Ab2f506ACb52E106b88B9707BF70230AA"
             },
             // 金库地址 — 新地址
-            // TODO_MEYIELDVAULT_ABI: 如 Vault ABI 有变更，请更新下方 VAULT_ABI 字段
+            // TODO_CLAIM_VAULT_ABI: 如 Vault ABI 有变更，请更新下方 VAULT_ABI 字段
             VAULT: {
                 address: "0x2E42E7100BE260C415b33Cf349eC8dAC2163d21E"
             },
@@ -1217,7 +1215,12 @@
                 address: "0xf25635ec0f3ca460043d9f2abb49caacaa0328e6",
                 displayName: "营销钱包"
             },
-            // MEYieldVault 完整 ABI（基于 BSC 链上已验证字节码）
+            // Lista 质押管理器
+            // TODO_CLAIM_LISTA: listaStakeManager 合约地址
+            LISTA_STAKE_MANAGER: {
+                address: "0x89B2eB59C6B77c244407DEFA926A97c01fE9486A"
+            },
+            // Claim Vault 完整 ABI（基于 BSC 链上已验证字节码）
             // 来源：合约源码导出，包含所有 view/write 方法
             VAULT_ABI: [
                 // === 核心写入操作 ===
@@ -1321,18 +1324,18 @@
         // ==================== 公告配置 ====================
         const ANNOUNCEMENTS = {
             milestones: [
-                { threshold: 10000000, title: "累计销毁突破 1000万 ZRTA", message: "社区销毁热情高涨，销毁分红池持续扩大" },
-                { threshold: 20000000, title: "累计销毁突破 2000万 ZRTA", message: "销毁里程碑达成，感谢所有参与者" },
-                { threshold: 30000000, title: "累计销毁突破 3000万 ZRTA", message: "社区共识不断增强，ZRTA 通缩加速" },
-                { threshold: 40000000, title: "累计销毁突破 4000万 ZRTA", message: "销毁量创新高，持币者收益稳步增长" },
-                { threshold: 50000000, title: "累计销毁突破 5000万 ZRTA", message: "halfway to the moon! 销毁过半目标" },
-                { threshold: 60000000, title: "累计销毁突破 6000万 ZRTA", message: "里程碑达成！社区力量无可阻挡" },
+                { threshold: 10000000, title: "累计销毁突破 1000万 CLAIM", message: "社区销毁热情高涨，销毁分红池持续扩大" },
+                { threshold: 20000000, title: "累计销毁突破 2000万 CLAIM", message: "销毁里程碑达成，感谢所有参与者" },
+                { threshold: 30000000, title: "累计销毁突破 3000万 CLAIM", message: "社区共识不断增强，CLAIM 通缩加速" },
+                { threshold: 40000000, title: "累计销毁突破 4000万 CLAIM", message: "销毁量创新高，持币者收益稳步增长" },
+                { threshold: 50000000, title: "累计销毁突破 5000万 CLAIM", message: "halfway to the moon! 销毁过半目标" },
+                { threshold: 60000000, title: "累计销毁突破 6000万 CLAIM", message: "里程碑达成！社区力量无可阻挡" },
             ],
             dailyMilestones: [
-                { threshold: 1000000, title: "今日销毁突破 100万 ZRTA", message: "单日销毁量创新高" },
+                { threshold: 1000000, title: "今日销毁突破 100万 CLAIM", message: "单日销毁量创新高" },
             ],
             manual: [
-                { date: "2026-04-18", title: "MEYieldVault V2 正式上线", message: "新增 Lens 查询合约，优化 Gas 费用，邀请系统全面开放", isNew: true },
+                { date: "2026-04-18", title: "Claim V2 正式上线", message: "新增 Lens 查询合约，优化 Gas 费用，邀请系统全面开放", isNew: true },
             ]
         };
 
@@ -1977,13 +1980,13 @@
                     const myBurnedEl = document.getElementById('myTotalBurnedAmount');
                     const myCumBurnRewEl = document.getElementById('myCumulativeBurnReward');
                     if (myBurnedEl && stats.cumulativeBurned) {
-                        myBurnedEl.textContent = formatEther(stats.cumulativeBurned, 1) + ' ZRTA';
+                        myBurnedEl.textContent = formatEther(stats.cumulativeBurned, 1) + ' CLAIM';
                     }
                     // TODO: 如合约提供累计已领燃烧奖励，请填充 myCumulativeBurnReward
                     if (myCumBurnRewEl) myCumBurnRewEl.textContent = '--';
                 } catch(e3) { /* skip */ }
                 
-                // D. 邀请奖励 (mint theme — 本代币 ZRTA)
+                // D. 邀请奖励 (mint theme — 本代币 CLAIM)
                 const inviteRewardEl = document.getElementById('inviteRewardAmount');
                 if (inviteRewardEl) {
                     inviteRewardEl.textContent = formatEther(chainData.userRewards.invite || 0, 4);
@@ -2044,7 +2047,7 @@
                         inviterLabel.className = 'text-sm text-gray-500 mb-2 block';
                     }
                     if (inviterHint) {
-                        inviterHint.textContent = '填写邀请人可获得 ZRTA 代币返佣奖励（L1:10% / L2:5%）';
+                        inviterHint.textContent = '填写邀请人可获得 CLAIM 代币返佣奖励（L1:10% / L2:5%）';
                         inviterHint.className = 'text-xs text-gray-400 mt-2';
                     }
                     syncInviteBindStateToRewards();
@@ -2086,7 +2089,8 @@
         async function _fallbackMarketingSlis() {
             if (!provider) return;
             try {
-                const SLIS_BNB_ADDRESS = '0x1b0e7652f143c29832189136a3e6a3957c46a9ad';
+                // TODO_CLAIM_SLISBNB: slisBNB 代币地址
+                const SLIS_BNB_ADDRESS = '0xB0b84D294e0C75A6abe60171b70edEb2EFd14A1B';
                 const erc20Abi = [{"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"type":"uint256"}],"stateMutability":"view","type":"function"}];
                 const slisToken = new ethers.Contract(SLIS_BNB_ADDRESS, erc20Abi, provider);
                 const balance = await slisToken.balanceOf(CONTRACTS.MULTISIG.address);
@@ -2544,7 +2548,7 @@
                     // 同步到收益页燃烧奖励子字段
                     try {
                         const myBurnedEl2 = document.getElementById('myTotalBurnedAmount');
-                        if (myBurnedEl2 && burnedNum > 0) myBurnedEl2.textContent = formatCN(burnedNum, 1) + ' ZRTA';
+                        if (myBurnedEl2 && burnedNum > 0) myBurnedEl2.textContent = formatCN(burnedNum, 1) + ' CLAIM';
                     } catch(e3) {}
                 }
 
@@ -2556,7 +2560,7 @@
 
                 // 更新收益页"我的资产"卡片
                 try {
-                    // 1) ZRTA 代币余额 — 来自 Lens userStats 或链上 balanceOf
+                    // 1) CLAIM 代币余额 — 来自 Lens userStats 或链上 balanceOf
                     const tokenBalEl = document.getElementById('rewardTokenBalance');
                     if (tokenBalEl) {
                         let tokenBal = 0;
@@ -2573,10 +2577,11 @@
                     }
 
                     // 2) slisBNB 余额 — 通过 ERC20 balanceOf 查询用户持有量
+                    // TODO_CLAIM_SLISBNB: slisBNB 代币地址（需与上方保持一致）
                     const slisBalEl = document.getElementById('rewardSlisBalance');
                     if (slisBalEl) {
                         try {
-                            const SLIS_BNB_ADDRESS = '0x1b0e7652f143c29832189136a3e6a3957c46a9ad';
+                            const SLIS_BNB_ADDRESS = '0xB0b84D294e0C75A6abe60171b70edEb2EFd14A1B';
                             const erc20Abi = [{'inputs':[{'name':'','type':'address'}],'name':'balanceOf','outputs':[{'type':'uint256'}],'stateMutability':'view','type':'function'}];
                             const slisToken = new ethers.Contract(SLIS_BNB_ADDRESS, erc20Abi, provider);
                             const rawSlis = await slisToken.balanceOf(userAddress);
@@ -2986,7 +2991,7 @@
 
                 // 统计 L1 数据
                 let l1TotalReward = 0;   // 下级销毁产生的 L1 返佣总额（slisBNB）
-                let l1TotalBurned = 0;    // 所有直接下级的总销毁量（ZRTA）
+                let l1TotalBurned = 0;    // 所有直接下级的总销毁量（CLAIM）
                 const l1UniqueUsers = new Set(); // 去重后的 L1 邀请人数
                 for (const ev of l1Events) {
                     const reward = parseFloat(ethers.utils.formatEther(ev.args.inviterReward));
@@ -3014,8 +3019,8 @@
                 //   - l1Events.length = L1 下级销毁总次数（可能同一人多次销毁）
                 // 这里显示"人数"用去重值，但保留事件数用于调试
 
-                console.log(`[inviteStats] L1: ${l1UniqueUsers.size} 人/${l1Events.length} 次, 返佣=${l1TotalReward.toFixed(4)} ZRTA, 销毁=${l1TotalBurned.toFixed(0)} ZRTA`);
-                console.log(`[inviteStats] L2: ${l2UniqueUsers.size} 人/${l2Events.length} 次, 返佣=${l2TotalReward.toFixed(4)} ZRTA, 销毁=${l2TotalBurned.toFixed(0)} ZRTA`);
+                console.log(`[inviteStats] L1: ${l1UniqueUsers.size} 人/${l1Events.length} 次, 返佣=${l1TotalReward.toFixed(4)} CLAIM, 销毁=${l1TotalBurned.toFixed(0)} CLAIM`);
+                console.log(`[inviteStats] L2: ${l2UniqueUsers.size} 人/${l2Events.length} 次, 返佣=${l2TotalReward.toFixed(4)} CLAIM, 销毁=${l2TotalBurned.toFixed(0)} CLAIM`);
 
                 // ====== 更新 DOM ======
 
@@ -3041,7 +3046,7 @@
                         `近28天 L1 返佣: ${l1TotalReward.toFixed(4)} slisBNB\n` +
                         `L1 下级人数: ${l1UniqueUsers.size} 人\n` +
                         `L1 下级销毁次数: ${l1Events.length} 次\n` +
-                        `L1 下级总销毁量: ${l1TotalBurned.toFixed(0)} ZRTA\n` +
+                        `L1 下级总销毁量: ${l1TotalBurned.toFixed(0)} CLAIM\n` +
                         `(比例: 直接下级销毁额的10%)`;
                 }
 
@@ -3052,7 +3057,7 @@
                         `近28天 L2 返佣: ${l2TotalReward.toFixed(4)} slisBNB\n` +
                         `L2 下级人数: ${l2UniqueUsers.size} 人\n` +
                         `L2 下级销毁次数: ${l2Events.length} 次\n` +
-                        `L2 下级总销毁量: ${l2TotalBurned.toFixed(0)} ZRTA\n` +
+                        `L2 下级总销毁量: ${l2TotalBurned.toFixed(0)} CLAIM\n` +
                         `(比例: 间接下级销毁额的5%)`;
                 }
 
@@ -3424,9 +3429,9 @@
             const l2 = amount * 0.05;
             const burn = amount * 0.85;
 
-            document.getElementById('previewBurn').textContent = burn.toLocaleString() + ' ZRTA';
-            document.getElementById('previewL1').textContent = l1.toLocaleString() + ' ZRTA';
-            document.getElementById('previewL2').textContent = l2.toLocaleString() + ' ZRTA';
+            document.getElementById('previewBurn').textContent = burn.toLocaleString() + ' CLAIM';
+            document.getElementById('previewL1').textContent = l1.toLocaleString() + ' CLAIM';
+            document.getElementById('previewL2').textContent = l2.toLocaleString() + ' CLAIM';
         }
 
         // 公告系统使用的全局变量（由 refreshAllData 更新）
@@ -3914,7 +3919,7 @@
                 if (inviter === ethers.constants.AddressZero) {
                     const confirmContinue = confirm(
                         '⚠️ 您未填写邀请人地址！\n\n' +
-                        '销毁时将不产生任何 ZRTA 邀请奖励返佣。\n' +
+                        '销毁时将不产生任何 CLAIM 邀请奖励返佣。\n' +
                         '一旦销毁，如果后续绑定上级，之前的销毁记录不会补发返佣。\n\n' +
                         '是否继续销毁？'
                     );
