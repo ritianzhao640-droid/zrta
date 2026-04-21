@@ -1,0 +1,49 @@
+# 日志文件
+*.log
+*.tmp
+*.bak
+*.swp
+
+# 开发环境文件
+.env
+.env.local
+.env.development
+.env.production
+
+# 编辑器文件
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 工作区特定文件
+.workbuddy/
+memory/
+*.memory.md
+
+# 修改日记
+修改日记.md
+change_log.md
+更新记录.md
+
+# 临时文件
+temp/
+tmp/
+
+# 依赖目录
+node_modules/
+dist/
+build/
+out/
+coverage/
+
+# 项目配置文件（可根据需要保留）
+# contracts_config.js 需要保留
+# 但可能包含敏感信息，注意检查
