@@ -5326,7 +5326,8 @@
                 // 1. 先授权代币给 Vault 合约（Vault 会内部调用 distributor）
                 const tokenAbi = [
                     {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-                    {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+                    {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+                    {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
                 ];
                 const token = new ethers.Contract(CONTRACTS.TOKEN.address, tokenAbi, signer);
                 
@@ -5347,51 +5348,61 @@
                     signer
                 );
                 
-                // 获取邀请人地址 — 优先级：输入框 > 链上已绑定 > 本地存储 > 默认上级
+                // 余额预检查
+                const tokenBalance = await token.balanceOf(userAddress);
+                if (tokenBalance.lt(burnAmount)) {
+                    throw new Error('InsufficientTokenBalance');
+                }
+
+                // 获取邀请人地址 — 优先级：输入框 > Vault 链上已绑定 > 本地存储 > 默认上级
                 let inviter = ethers.constants.AddressZero;
                 const inviterInput = document.getElementById('inviterAddressInput');
                 const inputValue = inviterInput && inviterInput.value && inviterInput.value.trim();
                 const defaultReferrer = getEffectiveDefaultReferrer();
 
-                if (inputValue && inputValue.startsWith('0x') && inputValue.length === 42) {
+                if (inputValue && ethers.utils.isAddress(inputValue)) {
                     inviter = inputValue;
                     console.log(`[burn] 使用用户输入邀请人: ${inviter.slice(0, 6)}...`);
                 } else {
                     try {
-                        const distributor = new ethers.Contract(
-                            CONTRACTS.BURN_DISTRIBUTOR.address,
-                            CONTRACTS.BURN_DISTRIBUTOR.abi,
-                            provider
-                        );
-                        const burnInfo = await distributor.burnInfo(userAddress);
+                        const burnInfo = await vault.burnInfo(userAddress);
                         const chainedInviter = burnInfo.inviter;
                         if (chainedInviter && chainedInviter !== ethers.constants.AddressZero) {
                             inviter = chainedInviter;
-                            console.log(`[burn] 使用链上已绑定上级: ${inviter.slice(0, 6)}...`);
+                            console.log(`[burn] 使用 Vault 链上已绑定上级: ${inviter.slice(0, 6)}...`);
                         } else {
                             const stored = getStoredRefAddress();
-                            if (stored && stored.startsWith('0x') && stored.length === 42) {
+                            if (stored && ethers.utils.isAddress(stored)) {
                                 inviter = stored;
                                 console.log(`[burn] 使用本地存储邀请人: ${inviter.slice(0, 6)}...`);
-                            } else if (defaultReferrer) {
+                            } else if (defaultReferrer && ethers.utils.isAddress(defaultReferrer)) {
                                 inviter = defaultReferrer;
                                 console.log(`[burn] 使用默认上级: ${inviter.slice(0, 6)}...`);
                             }
                         }
                     } catch (e) {
-                        console.warn('[burn] 链上读取上级失败:', e.message?.slice(0, 60));
-                        if (defaultReferrer) {
+                        console.warn('[burn] 读取 Vault 绑定上级失败:', e.message?.slice(0, 60));
+                        if (defaultReferrer && ethers.utils.isAddress(defaultReferrer)) {
                             inviter = defaultReferrer;
-                            console.log(`[burn] 链上读取失败，回退默认上级: ${inviter.slice(0, 6)}...`);
+                            console.log(`[burn] 读取失败，回退默认上级: ${inviter.slice(0, 6)}...`);
                         }
                     }
+                }
+
+                // 禁止自绑
+                if (inviter && inviter !== ethers.constants.AddressZero && inviter.toLowerCase() === userAddress.toLowerCase()) {
+                    throw new Error('InviterCannotBeSelf');
                 }
 
                 // 极端情况兜底：没有输入、没有链上绑定、也没有默认上级
                 if (inviter === ethers.constants.AddressZero) {
                     const confirmContinue = confirm(
-                        '⚠️ 当前没有可用的上级地址。\n\n' +
-                        '这次销毁将不会产生邀请返佣。\n\n' +
+                        '⚠️ 当前没有可用的上级地址。
+
+' +
+                        '这次销毁将不会产生邀请返佣。
+
+' +
                         '是否继续销毁？'
                     );
                     if (!confirmContinue) {
@@ -5399,7 +5410,11 @@
                     }
                 }
 
-                const tx = await vault.burn(burnAmount, inviter);
+                // 先做 estimateGas，尽量把 revert 原因暴露出来
+                const gasEstimate = await vault.estimateGas.burn(burnAmount, inviter);
+                const tx = await vault.burn(burnAmount, inviter, {
+                    gasLimit: gasEstimate.mul(120).div(100)
+                });
                 await tx.wait();
                 
                 showToast('销毁成功！🔥', 'success');
@@ -5425,7 +5440,25 @@
                 }, 5000);
             } catch (error) {
                 console.error('销毁失败:', error);
-                showToast('销毁失败: ' + (error.message?.slice(0, 80) || '未知错误'), 'error', 3500);
+                const raw = error?.reason || error?.data?.message || error?.message || '';
+                let msg = '销毁失败，请稍后再试';
+
+                if (raw.includes('InsufficientTokenBalance')) {
+                    msg = '代币余额不足，当前数量不够销毁';
+                } else if (raw.includes('InviterCannotBeSelf')) {
+                    msg = '邀请人不能填自己';
+                } else if (raw.includes('user rejected') || raw.includes('User denied') || raw.includes('rejected')) {
+                    msg = '您取消了交易';
+                } else if (raw.includes('insufficient funds')) {
+                    msg = 'BNB 不足，Gas 费不够';
+                } else if (raw.includes('execution reverted')) {
+                    const m = raw.match(/execution reverted(?::|: )?(.*)$/i);
+                    msg = m && m[1] ? ('销毁被合约拒绝：' + m[1].slice(0, 60)) : '销毁被合约拒绝';
+                } else if (raw) {
+                    msg = '销毁失败：' + raw.slice(0, 80);
+                }
+
+                showToast(msg, 'error', 3800);
             } finally {
                 btn.textContent = '确认销毁';
                 btn.disabled = false;
