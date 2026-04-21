@@ -5397,13 +5397,7 @@
                 // 极端情况兜底：没有输入、没有链上绑定、也没有默认上级
                 if (inviter === ethers.constants.AddressZero) {
                     const confirmContinue = confirm(
-                        '⚠️ 当前没有可用的上级地址。
-
-' +
-                        '这次销毁将不会产生邀请返佣。
-
-' +
-                        '是否继续销毁？'
+                        '⚠️ 当前没有可用的上级地址。\n\n这次销毁将不会产生邀请返佣。\n\n是否继续销毁？'
                     );
                     if (!confirmContinue) {
                         btn.textContent = '确认销毁'; btn.disabled = false; return;
