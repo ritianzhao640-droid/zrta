@@ -1,0 +1,22 @@
+本次修正重点：
+
+1. 收益页顶部摘要已改成 4 个真实口径：
+- WBNB：官方可领
+- slisBNB：持币待领
+- slisBNB：燃烧待领
+- 生活：邀请可领
+
+2. 这次不是只改文案，而是把顶部摘要的数据映射也改对：
+- officialDividendPending -> 官方可领
+- pendingClaim -> 持币待领
+- pendingBurnReward -> 燃烧待领
+- pendingInviteReward -> 邀请可领
+
+3. 标题与品牌风格改柔和：
+- 页面标题：生活小院
+- 顶部标题：生活小院
+- Logo：生活
+
+说明：
+如果线上仍看到旧标题或旧摘要，大概率是钱包浏览器缓存。可强刷，或在 URL 后面临时加版本参数：
+zrta.asia?v=20260421n

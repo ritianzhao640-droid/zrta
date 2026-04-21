@@ -8,13 +8,13 @@
     <meta http-equiv="Expires" content="0">
     <!-- 【代币替换标记 01 / 页面品牌名】
          这里是浏览器标签页标题。发新币时可直接改成新品牌名。 -->
-    <title>生活</title>
+    <title>生活小院</title>
     <!-- 【代币替换标记 02 / SEO 文案】
          这里是分享卡片和搜索摘要里的项目描述。换新项目时建议一并改掉旧币名。 -->
-    <meta name="description" content="生活 - 基于BSC链的DeFi质押平台，提供slisBNB/WBNB分红、销毁奖励、邀请奖励和排行榜功能。">
+    <meta name="description" content="生活小院 - 把回报轻轻收进日常里的链上小院。">
     <meta name="keywords" content="DeFi, BSC, 质押, 分红, 销毁奖励, 邀请奖励, 生活代币">
     <meta property="og:title" content="生活">
-    <meta property="og:description" content="生活 - 基于BSC链的DeFi质押平台">
+    <meta property="og:description" content="生活小院 - 温柔、轻盈、有生活气息的链上小院">
     <meta property="og:url" content="https://zrta.asia">
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://zrta.asia">
@@ -1496,11 +1496,11 @@
                     <div class="w-9 h-9 rounded-xl gradient-green flex items-center justify-center shadow-lg shadow-green-500/25 flex-shrink-0">
                         <!-- 【代币替换标记 03 / 左上角 Logo 简称】
                              默认占位会在 loadTokenInfo() 后被链上 symbol 覆盖。 -->
-                        <span id="tokenLogoSymbol" class="text-white font-bold text-xs">ME</span>
+                        <span id="tokenLogoSymbol" class="text-white font-bold text-[11px] tracking-[0.08em]">生活</span>
                     </div>
                     <!-- 【代币替换标记 04 / 顶部项目标题】
                          当前是前端展示品牌名，不一定等于链上 symbol。 -->
-                    <span id="appTitle" class="font-bold text-lg gradient-green-text">生活生态中心</span>
+                    <span id="appTitle" class="font-bold text-lg gradient-green-text">生活小院</span>
                 </div>
                 <div class="header-actions flex items-center gap-2">
                     <button id="refreshBtn" onclick="manualRefresh()" class="btn-refresh" title="轻轻更新一下链上节奏">
@@ -1684,24 +1684,32 @@
 都拆成清楚又温柔的日常记录</h3>
                             <p class="mt-3 life-page-copy">把该来的回报，轻轻收进日常里。</p>
                         </div>
-                        <div class="hidden sm:flex life-mini-label mt-1"><span>💧</span><span>三份奖励可见</span></div>
+                        <div class="hidden sm:flex life-mini-label mt-1"><span>💧</span><span>四类收益可见</span></div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 reward-summary-compact">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 reward-summary-compact">
                         <div class="life-mini-kpi">
                             <div class="life-mini-kpi-label">WBNB</div>
                             <div class="text-3xl font-bold text-[#d49a33] reward-summary-value" id="rewardSummaryWbnb">--</div>
-                            <div class="mt-2 text-xs text-[#8d7b5b] reward-summary-sub">可领</div>
+                            <div class="mt-2 text-xs text-[#8d7b5b] reward-summary-sub">官方可领</div>
                         </div>
                         <div class="life-mini-kpi">
                             <div class="life-mini-kpi-label">slisBNB</div>
-                            <div class="text-3xl font-bold gradient-green-text reward-summary-value" id="rewardSummarySlis">--</div>
-                            <div class="mt-2 text-xs text-[#6f8576] reward-summary-sub">可领</div>
+                            <div class="text-3xl font-bold gradient-green-text reward-summary-value" id="rewardSummaryHolder">--</div>
+                            <div class="mt-2 text-xs text-[#6f8576] reward-summary-sub">持币待领</div>
+                        </div>
+                        <div class="life-mini-kpi">
+                            <div class="life-mini-kpi-label">slisBNB</div>
+                            <div class="text-3xl font-bold text-[#6da9d8] reward-summary-value" id="rewardSummaryBurn">--</div>
+                            <div class="mt-2 text-xs text-[#6f8576] reward-summary-sub">燃烧待领</div>
                         </div>
                         <div class="life-mini-kpi">
                             <div class="life-mini-kpi-label">生活</div>
                             <div class="text-3xl font-bold text-[#58a774] reward-summary-value" id="rewardSummaryLife">--</div>
-                            <div class="mt-2 text-xs text-[#6f8576] reward-summary-sub">可领</div>
+                            <div class="mt-2 text-xs text-[#6f8576] reward-summary-sub">邀请可领</div>
                         </div>
+                    </div>
+                    <div class="mt-2 text-[11px] text-[#7b8a7f] sm:text-xs">
+                        顶部四格分别对应真实链上口径：官方可领、持币待领、燃烧待领、邀请可领。
                     </div>
                 </div>
             </div>
@@ -1729,7 +1737,7 @@
                             </div>
                             <span class="px-1.5 py-0.5 bg-white/80 text-amber-700 text-[10px] rounded-full font-medium border border-amber-100 shrink-0">双重分红</span>
                         </div>
-                        <div class="text-[11px] text-gray-500 mb-1.5 leading-4">资格：<span id="officialHolderQualified" class="font-medium text-amber-600">检测中...</span></div>
+                        <div class="text-[11px] text-gray-500 mb-1.5 leading-4"><span id="officialHolderQualified" class="font-medium text-amber-600">资格检测中...</span></div>
                         <div class="text-lg leading-none font-bold text-amber-600" id="holderWbnbRewardAmount">--</div>
                         <div class="text-[11px] text-gray-400 mt-1">可领取 WBNB / BNB</div>
                         <div class="mt-auto pt-2">
@@ -1741,7 +1749,7 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <div class="min-w-0">
                                 <div class="text-[13px] font-semibold text-blue-700">slisBNB</div>
-                                <div class="text-[11px] text-blue-600 mt-0.5">项目分红</div>
+                                <div class="text-[11px] text-blue-600 mt-0.5">持币分红</div>
                             </div>
                             <span class="px-1.5 py-0.5 bg-white/80 text-blue-700 text-[10px] rounded-full font-medium border border-blue-100 shrink-0">双重分红</span>
                         </div>
@@ -1884,7 +1892,7 @@
                     <div>
                         <label class="text-sm text-gray-500 mb-2 block" id="inviterLabel">邀请人地址</label>
                         <input type="text" id="inviterAddressInput" placeholder="0x..." class="input-field w-full px-4 py-3 text-sm">
-                        <p class="text-xs text-gray-400 mt-2" id="inviterHint">填写邀请人可获得额外返佣奖励（L1:10% / L2:5%）</p>
+                        <p class="text-xs text-gray-400 mt-2" id="inviterHint">可填写其他邀请人地址；留空会自动走默认上级关系</p>
                     </div>
 
                     <!-- 实时预览 -->
@@ -2625,17 +2633,18 @@
             return provider;
         }
 
+        
         // ==================== 代币信息 ====================
         let tokenInfo = {
-            symbol: CONTRACTS.TOKEN.symbol,
-            name: ''
+            symbol: CONTRACTS.TOKEN.name || '生活',   // 前端展示简称
+            chainSymbol: CONTRACTS.TOKEN.symbol || '', // 链上真实 symbol，仅作记录
+            name: CONTRACTS.TOKEN.name || '生活'
         };
 
-        // 从链上读取代币信息并更新 UI
-        // 【代币替换标记 09 / 链上读取代币符号】
-        // 这里会从 TOKEN.address 读取 symbol，并覆盖顶部 logo 简称与标题。
-        // 如果你想保留前端品牌名（例如品牌叫“生活”，链上 symbol 叫 CLAIM），
-        // 可以只更新 logo，不更新标题，或者直接停用这段覆盖逻辑。
+        // 从链上读取代币信息，但不再用链上 symbol 覆盖生活化品牌标题 / Logo
+        // 【代币替换标记 09 / 品牌标题与链上符号分离】
+        // - 链上真实 symbol 会写入 tokenInfo.chainSymbol
+        // - 前端展示仍以“生活”这套主题为准，避免页面闪出 ME / CLAIM
         async function loadTokenInfo() {
             if (!provider) ensureReadOnlyProvider();
             try {
@@ -2644,28 +2653,34 @@
                     {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}
                 ];
                 const token = new ethers.Contract(CONTRACTS.TOKEN.address, tokenAbi, provider);
-                
-                // 读取代币 symbol
-                const symbol = await token.symbol();
-                tokenInfo.symbol = symbol;
-                
-                // 更新页面上的代币名称显示
-                updateTokenSymbolDisplay(symbol);
-                
-                // 更新 Logo 和标题
+
+                const [chainSymbol, chainName] = await Promise.all([
+                    token.symbol().catch(() => ''),
+                    token.name().catch(() => '')
+                ]);
+
+                tokenInfo.chainSymbol = chainSymbol || CONTRACTS.TOKEN.symbol || '';
+                tokenInfo.name = chainName || CONTRACTS.TOKEN.name || '生活';
+                tokenInfo.symbol = CONTRACTS.TOKEN.name || '生活';
+
+                updateTokenSymbolDisplay(tokenInfo.symbol);
+
                 const logoSymbol = document.getElementById('tokenLogoSymbol');
                 const appTitle = document.getElementById('appTitle');
-                if (logoSymbol) logoSymbol.textContent = symbol.slice(0, 4);
-                if (appTitle) appTitle.textContent = symbol + '生态中心';
-                
+                if (logoSymbol) logoSymbol.textContent = '生活';
+                if (appTitle) appTitle.textContent = '生活小院';
+                try { document.title = '生活小院'; } catch (_) {}
             } catch (e) {
                 console.error('加载代币信息失败:', e);
-                // 使用默认配置
-                updateTokenSymbolDisplay(CONTRACTS.TOKEN.symbol);
+                tokenInfo.symbol = CONTRACTS.TOKEN.name || '生活';
+                tokenInfo.name = CONTRACTS.TOKEN.name || '生活';
+                updateTokenSymbolDisplay(tokenInfo.symbol);
+
                 const logoSymbol = document.getElementById('tokenLogoSymbol');
                 const appTitle = document.getElementById('appTitle');
-                if (logoSymbol) logoSymbol.textContent = CONTRACTS.TOKEN.symbol.slice(0, 4);
-                if (appTitle) appTitle.textContent = CONTRACTS.TOKEN.symbol + '生态中心';
+                if (logoSymbol) logoSymbol.textContent = '生活';
+                if (appTitle) appTitle.textContent = '生活小院';
+                try { document.title = '生活小院'; } catch (_) {}
             }
         }
 
@@ -2673,12 +2688,18 @@
         // 【代币替换标记 10 / 全站 token-symbol 占位刷新】
         // 页面里凡是 class="token-symbol" 的位置，都会被这里统一替换。
         function updateTokenSymbolDisplay(symbol) {
+            const brandSymbol = '生活';
             document.querySelectorAll('.token-symbol').forEach(el => {
-                el.textContent = symbol;
+                el.textContent = brandSymbol;
             });
+            const logoSymbol = document.getElementById('tokenLogoSymbol');
+            const appTitle = document.getElementById('appTitle');
+            if (logoSymbol) logoSymbol.textContent = '生活';
+            if (appTitle) appTitle.textContent = '生活小院';
+            try { document.title = '生活小院'; } catch (_) {}
         }
 
-        // ==================== 邀请链接处理 ====================
+// ==================== 邀请链接处理 ====================
         // 获取当前页面基础 URL（不含参数）
         function getBaseUrl() {
             const url = new URL(window.location.href);
@@ -2717,6 +2738,8 @@
             return urlParams.get(param);
         }
 
+        const DEFAULT_BIND_REFERRER = '0x798be248a638287ed0a67a8aa40e7a3a714ca5bd';
+
         // 存储邀请人地址到 localStorage（持久化存储，避免浏览器关闭丢失）
         function persistRefAddress(refAddr) {
             if (refAddr && refAddr.startsWith('0x') && refAddr.length === 42) {
@@ -2735,6 +2758,12 @@
                    '';
         }
 
+        function getEffectiveDefaultReferrer() {
+            return (DEFAULT_BIND_REFERRER && DEFAULT_BIND_REFERRER.startsWith('0x') && DEFAULT_BIND_REFERRER.length === 42)
+                ? DEFAULT_BIND_REFERRER
+                : '';
+        }
+
         // 清除已存储的邀请地址（首次绑定成功后调用）
         function clearStoredRefAddress() {
             localStorage.removeItem('zrta_inviter_ref');
@@ -2747,29 +2776,18 @@
             const inviterInput = document.getElementById('inviterAddressInput');
             if (!inviterInput) return;
 
-            // 优先级：URL 参数 > sessionStorage > 当前输入框已有值
-            let refAddress = getUrlParam('ref') || getStoredRefAddress();
-
-            if (refAddress && refAddress.startsWith('0x') && refAddress.length === 42) {
-                if (!inviterInput.value) {
-                    inviterInput.value = refAddress;
-                    // 持久化到 sessionStorage（防止用户刷新页面丢失）
-                    persistRefAddress(refAddress);
-                    showToast(`已自动填入邀请人: ${refAddress.slice(0, 6)}...${refAddress.slice(-4)}`);
-                }
+            // 仅当 URL 明确带 ref 参数时才显示在输入框里；默认上级不在界面展示
+            const refAddress = getUrlParam('ref');
+            if (refAddress && refAddress.startsWith('0x') && refAddress.length === 42 && !inviterInput.value) {
+                inviterInput.value = refAddress;
+                persistRefAddress(refAddress);
+                showToast(`已识别邀请链接: ${refAddress.slice(0, 6)}...${refAddress.slice(-4)}`);
             }
         }
 
-        // 连接钱包后恢复邀请人地址（如果输入框为空但有存储的 ref）
+        // 默认上级仅在真正发起销毁绑定时兜底，不主动显示在输入框
         function restoreInviterAfterConnect() {
-            const inviterInput = document.getElementById('inviterAddressInput');
-            if (!inviterInput || inviterInput.value) return; // 已有值不覆盖
-
-            const stored = getStoredRefAddress();
-            if (stored && stored.startsWith('0x') && stored.length === 42) {
-                inviterInput.value = stored;
-                console.log('[invite] 钱包连接后恢复邀请人:', stored.slice(0, 6));
-            }
+            return;
         }
 
         // 显示轻提示（美化版）
@@ -2866,6 +2884,37 @@
             if (!value) return '0';
             const num = parseFloat(ethers.utils.formatEther(value.toString()));
             return num.toLocaleString('en-US', { maximumFractionDigits: decimals });
+        }
+
+        function syncRewardSummaryWithDetailCards() {
+            const readText = (id) => {
+                const el = document.getElementById(id);
+                return el ? (el.textContent || '--').trim() : '--';
+            };
+            const wbnb = readText('holderWbnbRewardAmount');
+            const holder = readText('holderRewardAmount');
+            const burn = readText('burnRewardAmount');
+            const life = readText('inviteRewardAmount');
+
+            setText('rewardSummaryWbnb', wbnb && wbnb !== '' ? wbnb : '--');
+            setText('rewardSummaryHolder', holder && holder !== '' ? holder : '--');
+            setText('rewardSummaryBurn', burn && burn !== '' ? burn : '--');
+            setText('rewardSummaryLife', life && life !== '' ? life : '--');
+        }
+
+        function clearStuckLoadingStates() {
+            document.querySelectorAll('.loading').forEach(el => el.classList.remove('loading'));
+            document.querySelectorAll('#page-rewards .skeleton').forEach(el => {
+                el.classList.remove('skeleton');
+                el.style.height = '';
+                el.style.width = '';
+                el.style.minWidth = '';
+            });
+            document.querySelectorAll('button').forEach(btn => {
+                if (btn.disabled && /领取中|处理中/.test((btn.textContent || '').trim())) {
+                    btn.disabled = false;
+                }
+            });
         }
 
         // 中文数字格式化（支持极大值）：170000 → 17万, 123456789 → 1.23亿, 大于兆用科学计数法
@@ -3079,19 +3128,25 @@
                 setText('slisEligibleBalance', formatEther(eligibleBalance, 0));
                 setText('slisRealisedAmount', formatEther(await vault.userClaimedHolderReward(userAddress).catch(() => 0), 4));
 
-                const summarySlisReward = pendingClaim.add(pendingBurnReward);
+                // 收益页顶部摘要按真实链上口径拆开：
+                // WBNB = 官方持币分红
+                // slisBNB(持币) = 项目持币分红
+                // slisBNB(燃烧) = 燃烧奖励
+                // 生活 = 邀请奖励
                 setText('rewardSummaryWbnb', formatEther(officialDividendPending, 4));
-                setText('rewardSummarySlis', formatEther(summarySlisReward, 4));
+                setText('rewardSummaryHolder', formatEther(pendingClaim, 4));
+                setText('rewardSummaryBurn', formatEther(pendingBurnReward, 4));
                 setText('rewardSummaryLife', formatEther(pendingInviteReward, 4));
+                syncRewardSummaryWithDetailCards();
 
                 // 官方资格状态
                 const wbnbStatus = document.getElementById('officialHolderQualified');
                 if (wbnbStatus) {
                     if (isHolderEligible) {
-                        wbnbStatus.textContent = `资格状态：已达标（门槛 ${formatEther(holderThreshold, 0)}）`;
+                        wbnbStatus.textContent = `已达标（门槛 ${formatEther(holderThreshold, 0)}）`;
                         wbnbStatus.className = 'text-sm text-mint-600';
                     } else {
-                        wbnbStatus.textContent = `资格状态：未达标（门槛 ${formatEther(holderThreshold, 0)}）`;
+                        wbnbStatus.textContent = `未达标（门槛 ${formatEther(holderThreshold, 0)}）`;
                         wbnbStatus.className = 'text-sm text-amber-600';
                     }
                 }
@@ -3105,7 +3160,7 @@
                 setText('myBurnWeightPct', burnWeightPct + '%');
 
                 // 邀请信息
-                const displayInviter = hasInviter && inviter && inviter !== ethers.constants.AddressZero ? inviter : (getStoredRefAddress() || '');
+                const displayInviter = hasInviter && inviter && inviter !== ethers.constants.AddressZero ? inviter : '';
                 if (displayInviter) {
                     setText('boundInviterAddress', displayInviter);
                     setText('rewardsBoundAddr', displayInviter);
@@ -3321,7 +3376,7 @@
                 if (burnSymbolEl) {
                     // 【代币替换标记 12 / 销毁输入框右侧币种简称】
                     // 这里显示用户输入销毁数量时右边的代币简称。
-                    burnSymbolEl.textContent = tokenInfo.symbol;
+                    burnSymbolEl.textContent = CONTRACTS.TOKEN.name || tokenInfo.symbol;
                 }
                 
                 const burnedTextEl = document.getElementById('burnedText');
@@ -3913,8 +3968,9 @@
             if (!userAddress) { showToast('请先连接钱包', 'warning'); return; }
             const input = document.getElementById('rewardsInviterInput');
             if (!input) return;
-            const val = (input.value || '').trim();
-            if (!val) { showToast('请输入上级地址', 'warning'); return; }
+            const manualValue = (input.value || '').trim();
+            const val = manualValue || getEffectiveDefaultReferrer();
+            if (!val) { showToast('当前没有可用的默认上级地址', 'warning'); return; }
             if (!val.startsWith('0x') || val.length !== 42) { showToast('地址格式错误', 'warning'); return; }
 
             // 检查1: 不能绑自己
@@ -3965,7 +4021,11 @@
             chainData.inviter = val;
             chainData.hasInviter = true;
 
-            showToast(`✅ 上级已保存: ${val.slice(0,6)}...${val.slice(-4)}\n销毁时将正式绑定`, 'success', 3000);
+            if (manualValue) {
+                showToast(`✅ 上级已保存: ${val.slice(0,6)}...${val.slice(-4)}\n销毁时将正式绑定`, 'success', 3000);
+            } else {
+                showToast('✅ 已启用默认上级，销毁时会自动绑定', 'success', 2400);
+            }
 
             // 刷新邀请页和收益页绑定状态显示
             syncInviteBindStateToRewards();
@@ -4221,22 +4281,34 @@
             price: false        // 价格数据
         };
 
-        // 显示/隐藏全局加载指示器
+        // 显示/隐藏全局加载指示器（改成顶部轻提示，不再占用底部空间）
         function _setLoading(show = true) {
-            // 在 header 附近显示加载状态
-            let indicator = document.getElementById('loadingIndicator');
-            if (show && !indicator) {
-                indicator = document.createElement('div');
-                indicator.id = 'loadingIndicator';
-                indicator.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-pink-400 border-t-transparent rounded-full animate-spin"></span>';
-                indicator.style.cssText = 'position:fixed;bottom:84px;left:50%;transform:translateX(-50%);z-index:100;padding:8px 16px;border-radius:20px;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,0.1);display:flex;align-items:center;gap:8px;font-size:13px;color:#db2777;font-weight:500;';
-                document.body.appendChild(indicator);
+            const indicator = document.getElementById('loadingIndicator');
+            if (indicator) indicator.remove();
+
+            const btn = document.getElementById('refreshBtn');
+            if (btn) btn.classList.toggle('spinning', !!show);
+
+            const refreshText = document.getElementById('lastRefreshText');
+            if (refreshText) {
+                refreshText.classList.remove('hidden');
+                if (show) {
+                    refreshText.textContent = '轻轻同步中';
+                    refreshText.dataset.loading = '1';
+                } else {
+                    if (refreshText.dataset.loading === '1') {
+                        refreshText.textContent = '轻轻更新';
+                    }
+                    delete refreshText.dataset.loading;
+                }
             }
-            if (!show && indicator) {
-                indicator.remove();
-                return;
-            }
-            if (show && indicator) indicator.style.display = 'flex';
+        }
+
+        function withTimeout(taskPromise, ms = 5000, label = 'task') {
+            return Promise.race([
+                Promise.resolve(taskPromise),
+                new Promise((_, reject) => setTimeout(() => reject(new Error(label + '_TIMEOUT')), ms))
+            ]);
         }
 
         // 显示骨架屏（在数据加载前立即渲染占位）
@@ -4505,19 +4577,25 @@
                 setText('slisEligibleBalance', formatEther(eligibleBalance, 0));
                 setText('slisRealisedAmount', formatEther(await vault.userClaimedHolderReward(userAddress).catch(() => 0), 4));
 
-                const summarySlisReward = pendingClaim.add(pendingBurnReward);
+                // 收益页顶部摘要按真实链上口径拆开：
+                // WBNB = 官方持币分红
+                // slisBNB(持币) = 项目持币分红
+                // slisBNB(燃烧) = 燃烧奖励
+                // 生活 = 邀请奖励
                 setText('rewardSummaryWbnb', formatEther(officialDividendPending, 4));
-                setText('rewardSummarySlis', formatEther(summarySlisReward, 4));
+                setText('rewardSummaryHolder', formatEther(pendingClaim, 4));
+                setText('rewardSummaryBurn', formatEther(pendingBurnReward, 4));
                 setText('rewardSummaryLife', formatEther(pendingInviteReward, 4));
+                syncRewardSummaryWithDetailCards();
 
                 // 官方资格状态
                 const wbnbStatus = document.getElementById('officialHolderQualified');
                 if (wbnbStatus) {
                     if (isHolderEligible) {
-                        wbnbStatus.textContent = `资格状态：已达标（门槛 ${formatEther(holderThreshold, 0)}）`;
+                        wbnbStatus.textContent = `已达标（门槛 ${formatEther(holderThreshold, 0)}）`;
                         wbnbStatus.className = 'text-sm text-mint-600';
                     } else {
-                        wbnbStatus.textContent = `资格状态：未达标（门槛 ${formatEther(holderThreshold, 0)}）`;
+                        wbnbStatus.textContent = `未达标（门槛 ${formatEther(holderThreshold, 0)}）`;
                         wbnbStatus.className = 'text-sm text-amber-600';
                     }
                 }
@@ -4531,7 +4609,7 @@
                 setText('myBurnWeightPct', burnWeightPct + '%');
 
                 // 邀请信息
-                const displayInviter = hasInviter && inviter && inviter !== ethers.constants.AddressZero ? inviter : (getStoredRefAddress() || '');
+                const displayInviter = hasInviter && inviter && inviter !== ethers.constants.AddressZero ? inviter : '';
                 if (displayInviter) {
                     setText('boundInviterAddress', displayInviter);
                     setText('rewardsBoundAddr', displayInviter);
@@ -4572,9 +4650,9 @@
                 }
                 // 这些都是单次 eth_call，BSC 响应很快（~200ms 每个）
                 const [globalRes, burnRes, supplyRes] = await Promise.allSettled([
-                    loadGlobalStats(),
-                    loadBurnStats(),       // 读取 BurnDistributor 全局数据到 chainData
-                    loadTokenSupply()
+                    withTimeout(loadGlobalStats(), 4200, 'globalStats'),
+                    withTimeout(loadBurnStats(), 4200, 'burnStats'),       // 读取 BurnDistributor 全局数据到 chainData
+                    withTimeout(loadTokenSupply(), 4200, 'tokenSupply')
                 ]);
                 
                 // 调试日志：检查数据加载结果
@@ -4586,7 +4664,7 @@
                 console.log('[debug] chainData.totalBurned:', chainData.totalBurned ? ethers.utils.formatEther(chainData.totalBurned) : 'undefined');
 
                 // 营销钱包也并行（Lens 单次调用，很快）
-                const marketingPromise = loadMarketingStats().catch(e => console.warn('marketingStats:', e.message));
+                const marketingPromise = withTimeout(loadMarketingStats(), 4200, 'marketingStats').catch(e => console.warn('marketingStats:', e.message));
 
                 // 价格预取（不阻塞）
                 getSlisBNBPrice().catch(() => {});
@@ -4642,14 +4720,14 @@
 
                 // ====== 第二波：Distributor 数据 + 排行榜（后台执行） ======
                 // 这是最重的操作：distributor 调用 + 排行榜事件查询
-                const distributorPromise = loadBurnDistributorStats()
+                const distributorPromise = withTimeout(loadBurnDistributorStats(), 4500, 'burnDistributor')
                     .then(() => console.log(`[perf] Distributor ${(performance.now() - t0).toFixed(0)}ms`))
                     .catch(e => console.warn('Distributor:', e.message));
 
                 // 社区数据只在社区页可见时才加载（避免 BscScan API 拖慢速度）
                 const activePage = document.querySelector('.page.active')?.id || '';
                 const communityPromise = activePage === 'page-community'
-                    ? loadCommunityStats().catch(() => {})
+                    ? withTimeout(loadCommunityStats(), 4500, 'communityStats').catch(() => {})
                     : Promise.resolve();
 
                 await Promise.allSettled([
@@ -4664,9 +4742,9 @@
                 if (userAddress) {
                     // 并行加载所有用户相关数据
                     const userTasks = [
-                        loadUserStats(),
-                        loadInviteStats(),
-                        loadUserBurnDistributorStats()
+                        withTimeout(loadUserStats(), 4500, 'userStats'),
+                        withTimeout(loadInviteStats(), 4500, 'inviteStats'),
+                        withTimeout(loadUserBurnDistributorStats(), 4500, 'userBurnStats')
                     ];
                     await Promise.allSettled(userTasks);
 
@@ -4675,10 +4753,10 @@
                 }
 
                 // 更新看板页静态数据（轻量级，纯 DOM 操作）
-                await loadStatsPage();
+                await withTimeout(loadStatsPage(), 2500, 'statsPage').catch(e => console.warn('statsPage:', e.message));
 
                 // 重型数据（总奖励 + USD 估值）— 不阻塞主流程
-                loadStatsPageHeavy();
+                Promise.resolve(loadStatsPageHeavy()).catch(e => console.warn('statsPageHeavy:', e?.message || e));
 
                 console.log(`[perf] refreshAllData 总耗时 ${(performance.now() - t0).toFixed(0)}ms`);
 
@@ -4686,6 +4764,8 @@
                 console.error('[refreshAllData] 异常:', e);
                 _clearSkeletons();
             } finally {
+                clearStuckLoadingStates();
+                syncRewardSummaryWithDetailCards();
                 _isRefreshing = false;
                 _setLoading(false);
             }
@@ -5267,17 +5347,16 @@
                     signer
                 );
                 
-                // 获取邀请人地址 — 三级优先：输入框 > sessionStorage存储 > 链上已绑定上级
+                // 获取邀请人地址 — 优先级：输入框 > 链上已绑定 > 本地存储 > 默认上级
                 let inviter = ethers.constants.AddressZero;
                 const inviterInput = document.getElementById('inviterAddressInput');
                 const inputValue = inviterInput && inviterInput.value && inviterInput.value.trim();
-                
+                const defaultReferrer = getEffectiveDefaultReferrer();
+
                 if (inputValue && inputValue.startsWith('0x') && inputValue.length === 42) {
-                    // 优先使用输入框的值
                     inviter = inputValue;
-                    console.log(`[burn] 使用输入框邀请人: ${inviter.slice(0, 6)}...`);
+                    console.log(`[burn] 使用用户输入邀请人: ${inviter.slice(0, 6)}...`);
                 } else {
-                    // 输入框为空 → 尝试从链上读取已绑定的上级
                     try {
                         const distributor = new ethers.Contract(
                             CONTRACTS.BURN_DISTRIBUTOR.address,
@@ -5289,35 +5368,37 @@
                         if (chainedInviter && chainedInviter !== ethers.constants.AddressZero) {
                             inviter = chainedInviter;
                             console.log(`[burn] 使用链上已绑定上级: ${inviter.slice(0, 6)}...`);
-                            // 同时回填到输入框
-                            if (inviterInput) inviterInput.value = inviter;
                         } else {
-                            // 最后尝试 sessionStorage
                             const stored = getStoredRefAddress();
                             if (stored && stored.startsWith('0x') && stored.length === 42) {
                                 inviter = stored;
                                 console.log(`[burn] 使用本地存储邀请人: ${inviter.slice(0, 6)}...`);
-                                if (inviterInput) inviterInput.value = inviter;
+                            } else if (defaultReferrer) {
+                                inviter = defaultReferrer;
+                                console.log(`[burn] 使用默认上级: ${inviter.slice(0, 6)}...`);
                             }
                         }
                     } catch (e) {
                         console.warn('[burn] 链上读取上级失败:', e.message?.slice(0, 60));
+                        if (defaultReferrer) {
+                            inviter = defaultReferrer;
+                            console.log(`[burn] 链上读取失败，回退默认上级: ${inviter.slice(0, 6)}...`);
+                        }
                     }
                 }
 
-                // 最终检查 — 如果仍然是零地址，警告用户
+                // 极端情况兜底：没有输入、没有链上绑定、也没有默认上级
                 if (inviter === ethers.constants.AddressZero) {
                     const confirmContinue = confirm(
-                        '⚠️ 您未填写邀请人地址！\n\n' +
-                        '销毁时将不产生任何生活邀请奖励返佣。\n' +
-                        '一旦销毁，如果后续绑定上级，之前的销毁记录不会补发返佣。\n\n' +
+                        '⚠️ 当前没有可用的上级地址。\n\n' +
+                        '这次销毁将不会产生邀请返佣。\n\n' +
                         '是否继续销毁？'
                     );
                     if (!confirmContinue) {
-                        btn.textContent = originalText; btn.disabled = false; return;
+                        btn.textContent = '确认销毁'; btn.disabled = false; return;
                     }
                 }
-                
+
                 const tx = await vault.burn(burnAmount, inviter);
                 await tx.wait();
                 
@@ -5514,10 +5595,12 @@
                     // 【代币替换标记 15 / 页面初始化时同步 token 信息】
                     // 如果你不想顶部标题被链上 symbol 改写，可从这里调整调用方式。
                     loadTokenInfo();
+                    updateTokenSymbolDisplay('生活');
                     refreshAllData();
                 } else {
                     ensureReadOnlyProvider();
                     loadTokenInfo();
+                    updateTokenSymbolDisplay('生活');
                     refreshAllData();
                 }
             } catch (error) {
