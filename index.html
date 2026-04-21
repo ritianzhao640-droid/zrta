@@ -6,11 +6,15 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <!-- 【代币替换标记 01 / 页面品牌名】
+         这里是浏览器标签页标题。发新币时可直接改成新品牌名。 -->
     <title>生活</title>
+    <!-- 【代币替换标记 02 / SEO 文案】
+         这里是分享卡片和搜索摘要里的项目描述。换新项目时建议一并改掉旧币名。 -->
     <meta name="description" content="生活 - 基于BSC链的DeFi质押平台，提供slisBNB/WBNB分红、销毁奖励、邀请奖励和排行榜功能。">
     <meta name="keywords" content="DeFi, BSC, 质押, 分红, 销毁奖励, 邀请奖励, 生活代币">
     <meta property="og:title" content="生活">
-    <meta property="og:description" content="Claim - 基于BSC链的DeFi质押平台">
+    <meta property="og:description" content="生活 - 基于BSC链的DeFi质押平台">
     <meta property="og:url" content="https://zrta.asia">
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://zrta.asia">
@@ -321,29 +325,65 @@
             box-shadow: none;
         }
 
-        /* 刷新按钮 */
+        /* 刷新按钮：改成更贴合生活主题的“晨光 / 生长感”胶囊 */
         .btn-refresh {
-            width: 36px;
+            min-width: 44px;
             height: 36px;
-            border-radius: 12px;
-            display: flex;
+            padding: 0 10px;
+            border-radius: 999px;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(8px);
-            border: 1.5px solid rgba(219, 39, 119, 0.2);
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(233, 250, 241, 0.96) 0%, rgba(254, 242, 248, 0.96) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(34, 197, 94, 0.18);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.08), inset 0 1px 0 rgba(255,255,255,0.7);
             transition: all 0.25s ease;
             cursor: pointer;
             flex-shrink: 0;
+            color: #198754;
         }
         .btn-refresh:hover {
-            border-color: #db2777;
-            box-shadow: 0 2px 10px rgba(219, 39, 119, 0.15);
+            transform: translateY(-1px);
+            border-color: rgba(34, 197, 94, 0.35);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.12), inset 0 1px 0 rgba(255,255,255,0.78);
         }
-        .btn-refresh.spinning svg {
-            animation: spin 0.8s linear infinite;
+        .btn-refresh:active {
+            transform: scale(0.97);
         }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .btn-refresh .refresh-sun {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 35% 35%, #fde68a 0%, #fbbf24 70%, #f59e0b 100%);
+            box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.20);
+            flex-shrink: 0;
+        }
+        .btn-refresh .refresh-leaf {
+            width: 18px;
+            height: 18px;
+            color: #16a34a;
+            flex-shrink: 0;
+            transform-origin: 50% 65%;
+        }
+        .btn-refresh.spinning .refresh-leaf {
+            animation: refreshBreath 0.9s ease-in-out infinite;
+        }
+        .btn-refresh.spinning .refresh-sun {
+            animation: sunPulse 0.9s ease-in-out infinite;
+        }
+        @keyframes refreshBreath {
+            0% { transform: rotate(-8deg) scale(0.96); }
+            50% { transform: rotate(8deg) scale(1.08); }
+            100% { transform: rotate(-8deg) scale(0.96); }
+        }
+        @keyframes sunPulse {
+            0% { transform: scale(0.92); opacity: 0.82; }
+            50% { transform: scale(1.08); opacity: 1; }
+            100% { transform: scale(0.92); opacity: 0.82; }
+        }
 
         .btn-secondary {
             background: rgba(255, 255, 255, 0.88);
@@ -1104,31 +1144,400 @@
             #page-overview .life-path-card .life-note-compact .space-y-2 > * + * { margin-top: 0.35rem !important; }
             #page-overview .life-path-card .life-note-compact .text-sm { font-size: 11px !important; }
         }
+
+
+        /* ===== v2026.04.21：最终收口（手机端压缩 / 并行布局 / 占位符清理） ===== */
+        .link-placeholder-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.6rem;
+        }
+        .link-placeholder-card {
+            min-width: 0;
+            min-height: 64px;
+            padding: 12px 11px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @media (max-width: 640px) {
+            .page.space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.72rem !important; }
+            #page-rewards .life-page-title,
+            #page-invite .life-page-title,
+            #page-community .life-page-title {
+                font-size: 1.08rem !important;
+                line-height: 1.16 !important;
+            }
+            #page-rewards .card.border-l-4.border-l-\[\#93bba0\] {
+                padding: 9px !important;
+            }
+            #page-rewards .card.border-l-4.border-l-\[\#93bba0\] .flex.items-center.gap-2\.5.mb-3 {
+                margin-bottom: 0.45rem !important;
+            }
+            #page-rewards .card.border-l-4.border-l-\[\#93bba0\] .font-semibold.text-sm {
+                font-size: 12px !important;
+            }
+            #page-rewards .dual-claim-grid { gap: 0.4rem !important; }
+            #page-rewards .dual-claim-card {
+                padding: 9px !important;
+                border-radius: 13px !important;
+            }
+            #page-rewards .dual-claim-card .text-lg {
+                font-size: 0.94rem !important;
+                line-height: 1.02 !important;
+            }
+            #page-rewards .dual-claim-card .text-\[11px\] {
+                font-size: 10px !important;
+                line-height: 1.22 !important;
+            }
+            #page-invite .warning-box,
+            #page-invite #inviterBindingSection,
+            #page-invite .invite-link-card,
+            #page-invite .space-y-3 > div {
+                margin-bottom: 0.65rem !important;
+            }
+            #page-invite .warning-box { padding: 10px !important; }
+            #page-invite #inviterBindingSection { padding: 10px !important; }
+            #page-invite .invite-link-card { padding: 9px !important; }
+            #page-invite .invite-link-card .text-sm { font-size: 11px !important; }
+            #page-invite .invite-count-grid { gap: 0.4rem !important; }
+            #page-invite .invite-count-card {
+                min-height: 62px !important;
+                padding: 8px 6px !important;
+            }
+            #page-community .card.life-card-soft.p-5 { padding: 10px !important; }
+            #page-community .card.p-4.mb-5,
+            #page-community .mechanism-card {
+                margin-bottom: 0.7rem !important;
+                padding: 10px !important;
+            }
+            #page-community .grid.grid-cols-3.gap-2.mb-5 {
+                gap: 0.4rem !important;
+                margin-bottom: 0.7rem !important;
+            }
+            #page-community .grid.grid-cols-3.gap-2.mb-5 > div {
+                padding: 8px 5px !important;
+                border-radius: 13px !important;
+            }
+            #page-community .grid.grid-cols-3.gap-2.mb-5 .text-base {
+                font-size: 0.92rem !important;
+            }
+            .link-placeholder-grid {
+                gap: 0.42rem !important;
+            }
+            .link-placeholder-card {
+                min-height: 56px !important;
+                padding: 9px 8px !important;
+                border-radius: 13px !important;
+            }
+            .link-placeholder-card .text-sm {
+                font-size: 11px !important;
+                line-height: 1.2 !important;
+            }
+            .link-placeholder-card .text-xs {
+                font-size: 9px !important;
+            }
+        }
+
+        /* ===== 2026.04.21b：刷新增强 / 汇率显示 / 移动端导航上移 ===== */
+        .global-rate-strip {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .rate-pill {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.62);
+            border: 1px solid rgba(255,255,255,0.78);
+            color: #5c6f63;
+            font-size: 12px;
+            line-height: 1.2;
+            backdrop-filter: blur(10px);
+        }
+        .rate-pill strong {
+            font-size: 12px;
+            font-weight: 700;
+            color: #2f5841;
+            white-space: nowrap;
+        }
+        .refresh-caption {
+            font-size: 11px;
+            color: #8a8f88;
+            white-space: nowrap;
+        }
+        @media (max-width: 430px) {
+            main#mainContent {
+                padding-top: 7rem !important;
+                padding-bottom: 1rem !important;
+            }
+            nav.glass-nav {
+                top: 62px;
+                bottom: auto;
+                left: 10px;
+                right: 10px;
+                border-radius: 18px;
+                border: 1px solid rgba(219, 39, 119, 0.10);
+                box-shadow: 0 8px 24px rgba(219, 39, 119, 0.08);
+            }
+            nav.glass-nav .h-16 {
+                height: 48px;
+            }
+            nav.glass-nav .bottom-nav-item {
+                gap: 1px !important;
+                padding: 4px 2px !important;
+            }
+            nav.glass-nav .bottom-nav-item svg {
+                width: 20px;
+                height: 20px;
+            }
+            nav.glass-nav .bottom-nav-item span {
+                font-size: 9px !important;
+                line-height: 1.05;
+            }
+            nav.glass-nav .bottom-nav-item > div.w-12.h-12 {
+                width: 36px !important;
+                height: 36px !important;
+                margin-top: -10px !important;
+                ring-width: 2px !important;
+            }
+            nav.glass-nav .bottom-nav-item.active::after {
+                bottom: -1px;
+                width: 16px;
+            }
+        }
+
+
+        /* ===== 导航方案 A2：手机端把主导航并入顶部状态栏 ===== */
+        .top-pill-nav-shell {
+            display: none !important;
+        }
+        .top-merge-nav {
+            display: none;
+        }
+        .top-merge-track {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 6px;
+            align-items: end;
+            width: 100%;
+        }
+        .top-merge-item {
+            min-width: 0;
+            border-radius: 14px;
+            padding: 7px 2px 6px;
+            font-size: 11px;
+            line-height: 1.1;
+            color: #7f7468;
+            font-weight: 600;
+            text-align: center;
+            transition: background .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease;
+        }
+        .top-merge-item .nav-ico {
+            display: block;
+            font-size: 13px;
+            line-height: 1;
+            margin-bottom: 3px;
+            opacity: .88;
+        }
+        .top-merge-item.active {
+            color: #c65d76;
+            background: linear-gradient(135deg, rgba(255,244,247,0.95) 0%, rgba(248,252,246,0.92) 100%);
+            box-shadow: inset 0 0 0 1px rgba(219, 39, 119, 0.10), 0 4px 10px rgba(198, 93, 118, 0.08);
+        }
+        .top-merge-burn-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .top-merge-burn {
+            width: 42px;
+            height: 42px;
+            margin-top: -10px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background: linear-gradient(135deg, #d77284 0%, #bf5d72 30%, #639d77 100%);
+            box-shadow: 0 12px 24px rgba(198, 93, 118, 0.20), 0 6px 16px rgba(88, 146, 107, 0.15);
+            transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+        }
+        .top-merge-burn.active {
+            box-shadow: 0 14px 28px rgba(198, 93, 118, 0.24), 0 6px 18px rgba(88, 146, 107, 0.18), 0 0 0 4px rgba(255,255,255,0.62);
+        }
+        .top-merge-burn-label {
+            margin-top: 2px;
+            font-size: 11px;
+            line-height: 1.05;
+            color: #7f7468;
+            font-weight: 700;
+            text-align: center;
+        }
+        .top-merge-burn.active + .top-merge-burn-label {
+            color: #c65d76;
+        }
+        .top-merge-burn:active,
+        .top-merge-item:active {
+            transform: scale(0.98);
+        }
+        .header-main-row {
+            gap: 10px;
+        }
+        .header-brand {
+            min-width: 0;
+        }
+        .header-actions {
+            flex-shrink: 0;
+        }
+        @media (max-width: 768px) {
+            header.glass-header .header-shell {
+                padding: 10px 12px 8px;
+            }
+            .top-merge-nav {
+                display: block;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-top: 1px solid rgba(219, 39, 119, 0.08);
+            }
+            body.nav-a-mobile main#mainContent {
+                padding-top: 7.2rem !important;
+                padding-bottom: 1.1rem !important;
+            }
+            body.nav-a-mobile nav.glass-nav {
+                display: none !important;
+            }
+            .header-brand #appTitle {
+                font-size: 17px !important;
+                line-height: 1.1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 46vw;
+                display: block;
+            }
+            #walletBtn {
+                padding: 0.45rem 0.78rem !important;
+                min-height: 36px;
+                font-size: 12px !important;
+            }
+            #walletBtn #walletText {
+                max-width: 22vw;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: inline-block;
+            }
+            .btn-refresh {
+                width: 34px;
+                height: 34px;
+                border-radius: 11px;
+            }
+        }
+        @media (max-width: 430px) {
+            header.glass-header .header-shell {
+                padding: 9px 10px 7px;
+            }
+            .header-main-row {
+                gap: 8px;
+            }
+            .header-brand .w-9.h-9 {
+                width: 34px !important;
+                height: 34px !important;
+                border-radius: 11px !important;
+            }
+            .header-brand #appTitle {
+                font-size: 16px !important;
+                max-width: 42vw;
+            }
+            .top-merge-track {
+                gap: 4px;
+            }
+            .top-merge-item {
+                padding: 6px 1px 5px;
+                font-size: 10px;
+            }
+            .top-merge-item .nav-ico {
+                font-size: 12px;
+                margin-bottom: 2px;
+            }
+            .top-merge-burn {
+                width: 38px;
+                height: 38px;
+                margin-top: -8px;
+            }
+            .top-merge-burn-label {
+                font-size: 10px;
+            }
+            body.nav-a-mobile main#mainContent {
+                padding-top: 6.95rem !important;
+            }
+        }
+        @media (min-width: 769px) {
+            .top-merge-nav {
+                display: none !important;
+            }
+        }
+
 </style>
 </head>
-<body class="text-gray-900">
-
-    <!-- 顶部状态栏 -->
+<body class="text-gray-900 nav-a-mobile">
+    <!-- 顶部状态栏 + 主导航（手机端合并） -->
     <header class="fixed top-0 left-0 right-0 glass-header z-50">
-        <div class="flex items-center justify-between px-4 py-3">
-            <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl gradient-green flex items-center justify-center shadow-lg shadow-green-500/25">
-                    <span id="tokenLogoSymbol" class="text-white font-bold text-xs">ME</span>
+        <div class="header-shell px-4 py-3">
+            <div class="header-main-row flex items-center justify-between">
+                <div class="header-brand flex items-center gap-2 min-w-0">
+                    <div class="w-9 h-9 rounded-xl gradient-green flex items-center justify-center shadow-lg shadow-green-500/25 flex-shrink-0">
+                        <!-- 【代币替换标记 03 / 左上角 Logo 简称】
+                             默认占位会在 loadTokenInfo() 后被链上 symbol 覆盖。 -->
+                        <span id="tokenLogoSymbol" class="text-white font-bold text-xs">ME</span>
+                    </div>
+                    <!-- 【代币替换标记 04 / 顶部项目标题】
+                         当前是前端展示品牌名，不一定等于链上 symbol。 -->
+                    <span id="appTitle" class="font-bold text-lg gradient-green-text">生活生态中心</span>
                 </div>
-                <span id="appTitle" class="font-bold text-lg gradient-green-text">生活生态中心</span>
+                <div class="header-actions flex items-center gap-2">
+                    <button id="refreshBtn" onclick="manualRefresh()" class="btn-refresh" title="轻轻更新一下链上节奏">
+                        <span class="refresh-sun" aria-hidden="true"></span>
+                        <svg id="refreshIcon" class="refresh-leaf" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M8 14c0-4.4 3.1-7.7 8.2-8.9.4 5.7-2 10.2-6.6 11.8"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M8.4 13.8c1.8-.2 3.1.4 4.2 1.7"></path>
+                        </svg>
+                    </button>
+                    <span id="lastRefreshText" class="refresh-caption hidden sm:inline">轻轻更新</span>
+                    <button id="walletBtn" onclick="toggleWallet()" class="px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5">
+                        <span id="walletText">连接钱包</span>
+                        <span id="walletSlisDisplay" class="hidden text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full font-medium">--</span>
+                    </button>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <!-- 手动刷新按钮 -->
-                <button id="refreshBtn" onclick="manualRefresh()" class="btn-refresh" title="刷新数据">
-                    <svg id="refreshIcon" class="w-5 h-5 text-pink-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                </button>
-                <button id="walletBtn" onclick="toggleWallet()" class="px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5">
-                    <span id="walletText">连接钱包</span>
-                    <span id="walletSlisDisplay" class="hidden text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full font-medium">--</span>
-                </button>
+
+            <div class="top-merge-nav" aria-label="主导航">
+                <div class="top-merge-track">
+                    <button onclick="showPage('overview')" class="top-merge-item active" data-page="overview"><span class="nav-ico">◫</span><span>总览</span></button>
+                    <button onclick="showPage('rewards')" class="top-merge-item" data-page="rewards"><span class="nav-ico">◌</span><span>收益</span></button>
+                    <div class="top-merge-burn-wrap">
+                        <div>
+                            <button onclick="showPage('burn')" class="top-merge-burn" data-page="burn" title="进入销毁页" aria-label="进入销毁页">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3c.6 2.4-.4 4.1-1.7 5.7-1.1 1.4-2.3 2.8-2.3 4.9a4 4 0 108 0c0-1.8-.9-3.1-1.9-4.4C13 7.7 12.1 6.4 12 3z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 14.5c.3 1.7 1.2 2.5 2.5 2.5 1.2 0 2-.7 2.2-1.8"></path></svg>
+                            </button>
+                            <div class="top-merge-burn-label">销毁</div>
+                        </div>
+                    </div>
+                    <button onclick="showPage('invite')" class="top-merge-item" data-page="invite"><span class="nav-ico">◎</span><span>邀请</span></button>
+                    <button onclick="showPage('community')" class="top-merge-item" data-page="community"><span class="nav-ico">◍</span><span>社区</span></button>
+                </div>
             </div>
         </div>
     </header>
+
+    <div class="top-pill-nav-shell" aria-hidden="true"></div>
 
     <!-- 主内容区 -->
     <main id="mainContent" class="wallet-disconnected wallet-transition pt-16 pb-24 px-4">
@@ -1159,21 +1568,21 @@
                             <span class="text-[13px] text-[#7a8b7f] font-medium">金库正在慢慢长大</span>
                             <span class="life-mini-label"><span>🏡</span><span>生活金库</span></span>
                         </div>
-                        <div class="life-main-number" id="totalStakedValue">--</div>
-                        <div class="mt-2 text-sm text-[#7b857f]" id="totalSlisAmount">≈ -- slisBNB</div>
-
                         <div class="mt-4 grid grid-cols-3 gap-2 home-kpi-compact">
-                            <div class="rounded-2xl bg-white/65 border border-white/80 p-4 backdrop-blur">
-                                <div class="text-xs text-[#8b8379] mb-1">待进入晨间质押</div>
-                                <div class="text-lg font-semibold text-[#ad5f64]" id="pendingBnb">--</div>
+                            <div class="rounded-2xl bg-white/65 border border-white/80 p-3 backdrop-blur">
+                                <div class="text-xs text-[#8b8379] mb-1">长出来的温柔回响</div>
+                                <div class="text-base sm:text-lg font-semibold text-[#9b6a2f] leading-tight" id="overviewVaultSlisBnb">--</div>
+                                <div class="text-[11px] text-[#8e7a57] mt-1">当前 slisBNB</div>
                             </div>
-                            <div class="rounded-2xl bg-white/65 border border-white/80 p-4 backdrop-blur">
-                                <div class="text-xs text-[#8b8379] mb-1">自动节奏阈值</div>
-                                <div class="text-lg font-semibold text-[#3c7b5e]" id="autoThresholdDisplay">0.01 BNB</div>
+                            <div class="rounded-2xl bg-white/65 border border-white/80 p-3 backdrop-blur">
+                                <div class="text-xs text-[#8b8379] mb-1">已经慢慢种下去</div>
+                                <div class="text-base sm:text-lg font-semibold text-[#3c7b5e] leading-tight" id="overviewTotalStakedBnb">--</div>
+                                <div class="text-[11px] text-[#7e8f82] mt-1">累计质押的 BNB</div>
                             </div>
-                            <div class="rounded-2xl bg-white/65 border border-white/80 p-4 backdrop-blur">
-                                <div class="text-xs text-[#8b8379] mb-1">我的生活持有</div>
-                                <div class="text-lg font-semibold text-[#9b6a2f]" id="userTokenBalance">--</div>
+                            <div class="rounded-2xl bg-white/65 border border-white/80 p-3 backdrop-blur">
+                                <div class="text-xs text-[#8b8379] mb-1">还在旁边等风来</div>
+                                <div class="text-base sm:text-lg font-semibold text-[#ad5f64] leading-tight" id="overviewVaultBnb">--</div>
+                                <div class="text-[11px] text-[#9a8c82] mt-1">等待质押的 BNB</div>
                             </div>
                         </div>
                     </div>
@@ -1262,18 +1671,6 @@
                 </div>
             </div>
 
-            <div class="card life-leaderboard-wrap p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h3 class="life-section-title">生活燃烧榜</h3>
-                        <p class="text-xs text-[#7f8a80] mt-1">按销毁权重排序，看看谁在为整个系统增加呼吸感</p>
-                    </div>
-                    <span class="life-mini-label"><span>🏅</span><span>实时更新</span></span>
-                </div>
-                <div class="space-y-3" id="burnLeaderboard">
-                    <div class="text-center text-gray-400 text-sm py-4">数据加载中...</div>
-                </div>
-            </div>
         </div>
 
         <!-- 我的收益页 -->
@@ -1319,7 +1716,7 @@
                     </div>
                     <div class="min-w-0">
                         <div class="font-semibold text-sm text-gray-800">来自生活的双份惊喜</div>
-                        <div class="text-[11px] leading-4 text-gray-500">把该来的回报，轻轻收进日常里。</div>
+                        <div class="text-[11px] leading-4 text-gray-500">日子会回礼。</div>
                     </div>
                 </div>
 
@@ -1476,10 +1873,10 @@
                         <label class="text-sm text-gray-500 mb-2 block">销毁数量</label>
                         <div class="relative">
                             <input type="number" id="burnAmount" placeholder="0.00" class="input-field w-full px-4 py-4 text-lg font-semibold" oninput="updateBurnPreview()">
-                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">CLAIM</span>
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">生活</span>
                         </div>
                         <div class="flex justify-between mt-2 text-xs text-gray-400">
-                            <span>余额: <span id="burnTokenBalance">--</span> CLAIM</span>
+                            <span>余额: <span id="burnTokenBalance">--</span> 生活</span>
                             <button class="text-pink-500 font-medium" onclick="setMaxBurn()">最大</button>
                         </div>
                     </div>
@@ -1495,15 +1892,15 @@
                          style="background: rgba(255,255,255,0.5);">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-500">实际销毁</span>
-                            <span class="font-semibold" id="previewBurn">0 CLAIM</span>
+                            <span class="font-semibold" id="previewBurn">0 生活</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-500">L1 邀请返佣 (10%)</span>
-                            <span class="font-semibold text-mint-600" id="previewL1">0 CLAIM</span>
+                            <span class="font-semibold text-mint-600" id="previewL1">0 生活</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-500">L2 邀请返佣 (5%)</span>
-                            <span class="font-semibold text-pink-600" id="previewL2">0 CLAIM</span>
+                            <span class="font-semibold text-pink-600" id="previewL2">0 生活</span>
                         </div>
                         <div class="border-t border-gray-200 pt-3 flex justify-between">
                             <span class="text-gray-500">销毁后预估权重提升</span>
@@ -1522,7 +1919,7 @@
                     <div class="bg-pink-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">累计销毁</div>
                     <div class="text-xl font-bold text-pink-600" id="myCumulativeBurn">--</div>
-                    <div class="text-xs text-gray-400">CLAIM</div>
+                    <div class="text-xs text-gray-400">生活</div>
                     </div>
                     <div class="bg-mint-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">销毁权重</div>
@@ -1561,7 +1958,7 @@
                         <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                         <div class="text-sm text-amber-800">
                             <p class="font-medium mb-1">无门槛邀请</p>
-                            <p class="text-xs leading-relaxed">所有用户均可绑定上级享受返佣，无需任何销毁要求。邀请奖励固定发放 CLAIM 本代币。一旦成功燃烧将终身绑定上级地址，无法更改。</p>
+                            <p class="text-xs leading-relaxed">任何地址都能先绑定上级再参与返佣；奖励固定发放生活本代币。完成首次销毁后，关系会长期锁定。</p>
                             <p class="text-xs mt-1 font-medium text-red-600">⚠️ 禁止自己绑自己、禁止二节点互绑、禁止上游环</p>
                         </div>
                     </div>
@@ -1629,7 +2026,7 @@
                     </div>
                     <div class="flex items-center justify-between mt-1">
                         <div class="text-2xl font-bold gradient-green-text" id="invitePendingReward">--</div>
-                        <div class="text-xs text-gray-400">CLAIM 本代币 · 下级销毁产生</div>
+                        <div class="text-xs text-gray-400">生活本代币 · 下级销毁产生</div>
                     </div>
                 </div>
 
@@ -1638,12 +2035,12 @@
                             <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-xs font-bold">L1</div>
                             <div>
                                 <div class="text-sm font-medium">直接邀请奖励</div>
-                                <div class="text-xs text-gray-400">10% 销毁金额 (CLAIM)</div>
+                                <div class="text-xs text-gray-400">10% 销毁金额（生活）</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-pink-600" id="l1RewardAmount">--</div>
-                            <div class="text-xs text-gray-400">CLAIM</div>
+                            <div class="text-xs text-gray-400">生活</div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between p-3 glass-subtle rounded-xl">
@@ -1651,12 +2048,12 @@
                             <div class="w-8 h-8 rounded-full bg-mint-100 flex items-center justify-center text-mint-600 text-xs font-bold">L2</div>
                             <div>
                                 <div class="text-sm font-medium">间接邀请奖励</div>
-                                <div class="text-xs text-gray-400">5% 销毁金额 (CLAIM)</div>
+                                <div class="text-xs text-gray-400">5% 销毁金额（生活）</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-mint-600" id="l2RewardAmount">--</div>
-                            <div class="text-xs text-gray-400">CLAIM</div>
+                            <div class="text-xs text-gray-400">生活</div>
                         </div>
                     </div>
                 </div>
@@ -1671,7 +2068,7 @@
                     <div class="bg-pink-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">总销毁量</div>
                         <div class="text-lg font-bold text-pink-600" id="statsTotalBurn">--</div>
-                        <div class="text-xs text-gray-400">CLAIM</div>
+                        <div class="text-xs text-gray-400">生活</div>
                         <div class="text-xs text-gray-500 mb-1">总奖励发放</div>
                         <div class="text-lg font-bold text-mint-600" id="statsTotalReward">--</div>
                         <div class="text-xs text-gray-400">slisBNB</div>
@@ -1707,36 +2104,36 @@
                 <h3 class="font-semibold text-gray-800 mb-4">合约信息</h3>
                 <div class="space-y-3 text-sm mb-5">
                     <div class="flex justify-between">
-                        <span class="text-gray-500">Claim Vault (金库)</span>
+                        <span class="text-gray-500">Vault Proxy</span>
                         <span class="font-mono text-gray-700" id="contractVaultAddr">--</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-500">Token (CLAIM)</span>
+                        <span class="text-gray-500">Token（生活）</span>
                         <span class="font-mono text-gray-700" id="contractTokenAddr">--</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-500">DividendContract</span>
-                        <span class="font-mono text-gray-700" id="contractLensAddr">--</span>
+                        <span class="text-gray-500">HolderDividendContract</span>
+                        <span class="font-mono text-gray-700" id="contractDividendAddr">--</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-500">BurnDistributor</span>
                         <span class="font-mono text-gray-700" id="contractBurnDistAddr">--</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-500">EligibilityOracle</span>
+                        <span class="text-gray-500">HolderEligibilityOracle</span>
                         <span class="font-mono text-gray-700" id="contractOracleAddr">--</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-500">ListaStakeManager</span>
-                        <span class="font-mono text-gray-700" id="contractTrackerAddr">--</span>
+                        <span class="text-gray-500">slisBNB</span>
+                        <span class="font-mono text-gray-700" id="contractSlisAddr">--</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-500">多签钱包</span>
-                        <span class="font-mono text-gray-700" id="contractMultisigAddr">--</span>
+                        <span class="text-gray-500">MarketingWallet</span>
+                        <span class="font-mono text-gray-700" id="contractMarketingAddr">--</span>
                     </div>
                 </div>
 
-                <!-- 金库关键数据（来自 Lens） -->
+                <!-- 金库关键数据（全部来自 Vault / 动态发现） -->
                 <h4 class="font-medium text-gray-700 text-sm mb-3 mt-5 pt-3 border-t border-gray-100">金库状态（Vault 数据）</h4>
                 <div class="grid grid-cols-2 gap-2 text-sm mb-3">
                     <div class="bg-pink-50 rounded-lg p-2.5">
@@ -1777,11 +2174,11 @@
                 <div class="relative z-10 space-y-4">
                     <div class="flex items-start justify-between gap-4">
                         <div class="max-w-full sm:max-w-[78%]">
-                            <div class="life-section-badge mb-3"><span>🫧</span><span>社区页 · 留白与陪伴</span></div>
-                            <h3 class="life-page-title">让社区看起来像一个会慢慢长满内容的客厅</h3>
-                            <p class="mt-3 life-page-copy">把热闹先留给以后，这里会慢慢长出温度。</p>
+                            <div class="life-section-badge mb-3"><span>🫧</span><span>社区页 · 生态入口</span></div>
+                            <h3 class="life-page-title">把社区入口、数据和动态收进同一页</h3>
+                            <p class="mt-3 life-page-copy">先把要看的信息放顺手，后续再把内容慢慢补齐。</p>
                         </div>
-                        <div class="hidden sm:flex life-mini-label mt-1"><span>🏠</span><span>预留扩展区</span></div>
+                        <div class="hidden sm:flex life-mini-label mt-1"><span>🏠</span><span>社区入口</span></div>
                     </div>
                     <div class="life-subgrid two">
                         <div class="life-mini-kpi">
@@ -1789,8 +2186,8 @@
                             <div class="life-mini-kpi-value">链上实时同步</div>
                         </div>
                         <div class="life-mini-kpi">
-                            <div class="life-mini-kpi-label">社区链接状态</div>
-                            <div class="life-mini-kpi-value">已留白，等待后续填充</div>
+                            <div class="life-mini-kpi-label">社区链接</div>
+                            <div class="life-mini-kpi-value">将按官方入口逐步接入</div>
                         </div>
                     </div>
                 </div>
@@ -1851,11 +2248,11 @@
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">3.</span>
-                            <span><strong>四类收益独立：</strong>项目 slisBNB 持币分红、官方 WBNB/BNB 分红、燃烧奖励、邀请奖励(CLAIM) 严格分开</span>
+                            <span><strong>四类收益独立：</strong>项目 slisBNB 持币分红、官方 WBNB/BNB 分红、燃烧奖励、邀请奖励（生活）严格分开</span>
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">4.</span>
-                            <span><strong>燃烧返佣：</strong>销毁 CLAIM 时，L1 邀请人得 10%，L2 得 5%（本代币），剩余 85% 真正销毁</span>
+                            <span><strong>燃烧返佣：</strong>销毁生活时，L1 邀请人得 10%，L2 得 5%（本代币），剩余 85% 真正销毁</span>
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">5.</span>
@@ -1863,87 +2260,37 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- 官方链接 - 替换为 QQ/TG/Debox -->
-                <div class="space-y-3 mb-5">
-                    <div class="flex items-center justify-between">
+                <div class="mb-5">
+                    <div class="flex items-center justify-between mb-3">
                         <h4 class="font-medium text-gray-700 text-sm">官方链接</h4>
-                        <span class="text-[11px] text-[#9a8e81]">内容留白中</span>
+                        <span class="text-[11px] text-[#9a8e81]">入口将逐步接入</span>
                     </div>
-                    <a href="javascript:void(0)" onclick="return false;" class="flex items-center gap-3 p-3 glass-subtle rounded-xl life-empty-card">
-                        <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    <div class="link-placeholder-grid">
+                        <div class="link-placeholder-card glass-subtle rounded-xl life-empty-card">
+                            <div class="text-sm font-medium text-gray-700">X / Twitter</div>
+                            <div class="text-xs text-gray-400 mt-1">即将接入</div>
                         </div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm"></div>
-                            <div class="text-xs text-gray-400"></div>
+                        <div class="link-placeholder-card glass-subtle rounded-xl life-empty-card">
+                            <div class="text-sm font-medium text-gray-700">QQ 主群</div>
+                            <div class="text-xs text-gray-400 mt-1">即将接入</div>
                         </div>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
-                    
-                    <!-- QQ群 -->
-                    <a href="javascript:void(0)" onclick="return false;" class="flex items-center gap-3 p-3 glass-subtle rounded-xl life-empty-card">
-                        <div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white font-bold text-sm">QQ</div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm"></div>
-                            <div class="text-xs text-gray-400"></div>
+                        <div class="link-placeholder-card glass-subtle rounded-xl life-empty-card">
+                            <div class="text-sm font-medium text-gray-700">QQ 禁言群 1</div>
+                            <div class="text-xs text-gray-400 mt-1">即将接入</div>
                         </div>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
-                    
-                    <a href="javascript:void(0)" onclick="return false;" class="flex items-center gap-3 p-3 glass-subtle rounded-xl life-empty-card">
-                        <div class="w-10 h-10 rounded-xl bg-blue-400 flex items-center justify-center text-white font-bold text-xs">禁言</div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm"></div>
-                            <div class="text-xs text-gray-400"></div>
+                        <div class="link-placeholder-card glass-subtle rounded-xl life-empty-card">
+                            <div class="text-sm font-medium text-gray-700">QQ 禁言群 2</div>
+                            <div class="text-xs text-gray-400 mt-1">即将接入</div>
                         </div>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
-                    
-                    <a href="javascript:void(0)" onclick="return false;" class="flex items-center gap-3 p-3 glass-subtle rounded-xl life-empty-card">
-                        <div class="w-10 h-10 rounded-xl bg-blue-400 flex items-center justify-center text-white font-bold text-xs">禁言</div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm"></div>
-                            <div class="text-xs text-gray-400"></div>
+                        <div class="link-placeholder-card glass-subtle rounded-xl life-empty-card">
+                            <div class="text-sm font-medium text-gray-700">Telegram</div>
+                            <div class="text-xs text-gray-400 mt-1">即将接入</div>
                         </div>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
-                    
-                    <!--  -->
-                    <a href="javascript:void(0)" onclick="return false;" class="flex items-center gap-3 p-3 glass-subtle rounded-xl life-empty-card">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <div class="link-placeholder-card glass-subtle rounded-xl life-empty-card">
+                            <div class="text-sm font-medium text-gray-700">Debox</div>
+                            <div class="text-xs text-gray-400 mt-1">即将接入</div>
                         </div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm"></div>
-                            <div class="text-xs text-gray-400"></div>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
-                    
-                    <!-- TG频道 -->
-                    <a href="javascript:void(0)" onclick="return false;" class="flex items-center gap-3 p-3 glass-subtle rounded-xl life-empty-card">
-                        <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-sky-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm"></div>
-                            <div class="text-xs text-gray-400"></div>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
-                    
-                    <!-- Debox群 -->
-                    <a href="javascript:void(0)" onclick="return false;" class="flex items-center gap-3 p-3 glass-subtle rounded-xl life-empty-card">
-                        <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        </div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm"></div>
-                            <div class="text-xs text-gray-400"></div>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
+                    </div>
                 </div>
 
                 <!-- 最新公告 -->
@@ -1998,11 +2345,18 @@
         });
 
         // ==================== 合约配置 ====================
+        // 【代币替换总入口】
+        // 下次发新币或复用这套前端，优先检查下面几块：
+        // 1) CONTRACTS.TOKEN：代币地址、symbol、name、decimals、token ABI
+        // 2) CONTRACTS.VAULT：Vault Proxy 地址、Vault ABI
+        // 3) loadTokenInfo()：是否要用链上 symbol 覆盖前端标题/Logo
+        // 4) 页面里所有直接写死“生活”的地方：销毁预览、说明文案、SEO 文案
+        // 5) initializeContractAddresses()：其余地址都从 Vault 动态发现，不要手填旧地址
         // ⚠️ 数据标记说明：
         // 1. 代币信息标记：更新 TOKEN 中的 address、symbol、name、decimals
         // 2. ABI 数据标记：从新部署的合约获取完整的 ABI 并替换
         // 3. 地址标记：VAULT 地址不变，其他地址通过动态发现获取
-        // 4. 生活代币数据：代币符号为 "CLAIM"，显示名称为 "生活"
+        // 4. 生活代币数据：链上符号为 "CLAIM"，前端展示名称为 "生活"
         // 下次迭代更新时，只需修改以下标记的数据：
         //   - TOKEN.address: 新代币合约地址
         //   - TOKEN.symbol: 新代币符号
@@ -2010,7 +2364,17 @@
         //   - TOKEN.abi: 新代币完整 ABI
         //   - VAULT.abi: 新 Vault 完整 ABI
         // 其他合约地址通过 initializeContractAddresses() 动态发现
+        // 【代币替换标记 05 / 合约常量区】
+        // 这里是整套前端最关键的替换入口。
+        // 真正必须人工改的，通常只有 TOKEN 与 VAULT。
         const CONTRACTS = {
+            // 【代币替换标记 06 / TOKEN 主配置】
+            // 发新币时，优先改这里：
+            // - address: 新代币地址
+            // - symbol: 链上符号
+            // - name: 前端展示名
+            // - decimals: 精度，非 18 时要联动检查 formatEther / parseEther
+            // - abi: 新代币 ABI，至少要保留 balanceOf / symbol / approve / allowance / transfer / transferFrom
             TOKEN: {
                 address: "0x379f9E96BDC94572492e3BAC75A5122fFb7E7777",
                 symbol: "CLAIM",
@@ -2018,6 +2382,10 @@
                 decimals: 18,
                 abi: [{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"dividendContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]
             },
+            // 【代币替换标记 07 / VAULT 主配置】
+            // 这个地址决定整个站读取的是哪套金库。
+            // 如果发新币但沿用同一 Vault 逻辑，只需替换 address + abi。
+            // 其他地址（burnDistributor / oracle / slisBNB / marketingWallet / dividend）都从 Vault 动态发现。
             VAULT: {
                 address: "0xC09f04d1DDD278A8a9406CfB6E9C80f2719DB2b0",
                 abi: [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"AlreadyInitialized","type":"error"},{"inputs":[],"name":"Reentrancy","type":"error"},{"inputs":[],"name":"TransferFailed","type":"error"},{"inputs":[],"name":"Unauthorized","type":"error"},{"inputs":[{"internalType":"uint256","name":"chainId","type":"uint256"}],"name":"UnsupportedChain","type":"error"},{"inputs":[],"name":"ZeroAddress","type":"error"},{"inputs":[],"name":"ZeroAmount","type":"error"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newValue","type":"uint256"}],"name":"AutoStakeThresholdUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"holder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"HolderRewardClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newValue","type":"uint256"}],"name":"MarketingAutoSendThresholdUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"MarketingAutoSent","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"MarketingClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"oldWallet","type":"address"},{"indexed":false,"internalType":"address","name":"newWallet","type":"address"}],"name":"MarketingWalletUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"marketingSlis","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"burnPoolSlis","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"holderSlis","type":"uint256"}],"name":"StakeSplit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountBNB","type":"uint256"}],"name":"TaxReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amountBNB","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"slisReceived","type":"uint256"}],"name":"TaxStaked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":true,"internalType":"address","name":"inviter","type":"address"}],"name":"UserBurned","type":"event"},{"inputs":[],"name":"BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"BURN_POOL_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"HOLDER_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MARKETING_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"autoStakeThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"burnDistributor","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"burnInfo","outputs":[{"internalType":"uint256","name":"rawBurned","type":"uint256"},{"internalType":"uint256","name":"weight","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"},{"internalType":"bool","name":"hasInviter","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claim","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimBurnReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"holder","type":"address"}],"name":"claimFor","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimInviteReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"}],"name":"claimMarketing","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"holderEligibilityOracle","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"holderRewardTracker","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"components":[{"internalType":"address","name":"taxToken","type":"address"},{"internalType":"address","name":"listaStakeManager","type":"address"},{"internalType":"address","name":"slisBNB","type":"address"},{"internalType":"address","name":"marketingWallet","type":"address"},{"internalType":"uint256","name":"autoStakeThreshold","type":"uint256"},{"internalType":"uint256","name":"marketingAutoSendThreshold","type":"uint256"},{"internalType":"address","name":"burnDistributor","type":"address"},{"internalType":"address","name":"holderEligibilityOracle","type":"address"},{"internalType":"address","name":"holderRewardTracker","type":"address"}],"internalType":"struct MEYieldVault.InitParams","name":"p","type":"tuple"}],"name":"initialize","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"initialized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"listaStakeManager","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"marketingAutoSendThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"marketingWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"overview","outputs":[{"internalType":"address","name":"_listaStakeManager","type":"address"},{"internalType":"uint16","name":"_marketingSharePercent","type":"uint16"},{"internalType":"uint16","name":"_holderSharePercent","type":"uint16"},{"internalType":"uint16","name":"_burnPoolSharePercent","type":"uint16"},{"internalType":"uint256","name":"_vaultBnbBalance","type":"uint256"},{"internalType":"uint256","name":"_totalStakedBnb","type":"uint256"},{"internalType":"uint256","name":"_vaultSlisBalance","type":"uint256"},{"internalType":"uint256","name":"_myPendingHolderDividend","type":"uint256"},{"internalType":"uint256","name":"_myPendingBurnDividend","type":"uint256"},{"internalType":"uint256","name":"_myPendingInviteReward","type":"uint256"},{"internalType":"uint256","name":"_myCumulativeBurned","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingBurnReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingClaim","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingInviteReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingMarketingSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingTaxBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newThreshold","type":"uint256"}],"name":"setAutoStakeThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"newThreshold","type":"uint256"}],"name":"setMarketingAutoSendThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newWallet","type":"address"}],"name":"setMarketingWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"slisBNB","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"stakePendingTax","outputs":[{"internalType":"bool","name":"ok","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"syncMyHolderAccount","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"taxToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalHolderAccumulativeSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalHolderClaimedSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSlisReceived","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalStakedBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"vaultUISchema","outputs":[{"components":[{"internalType":"string","name":"vaultType","type":"string"},{"internalType":"string","name":"description","type":"string"},{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"fieldType","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"}],"internalType":"struct FieldDescriptor[]","name":"inputs","type":"tuple[]"},{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"fieldType","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"}],"internalType":"struct FieldDescriptor[]","name":"outputs","type":"tuple[]"},{"components":[{"internalType":"string","name":"tokenType","type":"string"},{"internalType":"string","name":"amountFieldName","type":"string"}],"internalType":"struct ApproveAction[]","name":"approvals","type":"tuple[]"},{"internalType":"bool","name":"isInputArray","type":"bool"},{"internalType":"bool","name":"isOutputArray","type":"bool"},{"internalType":"bool","name":"isWriteMethod","type":"bool"}],"internalType":"struct VaultMethodSchema[]","name":"methods","type":"tuple[]"}],"internalType":"struct VaultUISchema","name":"schema","type":"tuple"}],"stateMutability":"pure","type":"function"},{"stateMutability":"payable","type":"receive"}]
@@ -2154,8 +2522,8 @@
 
             const labels = Array.from(document.querySelectorAll('#page-stats .text-gray-500'));
             labels.forEach((el) => {
-                if (el.textContent.trim() === 'DividendContract') el.textContent = 'DividendContract';
-                if (el.textContent.trim() === 'ListaStakeManager') el.textContent = 'ListaStakeManager';
+                if (el.textContent.trim() === 'DividendContract') el.textContent = 'HolderDividendContract';
+                if (el.textContent.trim() === 'ListaStakeManager') el.textContent = 'slisBNB';
             });
 
             const heading = document.querySelector('#page-stats h4');
@@ -2172,6 +2540,10 @@
 
         // ==================== 动态地址发现 ====================
         
+        // 【代币替换标记 08 / 动态发现其他合约地址】
+        // 这段会从 Vault 自动读取：
+        // burnDistributor() / slisBNB() / holderEligibilityOracle() / marketingWallet() / holderDividendContract() 等。
+        // 所以下次换项目时，不要在下面手抄一堆地址，先确保 Vault 配对即可。
         async function initializeContractAddresses() {
             try {
                 console.log('[动态地址发现] 开始初始化合约地址...');
@@ -2241,6 +2613,17 @@
         let provider = null;
         let signer = null;
         let userAddress = null;
+        const READONLY_RPC_URL = 'https://bsc-dataseed.binance.org/';
+
+        function ensureReadOnlyProvider(forceRenew = false) {
+            if (walletConnected && window.ethereum && !forceRenew) {
+                return provider;
+            }
+            if (!provider || forceRenew || !(provider instanceof ethers.providers.JsonRpcProvider)) {
+                provider = new ethers.providers.JsonRpcProvider(READONLY_RPC_URL);
+            }
+            return provider;
+        }
 
         // ==================== 代币信息 ====================
         let tokenInfo = {
@@ -2249,8 +2632,12 @@
         };
 
         // 从链上读取代币信息并更新 UI
+        // 【代币替换标记 09 / 链上读取代币符号】
+        // 这里会从 TOKEN.address 读取 symbol，并覆盖顶部 logo 简称与标题。
+        // 如果你想保留前端品牌名（例如品牌叫“生活”，链上 symbol 叫 CLAIM），
+        // 可以只更新 logo，不更新标题，或者直接停用这段覆盖逻辑。
         async function loadTokenInfo() {
-            if (!provider) return;
+            if (!provider) ensureReadOnlyProvider();
             try {
                 const tokenAbi = [
                     {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
@@ -2283,6 +2670,8 @@
         }
 
         // 更新页面上所有代币 symbol 显示
+        // 【代币替换标记 10 / 全站 token-symbol 占位刷新】
+        // 页面里凡是 class="token-symbol" 的位置，都会被这里统一替换。
         function updateTokenSymbolDisplay(symbol) {
             document.querySelectorAll('.token-symbol').forEach(el => {
                 el.textContent = symbol;
@@ -2435,24 +2824,35 @@
 
         // 手动刷新按钮（复用 _isRefreshing 状态）
         async function manualRefresh() {
-            if (!provider) {
-                showToast('请先连接钱包');
-                return;
-            }
             if (_isRefreshing) return;
 
-            // 重置懒加载标记，强制重新加载
+            // 无钱包也允许强制刷新只读数据
+            if (!walletConnected || !window.ethereum) {
+                ensureReadOnlyProvider(true);
+            }
+
+            // 重置懒加载与缓存，真正做一次“强制刷新”
             _communityLoaded = false;
             _statsHeavyLoaded = false;
+            _leaderboardCache = null;
+            _slisPriceCacheTime = 0;
+            _bnbPriceCacheTime = 0;
+            window._addressesInitialized = false;
 
             // 刷新按钮动画
             const btn = document.getElementById('refreshBtn');
-            const icon = document.getElementById('refreshIcon');
             if (btn) btn.classList.add('spinning');
 
             try {
                 await refreshAllData();
-                showToast('数据已更新 ✓');
+                const stamp = new Date();
+                const text = `${String(stamp.getHours()).padStart(2, '0')}:${String(stamp.getMinutes()).padStart(2, '0')}`;
+                const refreshText = document.getElementById('lastRefreshText');
+                if (refreshText) {
+                    refreshText.textContent = `已更新 ${text}`;
+                    refreshText.classList.remove('hidden');
+                }
+                showToast(`已强制刷新 · ${text}`);
             } catch (e) {
                 console.error('手动刷新失败:', e);
                 showToast('刷新失败，请重试');
@@ -2498,25 +2898,67 @@
             return num.toLocaleString('en-US', { maximumFractionDigits: decimals });
         }
 
-        // slisBNB 价格缓存（避免重复请求）
+        // 价格缓存（避免重复请求）
         let slisBNBPrice = 0;
+        let bnbUsdPrice = 0;
         let _slisPriceCacheTime = 0;
+        let _bnbPriceCacheTime = 0;
         const PRICE_CACHE_TTL = 60000; // 价格缓存 60 秒
+
+        async function getBNBPrice() {
+            if (_bnbPriceCacheTime && Date.now() - _bnbPriceCacheTime < PRICE_CACHE_TTL && bnbUsdPrice > 0) {
+                return bnbUsdPrice;
+            }
+            try {
+                try {
+                    const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd', { signal: AbortSignal.timeout(5000) });
+                    const data = await resp.json();
+                    const price = parseFloat(data?.binancecoin?.usd);
+                    if (price > 0) {
+                        bnbUsdPrice = price;
+                        _bnbPriceCacheTime = Date.now();
+                        return bnbUsdPrice;
+                    }
+                } catch { /* fallback */ }
+
+                try {
+                    const resp = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BNBUSDT', { signal: AbortSignal.timeout(5000) });
+                    const data = await resp.json();
+                    const price = parseFloat(data?.price);
+                    if (price > 0) {
+                        bnbUsdPrice = price;
+                        _bnbPriceCacheTime = Date.now();
+                        return bnbUsdPrice;
+                    }
+                } catch { /* fallback */ }
+
+                bnbUsdPrice = 600;
+                _bnbPriceCacheTime = Date.now();
+                return bnbUsdPrice;
+            } catch (e) {
+                console.error('获取 BNB 价格失败:', e);
+                return 600;
+            }
+        }
 
         // 获取 slisBNB 价格（带缓存）
         async function getSlisBNBPrice() {
-            // 缓存命中
             if (_slisPriceCacheTime && Date.now() - _slisPriceCacheTime < PRICE_CACHE_TTL && slisBNBPrice > 0) {
                 return slisBNBPrice;
             }
 
             try {
-                // TODO_CLAIM_SLISBNB: slisBNB 代币地址
-                const SLIS_BNB_ADDRESS = '0x________________SLIS_BNB_ADDRESS___________';
+                const slisAddress = CONTRACTS?.SLIS_BNB?.address;
+                if (!slisAddress || !ethers.utils.isAddress(slisAddress)) {
+                    slisBNBPrice = 652.19;
+                    _slisPriceCacheTime = Date.now();
+                    return slisBNBPrice;
+                }
+
                 try {
-                    const priceResp = await fetch(`https://api.geckoterminal.com/api/v2/simple/networks/bsc/token_price/${SLIS_BNB_ADDRESS}`, { signal: AbortSignal.timeout(5000) });
+                    const priceResp = await fetch(`https://api.geckoterminal.com/api/v2/simple/networks/bsc/token_price/${slisAddress}`, { signal: AbortSignal.timeout(5000) });
                     const priceData = await priceResp.json();
-                    const priceStr = priceData?.data?.attributes?.token_prices?.[SLIS_BNB_ADDRESS.toLowerCase()];
+                    const priceStr = priceData?.data?.attributes?.token_prices?.[slisAddress.toLowerCase()];
                     if (priceStr) {
                         slisBNBPrice = parseFloat(priceStr);
                         _slisPriceCacheTime = Date.now();
@@ -2524,17 +2966,27 @@
                     }
                 } catch { /* fallback */ }
 
-                console.warn('slisBNB 价格获取失败，使用默认价格 652.19 USD');
-                slisBNBPrice = 652.19;
+                const bnbPrice = await getBNBPrice();
+                slisBNBPrice = bnbPrice;
                 _slisPriceCacheTime = Date.now();
-                return 652.19;
+                return slisBNBPrice;
             } catch (e) {
                 console.error('获取 slisBNB 价格失败:', e);
                 return 652.19;
             }
         }
-        
 
+        async function updateGlobalRateDisplay() {
+            try {
+                const [bnbPrice, slisPrice] = await Promise.all([getBNBPrice(), getSlisBNBPrice()]);
+                const bnbRateEl = document.getElementById('bnbUsdRate');
+                const slisRateEl = document.getElementById('slisUsdRate');
+                if (bnbRateEl) bnbRateEl.textContent = `$${bnbPrice.toFixed(2)}`;
+                if (slisRateEl) slisRateEl.textContent = `$${slisPrice.toFixed(2)}`;
+            } catch (e) {
+                console.warn('更新全局汇率失败:', e);
+            }
+        }
 
 
 
@@ -2615,6 +3067,8 @@
                 chainData.myBurnWeight = weight;
 
                 // 概览页
+                // 【代币替换标记 11 / 我的生活持有】
+                // 这里控制总览页里用户代币余额。若 decimals 不是 18，要联动改格式化方式。
                 setText('userTokenBalance', formatCN(parseFloat(ethers.utils.formatEther(userTokenBalance || 0)), 1));
 
                 // 收益页三类可领取摘要 + 各奖励模块
@@ -2865,6 +3319,8 @@
                 // 更新代币符号
                 const burnSymbolEl = document.getElementById('burnTokenSymbol');
                 if (burnSymbolEl) {
+                    // 【代币替换标记 12 / 销毁输入框右侧币种简称】
+                    // 这里显示用户输入销毁数量时右边的代币简称。
                     burnSymbolEl.textContent = tokenInfo.symbol;
                 }
                 
@@ -3064,7 +3520,7 @@
                 }
 
                 if (events.length === 0) {
-                    console.warn(`[燃烧排行榜] 未找到任何销毁事件，显示空状态。当前区块: ${currentBlock}，查询范围: ${ranges.join(', ')}`);
+                    console.warn(`[燃烧排行榜] 未找到任何销毁事件，显示空状态。当前区块: ${currentBlock}`);
                     console.warn('[燃烧排行榜] 可能原因: 1) 合约中尚无销毁事件 2) 事件查询范围不足 3) 事件名称不匹配');
                     leaderboardEl.innerHTML = `
                         <div class="text-center text-gray-400 text-sm py-6">
@@ -3250,7 +3706,7 @@
                     // 同步到收益页燃烧奖励子字段
                     try {
                         const myBurnedEl2 = document.getElementById('myTotalBurnedAmount');
-                        if (myBurnedEl2 && burnedNum > 0) myBurnedEl2.textContent = formatCN(burnedNum, 1) + ' CLAIM';
+                        if (myBurnedEl2 && burnedNum > 0) myBurnedEl2.textContent = formatCN(burnedNum, 1) + ' 生活';
                     } catch(e3) {}
                 }
 
@@ -3666,7 +4122,7 @@
 
                 // 统计 L1 数据
                 let l1TotalReward = 0;   // 下级销毁产生的 L1 返佣总额（slisBNB）
-                let l1TotalBurned = 0;    // 所有直接下级的总销毁量（CLAIM）
+                let l1TotalBurned = 0;    // 所有直接下级的总销毁量（生活）
                 const l1UniqueUsers = new Set(); // 去重后的 L1 邀请人数
                 for (const ev of l1Events) {
                     const reward = parseFloat(ethers.utils.formatEther(ev.args.inviterReward));
@@ -3694,8 +4150,8 @@
                 //   - l1Events.length = L1 下级销毁总次数（可能同一人多次销毁）
                 // 这里显示"人数"用去重值，但保留事件数用于调试
 
-                console.log(`[inviteStats] L1: ${l1UniqueUsers.size} 人/${l1Events.length} 次, 返佣=${l1TotalReward.toFixed(4)} CLAIM, 销毁=${l1TotalBurned.toFixed(0)} CLAIM`);
-                console.log(`[inviteStats] L2: ${l2UniqueUsers.size} 人/${l2Events.length} 次, 返佣=${l2TotalReward.toFixed(4)} CLAIM, 销毁=${l2TotalBurned.toFixed(0)} CLAIM`);
+                console.log(`[inviteStats] L1: ${l1UniqueUsers.size} 人/${l1Events.length} 次, 返佣=${l1TotalReward.toFixed(4)} 生活, 销毁=${l1TotalBurned.toFixed(0)} 生活`);
+                console.log(`[inviteStats] L2: ${l2UniqueUsers.size} 人/${l2Events.length} 次, 返佣=${l2TotalReward.toFixed(4)} 生活, 销毁=${l2TotalBurned.toFixed(0)} 生活`);
 
                 // ====== 更新 DOM ======
 
@@ -3721,7 +4177,7 @@
                         `近28天 L1 返佣: ${l1TotalReward.toFixed(4)} slisBNB\n` +
                         `L1 下级人数: ${l1UniqueUsers.size} 人\n` +
                         `L1 下级销毁次数: ${l1Events.length} 次\n` +
-                        `L1 下级总销毁量: ${l1TotalBurned.toFixed(0)} CLAIM\n` +
+                        `L1 下级总销毁量: ${l1TotalBurned.toFixed(0)} 生活\n` +
                         `(比例: 直接下级销毁额的10%)`;
                 }
 
@@ -3732,7 +4188,7 @@
                         `近28天 L2 返佣: ${l2TotalReward.toFixed(4)} slisBNB\n` +
                         `L2 下级人数: ${l2UniqueUsers.size} 人\n` +
                         `L2 下级销毁次数: ${l2Events.length} 次\n` +
-                        `L2 下级总销毁量: ${l2TotalBurned.toFixed(0)} CLAIM\n` +
+                        `L2 下级总销毁量: ${l2TotalBurned.toFixed(0)} 生活\n` +
                         `(比例: 间接下级销毁额的5%)`;
                 }
 
@@ -4134,6 +4590,7 @@
 
                 // 价格预取（不阻塞）
                 getSlisBNBPrice().catch(() => {});
+                getBNBPrice().catch(() => {});
 
                 // 第一波回来就更新 UI！
                 CURRENT_TOTAL_BURN = parseFloat(ethers.utils.formatEther(chainData.totalBurned || 0));
@@ -4153,28 +4610,32 @@
                     }
                 }
                 
-                // 2. 总质押价值（BNB）和 slisBNB 数量
+                // 2. 金库主数字：只显示总质押 BNB；下方三列展示真实拆分
                 const totalStakedValueEl = document.getElementById('totalStakedValue');
-                const totalSlisAmountEl = document.getElementById('totalSlisAmount');
-                
-                // 显示总质押价值（BNB）
+                const overviewVaultBnbEl = document.getElementById('overviewVaultBnb');
+                const overviewTotalStakedBnbEl = document.getElementById('overviewTotalStakedBnb');
+                const overviewVaultSlisBnbEl = document.getElementById('overviewVaultSlisBnb');
+                const hasStakedBnb = chainData.totalStakedBNB !== undefined && chainData.totalStakedBNB !== null;
+                const bnbAmount = hasStakedBnb ? parseFloat(ethers.utils.formatEther(chainData.totalStakedBNB)) : null;
+                const vaultBnbAmount = chainData.vaultBnbBalance !== undefined && chainData.vaultBnbBalance !== null
+                    ? parseFloat(ethers.utils.formatEther(chainData.vaultBnbBalance))
+                    : null;
+                const vaultSlisAmount = chainData.vaultSlisBalance !== undefined && chainData.vaultSlisBalance !== null
+                    ? parseFloat(ethers.utils.formatEther(chainData.vaultSlisBalance))
+                    : null;
+
                 if (totalStakedValueEl) {
-                    if (chainData.totalStakedBNB !== undefined && chainData.totalStakedBNB !== null) {
-                        const bnbAmount = parseFloat(ethers.utils.formatEther(chainData.totalStakedBNB));
-                        totalStakedValueEl.textContent = formatCN(bnbAmount, 2);
-                    } else {
-                        totalStakedValueEl.textContent = '--';
-                    }
+                    totalStakedValueEl.textContent = hasStakedBnb ? `${formatCN(bnbAmount, 4)} BNB` : '-- BNB';
                 }
-                
-                // 显示 slisBNB 数量
-                if (totalSlisAmountEl) {
-                    if (chainData.totalSlisReceived !== undefined && chainData.totalSlisReceived !== null) {
-                        const slisAmount = parseFloat(ethers.utils.formatEther(chainData.totalSlisReceived));
-                        totalSlisAmountEl.textContent = `≈ ${formatCN(slisAmount, 2)} slisBNB`;
-                    } else {
-                        totalSlisAmountEl.textContent = '≈ -- slisBNB';
-                    }
+
+                if (overviewVaultBnbEl) {
+                    overviewVaultBnbEl.textContent = vaultBnbAmount !== null ? `${formatCN(vaultBnbAmount, 4)} BNB` : '--';
+                }
+                if (overviewTotalStakedBnbEl) {
+                    overviewTotalStakedBnbEl.textContent = hasStakedBnb ? `${formatCN(bnbAmount, 4)} BNB` : '--';
+                }
+                if (overviewVaultSlisBnbEl) {
+                    overviewVaultSlisBnbEl.textContent = vaultSlisAmount !== null ? `${formatCN(vaultSlisAmount, 4)} slisBNB` : '--';
                 }
 
                 console.log(`[perf] 首屏数据 ${(performance.now() - t0).toFixed(0)}ms`);
@@ -4350,15 +4811,15 @@
         function showPage(pageName) {
             console.log('[showPage] 切换到:', pageName);
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.bottom-nav-item, .top-pill-item, .top-merge-item, .top-merge-burn').forEach(b => b.classList.remove('active'));
 
             const page = document.getElementById('page-' + pageName);
             console.log('[showPage] 页面元素:', page ? '找到' : '未找到', '#page-' + pageName);
             if (page) page.classList.add('active');
 
-            const navBtn = document.querySelector(`[data-page="${pageName}"]`);
-            console.log('[showPage] 导航按钮:', navBtn ? '找到' : '未找到');
-            if (navBtn) navBtn.classList.add('active');
+            const navBtns = document.querySelectorAll(`[data-page="${pageName}"]`);
+            console.log('[showPage] 导航按钮数量:', navBtns.length);
+            navBtns.forEach(btn => btn.classList.add('active'));
 
             // 懒加载：切换到社区页时才请求社区数据
             if (pageName === 'community') {
@@ -4406,9 +4867,11 @@
             const l2 = amount * 0.05;
             const burn = amount * 0.85;
 
-            document.getElementById('previewBurn').textContent = burn.toLocaleString() + ' CLAIM';
-            document.getElementById('previewL1').textContent = l1.toLocaleString() + ' CLAIM';
-            document.getElementById('previewL2').textContent = l2.toLocaleString() + ' CLAIM';
+            // 【代币替换标记 13 / 销毁预览的品牌词】
+            // 这里目前仍写死了“生活”。下次复用模板时，建议统一换成 tokenInfo.name 或独立 BRAND.name。
+            document.getElementById('previewBurn').textContent = burn.toLocaleString() + ' 生活';
+            document.getElementById('previewL1').textContent = l1.toLocaleString() + ' 生活';
+            document.getElementById('previewL2').textContent = l2.toLocaleString() + ' 生活';
         }
 
         // 公告系统使用的全局变量（由 refreshAllData 更新）
@@ -4418,17 +4881,17 @@
         // 公告配置
         const ANNOUNCEMENTS = {
             milestones: [
-                { threshold: 1000000, title: "首个百万销毁", message: "社区共同达成首个100万CLAIM销毁里程碑！" },
-                { threshold: 5000000, title: "五百万销毁", message: "销毁量突破500万CLAIM，通缩效应显著增强！" },
-                { threshold: 10000000, title: "千万销毁", message: "历史性时刻！总销毁量突破1000万CLAIM！" }
+                { threshold: 1000000, title: "首个百万销毁", message: "社区共同达成首个100万生活销毁里程碑！" },
+                { threshold: 5000000, title: "五百万销毁", message: "销毁量突破500万生活，通缩效应显著增强！" },
+                { threshold: 10000000, title: "千万销毁", message: "历史性时刻！总销毁量突破1000万生活！" }
             ],
             dailyMilestones: [
-                { threshold: 10000, title: "日销毁破万", message: "今日销毁量突破10,000 CLAIM" },
-                { threshold: 50000, title: "日销毁五万", message: "今日销毁量突破50,000 CLAIM" },
-                { threshold: 100000, title: "日销毁十万", message: "今日销毁量突破100,000 CLAIM" }
+                { threshold: 10000, title: "日销毁破万", message: "今日销毁量突破10,000 生活" },
+                { threshold: 50000, title: "日销毁五万", message: "今日销毁量突破50,000 生活" },
+                { threshold: 100000, title: "日销毁十万", message: "今日销毁量突破100,000 生活" }
             ],
             manual: [
-                { title: "欢迎来到CLAIM", message: "这是基于 BSC 链的 DeFi 金库页面，提供项目 slisBNB 分红、官方 WBNB/BNB 分红、销毁奖励和邀请奖励。", date: "2026-04-21", isNew: true }
+                { title: "欢迎来到生活", message: "这是基于 BSC 链的 DeFi 金库页面，提供项目 slisBNB 分红、官方 WBNB/BNB 分红、销毁奖励和邀请奖励。", date: "2026-04-21", isNew: true }
             ]
         };
 
@@ -4521,12 +4984,14 @@
 
                 const addrMap = {
                     contractVaultAddr: CONTRACTS.VAULT.address,
+                    // 【代币替换标记 14 / 合约信息区里的 Token 地址】
+                    // 这里用于页面底部核对当前前端是否已经连到新代币。
                     contractTokenAddr: CONTRACTS.TOKEN.address,
-                    contractLensAddr: CONTRACTS.DIVIDEND.address || '--',
+                    contractDividendAddr: CONTRACTS.DIVIDEND.address || '--',
                     contractBurnDistAddr: CONTRACTS.BURN_DISTRIBUTOR.address || '--',
                     contractOracleAddr: CONTRACTS.HOLDER_ELIGIBILITY_ORACLE.address || '--',
-                    contractTrackerAddr: CONTRACTS.LISTA_STAKE_MANAGER.address || '--',
-                    contractMultisigAddr: CONTRACTS.MULTISIG.address || '--'
+                    contractSlisAddr: CONTRACTS.SLIS_BNB.address || '--',
+                    contractMarketingAddr: CONTRACTS.MULTISIG.address || '--'
                 };
                 Object.entries(addrMap).forEach(([id, value]) => {
                     const el = document.getElementById(id);
@@ -4589,8 +5054,7 @@
                 const slisBalEl = document.getElementById('marketingSlisBalance');
                 const bnbBalEl = document.getElementById('marketingBnbBalance');
 
-                // BNB 价格（固定近似，可后续接入真实 API）
-                const bnbPrice = 600; // 近似值
+                const bnbPrice = await getBNBPrice();
 
                 if (slisEl && slisBalEl && slisBalEl.textContent !== '--') {
                     const slisVal = parseFloat(slisBalEl.textContent.replace(/,/g, '')) || 0;
@@ -4845,7 +5309,7 @@
                 if (inviter === ethers.constants.AddressZero) {
                     const confirmContinue = confirm(
                         '⚠️ 您未填写邀请人地址！\n\n' +
-                        '销毁时将不产生任何 CLAIM 邀请奖励返佣。\n' +
+                        '销毁时将不产生任何生活邀请奖励返佣。\n' +
                         '一旦销毁，如果后续绑定上级，之前的销毁记录不会补发返佣。\n\n' +
                         '是否继续销毁？'
                     );
@@ -5047,10 +5511,14 @@
                     }).catch(() => {});
 
                     provider = new ethers.providers.Web3Provider(window.ethereum);
+                    // 【代币替换标记 15 / 页面初始化时同步 token 信息】
+                    // 如果你不想顶部标题被链上 symbol 改写，可从这里调整调用方式。
                     loadTokenInfo();
                     refreshAllData();
                 } else {
+                    ensureReadOnlyProvider();
                     loadTokenInfo();
+                    refreshAllData();
                 }
             } catch (error) {
                 console.error('页面初始化失败:', error);

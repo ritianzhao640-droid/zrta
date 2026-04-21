@@ -1,0 +1,33 @@
+这版 index.html 已加入“代币替换标记 01-15”，下次换币时优先看这些位置：
+
+01 页面标题
+02 SEO / 分享描述
+03 左上角 Logo 简称
+04 顶部项目标题
+05 合约常量区总入口
+06 TOKEN 主配置（地址、symbol、name、decimals、ABI）
+07 VAULT 主配置（地址、ABI）
+08 通过 Vault 动态发现其余合约地址
+09 是否用链上 symbol 覆盖前端标题/Logo
+10 页面里 token-symbol 统一替换
+11 用户代币余额展示
+12 销毁输入框右侧币种简称
+13 销毁预览中的品牌名（这里仍有“生活”硬编码）
+14 页面底部合约信息区里的 Token 地址
+15 页面启动时 loadTokenInfo() 调用点
+
+下次发新币最少要改：
+- CONTRACTS.TOKEN.address
+- CONTRACTS.TOKEN.symbol
+- CONTRACTS.TOKEN.name
+- CONTRACTS.TOKEN.decimals
+- CONTRACTS.TOKEN.abi
+- CONTRACTS.VAULT.address
+- CONTRACTS.VAULT.abi
+
+如果品牌名不再叫“生活”，还要额外全局检查文案里的“生活”硬编码。
+尤其注意：
+- 销毁预览
+- 邀请奖励说明
+- SEO 描述
+- 页面标题
