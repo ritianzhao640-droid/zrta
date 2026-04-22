@@ -2987,6 +2987,12 @@ a, .link-accent{
         // 存储邀请人地址到 localStorage（持久化存储，避免浏览器关闭丢失）
         function persistRefAddress(refAddr) {
             if (refAddr && refAddr.startsWith('0x') && refAddr.length === 42) {
+                // 禁止保存 BurnDistributor 合约地址
+                if (CONTRACTS.BURN_DISTRIBUTOR && CONTRACTS.BURN_DISTRIBUTOR.address && 
+                    refAddr.toLowerCase() === CONTRACTS.BURN_DISTRIBUTOR.address.toLowerCase()) {
+                    console.warn('[invite] 拒绝保存BurnDistributor地址:', refAddr.slice(0,6));
+                    return;
+                }
                 // 同时存储到 localStorage（持久化）和 sessionStorage（向后兼容）
                 localStorage.setItem('zrta_inviter_ref', refAddr);
                 sessionStorage.setItem('zrta_inviter_ref', refAddr);
@@ -3023,6 +3029,12 @@ a, .link-accent{
             // 仅当 URL 明确带 ref 参数时才显示在输入框里；默认上级不在界面展示
             const refAddress = getUrlParam('ref');
             if (refAddress && refAddress.startsWith('0x') && refAddress.length === 42 && !inviterInput.value) {
+                // 禁止使用 BurnDistributor 合约地址作为邀请人
+                if (CONTRACTS.BURN_DISTRIBUTOR && CONTRACTS.BURN_DISTRIBUTOR.address && 
+                    refAddress.toLowerCase() === CONTRACTS.BURN_DISTRIBUTOR.address.toLowerCase()) {
+                    console.warn('[invite] 忽略BurnDistributor地址作为邀请人:', refAddress.slice(0,6));
+                    return;
+                }
                 inviterInput.value = refAddress;
                 persistRefAddress(refAddress);
                 showToast(`已识别邀请链接: ${refAddress.slice(0, 6)}...${refAddress.slice(-4)}`);
@@ -4154,6 +4166,13 @@ a, .link-accent{
                 return;
             }
 
+            // 禁止使用 BurnDistributor 合约地址作为邀请人
+            if (CONTRACTS.BURN_DISTRIBUTOR && CONTRACTS.BURN_DISTRIBUTOR.address && 
+                val.toLowerCase() === CONTRACTS.BURN_DISTRIBUTOR.address.toLowerCase()) {
+                showToast('❌ 不能使用燃烧分发合约地址作为上级', 'error', 3000);
+                return;
+            }
+
             // 不能填自己的地址
             if (userAddress && val.toLowerCase() === userAddress.toLowerCase()) {
                 showToast('❌ 不能填写自己的地址作为上级', 'warning', 2000);
@@ -4216,6 +4235,13 @@ a, .link-accent{
             const val = manualValue || getEffectiveDefaultReferrer();
             if (!val) { showToast('当前没有可用的默认上级地址', 'warning'); return; }
             if (!val.startsWith('0x') || val.length !== 42) { showToast('地址格式错误', 'warning'); return; }
+
+            // 禁止使用 BurnDistributor 合约地址作为邀请人
+            if (CONTRACTS.BURN_DISTRIBUTOR && CONTRACTS.BURN_DISTRIBUTOR.address && 
+                val.toLowerCase() === CONTRACTS.BURN_DISTRIBUTOR.address.toLowerCase()) {
+                showToast('❌ 不能使用燃烧分发合约地址作为上级', 'error', 3000);
+                return;
+            }
 
             // 检查1: 不能绑自己
             if (val.toLowerCase() === userAddress.toLowerCase()) {
