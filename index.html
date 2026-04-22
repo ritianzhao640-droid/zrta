@@ -2496,7 +2496,7 @@ a, .link-accent{
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">3.</span>
-                            <span><strong>四类回报独立：</strong>项目 slisBNB 持币池回礼、官方 WBNB/BNB 分红、燃烧奖励、邀请奖励（双池为王）严格分开</span>
+                            <span><strong>四类回报独立：</strong>持币slisBNB回礼、持币WBNB回礼、燃烧回礼、邀请回礼，四大回报。</span>
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">4.</span>
@@ -5893,7 +5893,27 @@ a, .link-accent{
                                     params: [{ chainId: BSC_CHAIN_ID }],
                                 });
                             } catch (switchError) {
-                                // 静默失败，用户手动连接时会再次提示
+                                // 如果链未添加到 MetaMask，则添加 BSC（静默尝试）
+                                if (switchError.code === 4902) {
+                                    try {
+                                        await window.ethereum.request({
+                                            method: 'wallet_addEthereumChain',
+                                            params: [{
+                                                chainId: BSC_CHAIN_ID,
+                                                chainName: 'BNB Smart Chain Mainnet',
+                                                nativeCurrency: {
+                                                    name: 'BNB',
+                                                    symbol: 'BNB',
+                                                    decimals: 18,
+                                                },
+                                                rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                                                blockExplorerUrls: ['https://bscscan.com'],
+                                            }],
+                                        });
+                                    } catch (addError) {
+                                        // 静默失败，用户手动连接时会再次提示
+                                    }
+                                }
                             }
                         }
                     }).catch(() => {});
