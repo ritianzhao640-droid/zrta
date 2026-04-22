@@ -8,13 +8,13 @@
     <meta http-equiv="Expires" content="0">
     <!-- 【代币替换标记 01 / 页面品牌名】
          这里是浏览器标签页标题。发新币时可直接改成新品牌名。 -->
-    <title>生活小院</title>
+    <title>双池为王</title>
     <!-- 【代币替换标记 02 / SEO 文案】
          这里是分享卡片和搜索摘要里的项目描述。换新项目时建议一并改掉旧币名。 -->
-    <meta name="description" content="生活小院 - 把回报轻轻收进日常里的链上小院。">
-    <meta name="keywords" content="DeFi, BSC, 质押, 分红, 销毁奖励, 邀请奖励, 生活代币">
-    <meta property="og:title" content="生活">
-    <meta property="og:description" content="生活小院 - 温柔、轻盈、有生活气息的链上小院">
+    <meta name="description" content="双池为王 - 把回报轻轻收进日常里的链上小院。">
+    <meta name="keywords" content="DeFi, BSC, 双池为王, 双池, 质押, 分红, 销毁奖励, 邀请奖励">
+    <meta property="og:title" content="双池为王">
+    <meta property="og:description" content="双池为王 - 双池共振、双向聚势、双份回响的链上页面">
     <meta property="og:url" content="https://zrta.asia">
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://zrta.asia">
@@ -457,7 +457,7 @@
             border-radius: 12px;
         }
 
-        /* 机制说明卡片 — 深色粉绿氛围 */
+        /* 双池运作卡片 — 深色粉绿氛围 */
         .mechanism-card {
             background: linear-gradient(135deg, rgba(253, 242, 248, 1) 0%, rgba(220, 252, 231, 1) 100%);
             backdrop-filter: blur(12px);
@@ -1485,6 +1485,267 @@
             }
         }
 
+
+/* ===== 双池为王 · 主题覆写开始 ===== */
+:root{
+    --dp-gold-1:#f6d77a;
+    --dp-gold-2:#d9a93b;
+    --dp-gold-3:#b78317;
+    --dp-blue-1:#0f2c5c;
+    --dp-blue-2:#184a9c;
+    --dp-blue-3:#38bdf8;
+    --dp-cream:#fff9eb;
+    --dp-soft:#f6f8ff;
+    --dp-ink:#10213f;
+}
+body{
+    background:
+      radial-gradient(circle at top left, rgba(246,215,122,0.18), transparent 28%),
+      radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 30%),
+      linear-gradient(180deg, #fffdf8 0%, #f7f9ff 45%, #fdfcf7 100%) !important;
+    color: var(--dp-ink);
+}
+.gradient-green{
+    background: linear-gradient(135deg, var(--dp-gold-1) 0%, var(--dp-gold-2) 45%, var(--dp-gold-3) 100%) !important;
+}
+.gradient-pink{
+    background: linear-gradient(135deg, var(--dp-blue-1) 0%, var(--dp-blue-2) 50%, var(--dp-blue-3) 100%) !important;
+}
+.gradient-green-text{
+    background: linear-gradient(135deg, var(--dp-gold-2) 0%, var(--dp-gold-3) 100%) !important;
+    -webkit-background-clip:text !important;
+    -webkit-text-fill-color:transparent !important;
+    background-clip:text !important;
+    color:transparent !important;
+}
+.gradient-pink-text{
+    background: linear-gradient(135deg, var(--dp-blue-2) 0%, var(--dp-blue-3) 100%) !important;
+    -webkit-background-clip:text !important;
+    -webkit-text-fill-color:transparent !important;
+    background-clip:text !important;
+    color:transparent !important;
+}
+.glass-header{
+    background: rgba(255, 251, 241, 0.88) !important;
+    border-bottom: 1.5px solid rgba(183,131,23,0.16) !important;
+    box-shadow: 0 2px 24px rgba(15,44,92,0.08), 0 1px 4px rgba(183,131,23,0.09) !important;
+}
+.life-card-soft,.card{
+    background: rgba(255,255,255,0.88) !important;
+    border: 1px solid rgba(217,169,59,0.12) !important;
+    box-shadow: 0 12px 34px rgba(15,44,92,0.06), 0 4px 18px rgba(217,169,59,0.08) !important;
+}
+.life-hero{
+    background:
+      radial-gradient(circle at top left, rgba(246,215,122,0.18), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(56,189,248,0.10), transparent 30%),
+      linear-gradient(135deg, rgba(255,248,228,0.95) 0%, rgba(250,252,255,0.96) 55%, rgba(245,248,255,0.98) 100%) !important;
+}
+.btn-primary{
+    background: linear-gradient(135deg, var(--dp-blue-1) 0%, var(--dp-blue-2) 32%, var(--dp-gold-2) 68%, var(--dp-gold-3) 100%) !important;
+    box-shadow: 0 8px 24px rgba(15,44,92,0.20), 0 4px 16px rgba(183,131,23,0.18) !important;
+}
+.btn-primary:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(15,44,92,0.24), 0 6px 20px rgba(183,131,23,0.22) !important;
+}
+.btn-refresh{
+    background: linear-gradient(135deg, rgba(255,249,231,0.98) 0%, rgba(242,248,255,0.98) 100%) !important;
+    border: 1.5px solid rgba(183,131,23,0.20) !important;
+    box-shadow: 0 4px 14px rgba(15,44,92,0.08), inset 0 1px 0 rgba(255,255,255,0.75) !important;
+    color: var(--dp-blue-1) !important;
+}
+.refresh-sun{
+    background: radial-gradient(circle at 30% 30%, #ffe7a6 0%, #e7b84a 55%, #b78317 100%) !important;
+    box-shadow: 0 0 10px rgba(217,169,59,0.45) !important;
+}
+.life-mini-kpi{
+    background: linear-gradient(180deg, rgba(255,252,245,0.96), rgba(247,250,255,0.96)) !important;
+    border: 1px solid rgba(183,131,23,0.12) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 10px 24px rgba(15,44,92,0.04) !important;
+}
+.life-mini-kpi-label{ color:#8f6a13 !important; }
+.reward-summary-sub,.text-gray-400,.text-gray-500{ color:#6f7590 !important; }
+.text-gray-800,.text-gray-900{ color:var(--dp-ink) !important; }
+.text-mint-600,.text-green-600,.text-green-500{ color: var(--dp-gold-3) !important; }
+.text-pink-600,.text-pink-500,.text-rose-500{ color: var(--dp-blue-2) !important; }
+.bg-mint-50,.bg-green-50{
+    background: rgba(255,248,228,0.86) !important;
+}
+.bg-pink-50,.bg-rose-50{
+    background: rgba(237,245,255,0.92) !important;
+}
+.border-pink-100,.border-rose-100,.border-pink-200,.border-gray-200{
+    border-color: rgba(183,131,23,0.12) !important;
+}
+.nav-pill.active, .top-merge-nav .nav-pill.active{
+    background: linear-gradient(135deg, rgba(15,44,92,0.94), rgba(24,74,156,0.94)) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 18px rgba(15,44,92,0.18) !important;
+}
+.top-merge-nav{
+    border-top: 1px solid rgba(183,131,23,0.14) !important;
+}
+.top-merge-nav .nav-pill{
+    background: rgba(255,249,237,0.86) !important;
+    color: #5f6478 !important;
+    border: 1px solid rgba(183,131,23,0.10) !important;
+}
+.top-merge-nav .nav-pill.center-action{
+    background: linear-gradient(135deg, var(--dp-gold-1), var(--dp-gold-3)) !important;
+    color: #3a2a06 !important;
+    box-shadow: 0 10px 18px rgba(183,131,23,0.24) !important;
+}
+.input-field{
+    border: 1px solid rgba(183,131,23,0.18) !important;
+    background: rgba(255,255,255,0.88) !important;
+    box-shadow: inset 0 1px 2px rgba(15,44,92,0.03) !important;
+}
+.input-field:focus{
+    border-color: rgba(24,74,156,0.38) !important;
+    box-shadow: 0 0 0 4px rgba(56,189,248,0.12) !important;
+}
+a, .link-accent{
+    color: var(--dp-blue-2) !important;
+}
+.section-chip, .badge-soft{
+    background: rgba(255,248,228,0.85) !important;
+    color: #865f0e !important;
+    border: 1px solid rgba(183,131,23,0.10) !important;
+}
+/* ===== 双池为王 · 主题覆写结束 ===== */
+
+/* ===== 双池为王 · 高级柔和版主题覆写开始 ===== */
+:root{
+    --dp-gold-1:#ead9b6;
+    --dp-gold-2:#cfb07a;
+    --dp-gold-3:#9f7c46;
+    --dp-blue-1:#24384f;
+    --dp-blue-2:#5b728d;
+    --dp-blue-3:#8aa3b5;
+    --dp-cream:#fbf7ef;
+    --dp-soft:#f6f7f8;
+    --dp-ink:#2c3442;
+    --dp-mist:#eef2f4;
+}
+body{
+    background:
+      radial-gradient(circle at top left, rgba(234,217,182,0.18), transparent 28%),
+      radial-gradient(circle at top right, rgba(138,163,181,0.10), transparent 30%),
+      linear-gradient(180deg, #fcfaf6 0%, #f6f7f8 48%, #fbf8f2 100%) !important;
+    color: var(--dp-ink) !important;
+}
+.gradient-green{
+    background: linear-gradient(135deg, #dbc79f 0%, #c8a76b 48%, #9a7541 100%) !important;
+}
+.gradient-pink{
+    background: linear-gradient(135deg, #32465e 0%, #5d738a 55%, #8ea7b9 100%) !important;
+}
+.gradient-green-text{
+    background: linear-gradient(135deg, #be9a60 0%, #8f6d3f 100%) !important;
+    -webkit-background-clip:text !important;
+    -webkit-text-fill-color:transparent !important;
+    background-clip:text !important;
+    color:transparent !important;
+}
+.gradient-pink-text{
+    background: linear-gradient(135deg, #4c6278 0%, #829bac 100%) !important;
+    -webkit-background-clip:text !important;
+    -webkit-text-fill-color:transparent !important;
+    background-clip:text !important;
+    color:transparent !important;
+}
+.glass-header{
+    background: rgba(252,249,243,0.90) !important;
+    border-bottom: 1px solid rgba(159,124,70,0.12) !important;
+    box-shadow: 0 4px 22px rgba(44,52,66,0.05), 0 1px 6px rgba(159,124,70,0.06) !important;
+}
+.life-card-soft,.card{
+    background: rgba(255,255,255,0.84) !important;
+    border: 1px solid rgba(159,124,70,0.08) !important;
+    box-shadow: 0 10px 30px rgba(44,52,66,0.04), 0 2px 10px rgba(159,124,70,0.05) !important;
+    backdrop-filter: blur(10px);
+}
+.life-hero{
+    background:
+      radial-gradient(circle at top left, rgba(234,217,182,0.14), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(138,163,181,0.08), transparent 30%),
+      linear-gradient(135deg, rgba(251,248,241,0.95) 0%, rgba(247,248,249,0.96) 58%, rgba(248,245,239,0.98) 100%) !important;
+}
+.btn-primary{
+    background: linear-gradient(135deg, #42556f 0%, #647b92 44%, #c7a56d 76%, #9b7846 100%) !important;
+    box-shadow: 0 10px 22px rgba(66,85,111,0.16), 0 4px 12px rgba(159,124,70,0.14) !important;
+}
+.btn-primary:hover{
+    box-shadow: 0 12px 28px rgba(66,85,111,0.18), 0 6px 16px rgba(159,124,70,0.15) !important;
+}
+.btn-refresh{
+    background: linear-gradient(135deg, rgba(251,248,241,0.98) 0%, rgba(243,245,247,0.98) 100%) !important;
+    border: 1px solid rgba(159,124,70,0.14) !important;
+    box-shadow: 0 4px 14px rgba(44,52,66,0.05), inset 0 1px 0 rgba(255,255,255,0.75) !important;
+    color: #43556d !important;
+}
+.refresh-sun{
+    background: radial-gradient(circle at 30% 30%, #f1e3c5 0%, #cbad76 55%, #9f7c46 100%) !important;
+    box-shadow: 0 0 10px rgba(203,173,118,0.28) !important;
+}
+.life-mini-kpi{
+    background: linear-gradient(180deg, rgba(255,253,249,0.96), rgba(246,247,248,0.96)) !important;
+    border: 1px solid rgba(159,124,70,0.08) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 8px 20px rgba(44,52,66,0.03) !important;
+}
+.life-mini-kpi-label{ color:#8e734a !important; letter-spacing: .02em; }
+.reward-summary-sub,.text-gray-400,.text-gray-500{ color:#7d8793 !important; }
+.text-gray-800,.text-gray-900{ color:#2c3442 !important; }
+.text-mint-600,.text-green-600,.text-green-500{ color: #9f7c46 !important; }
+.text-pink-600,.text-pink-500,.text-rose-500{ color: #5b728d !important; }
+.bg-mint-50,.bg-green-50{
+    background: rgba(250,246,237,0.88) !important;
+}
+.bg-pink-50,.bg-rose-50{
+    background: rgba(239,243,246,0.92) !important;
+}
+.border-pink-100,.border-rose-100,.border-pink-200,.border-gray-200{
+    border-color: rgba(159,124,70,0.10) !important;
+}
+.nav-pill.active, .top-merge-nav .nav-pill.active{
+    background: linear-gradient(135deg, #4b6078, #6f859b) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 16px rgba(66,85,111,0.14) !important;
+}
+.top-merge-nav{
+    border-top: 1px solid rgba(159,124,70,0.10) !important;
+}
+.top-merge-nav .nav-pill{
+    background: rgba(251,248,241,0.88) !important;
+    color: #6d7380 !important;
+    border: 1px solid rgba(159,124,70,0.08) !important;
+}
+.top-merge-nav .nav-pill.center-action{
+    background: linear-gradient(135deg, #dfcfaf, #b8945d) !important;
+    color: #453116 !important;
+    box-shadow: 0 8px 18px rgba(159,124,70,0.18) !important;
+}
+.input-field{
+    border: 1px solid rgba(159,124,70,0.14) !important;
+    background: rgba(255,255,255,0.88) !important;
+    box-shadow: inset 0 1px 2px rgba(44,52,66,0.02) !important;
+}
+.input-field:focus{
+    border-color: rgba(91,114,141,0.28) !important;
+    box-shadow: 0 0 0 4px rgba(138,163,181,0.10) !important;
+}
+a, .link-accent{
+    color: #5a718b !important;
+}
+.section-chip, .badge-soft{
+    background: rgba(250,246,237,0.88) !important;
+    color: #8a6d40 !important;
+    border: 1px solid rgba(159,124,70,0.08) !important;
+}
+/* ===== 双池为王 · 高级柔和版主题覆写结束 ===== */
+
+
 </style>
 </head>
 <body class="text-gray-900 nav-a-mobile">
@@ -1496,21 +1757,21 @@
                     <div class="w-9 h-9 rounded-xl gradient-green flex items-center justify-center shadow-lg shadow-green-500/25 flex-shrink-0">
                         <!-- 【代币替换标记 03 / 左上角 Logo 简称】
                              默认占位会在 loadTokenInfo() 后被链上 symbol 覆盖。 -->
-                        <span id="tokenLogoSymbol" class="text-white font-bold text-[11px] tracking-[0.08em]">生活</span>
+                        <span id="tokenLogoSymbol" class="text-white font-bold text-[11px] tracking-[0.08em]">双池</span>
                     </div>
                     <!-- 【代币替换标记 04 / 顶部项目标题】
                          当前是前端展示品牌名，不一定等于链上 symbol。 -->
-                    <span id="appTitle" class="font-bold text-lg gradient-green-text">生活小院</span>
+                    <span id="appTitle" class="font-bold text-lg gradient-green-text">双池为王</span>
                 </div>
                 <div class="header-actions flex items-center gap-2">
-                    <button id="refreshBtn" onclick="manualRefresh()" class="btn-refresh" title="轻轻更新一下链上节奏">
+                    <button id="refreshBtn" onclick="manualRefresh()" class="btn-refresh" title="同步节奏一下链上节奏">
                         <span class="refresh-sun" aria-hidden="true"></span>
                         <svg id="refreshIcon" class="refresh-leaf" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M8 14c0-4.4 3.1-7.7 8.2-8.9.4 5.7-2 10.2-6.6 11.8"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M8.4 13.8c1.8-.2 3.1.4 4.2 1.7"></path>
                         </svg>
                     </button>
-                    <span id="lastRefreshText" class="refresh-caption hidden sm:inline">轻轻更新</span>
+                    <span id="lastRefreshText" class="refresh-caption hidden sm:inline">同步节奏</span>
                     <button id="walletBtn" onclick="toggleWallet()" class="px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5">
                         <span id="walletText">连接钱包</span>
                         <span id="walletSlisDisplay" class="hidden text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full font-medium">--</span>
@@ -1552,10 +1813,10 @@
                         <div class="max-w-full sm:max-w-[78%]">
                             <div class="life-badge mb-3">
                                 <span>☀️</span>
-                                <span>生活主页 · 晨光 / 空气 / 生长感</span>
+                                <span>双池主场 · 双引擎 / 双回响 / 双增长</span>
                             </div>
                             <h2 class="text-[28px] leading-[1.12] font-bold text-[#2e4638] tracking-[-0.03em]">把日常的节奏，<br>变成会生长的收益</h2>
-                            <p class="mt-3 text-sm leading-6 life-soft-text">在这里看看今天的节奏，也看看生活慢慢长出的回响。</p>
+                            <p class="mt-3 text-sm leading-6 life-soft-text">在这里看看两条收益池如何一起运转，也看看今天长出了多少真实回响。</p>
                         </div>
                         <div class="hidden sm:flex life-mini-label mt-1">
                             <span>🌿</span>
@@ -1565,32 +1826,32 @@
 
                     <div class="life-stat-card">
                         <div class="flex items-center justify-between gap-3 mb-3">
-                            <span class="text-[13px] text-[#7a8b7f] font-medium">金库正在慢慢长大</span>
-                            <span class="life-mini-label"><span>🏡</span><span>生活金库</span></span>
+                            <span class="text-[13px] text-[#7a8b7f] font-medium">双池正在一起长大</span>
+                            <span class="life-mini-label"><span>🏡</span><span>双池金库</span></span>
                         </div>
                         <div class="mt-4 grid grid-cols-3 gap-2 home-kpi-compact">
                             <div class="rounded-2xl bg-white/65 border border-white/80 p-3 backdrop-blur">
-                                <div class="text-xs text-[#8b8379] mb-1">长出来的温柔回响</div>
+                                <div class="text-xs text-[#8b8379] mb-1">已经长成的回响</div>
                                 <div class="text-base sm:text-lg font-semibold text-[#9b6a2f] leading-tight" id="overviewVaultSlisBnb">--</div>
                                 <div class="text-[11px] text-[#8e7a57] mt-1">当前 slisBNB</div>
                             </div>
                             <div class="rounded-2xl bg-white/65 border border-white/80 p-3 backdrop-blur">
-                                <div class="text-xs text-[#8b8379] mb-1">已经慢慢种下去</div>
+                                <div class="text-xs text-[#8b8379] mb-1">已经入池的 BNB</div>
                                 <div class="text-base sm:text-lg font-semibold text-[#3c7b5e] leading-tight" id="overviewTotalStakedBnb">--</div>
                                 <div class="text-[11px] text-[#7e8f82] mt-1">累计质押的 BNB</div>
                             </div>
                             <div class="rounded-2xl bg-white/65 border border-white/80 p-3 backdrop-blur">
-                                <div class="text-xs text-[#8b8379] mb-1">还在旁边等风来</div>
+                                <div class="text-xs text-[#8b8379] mb-1">等待入池的 BNB</div>
                                 <div class="text-base sm:text-lg font-semibold text-[#ad5f64] leading-tight" id="overviewVaultBnb">--</div>
-                                <div class="text-[11px] text-[#9a8c82] mt-1">等待质押的 BNB</div>
+                                <div class="text-[11px] text-[#9a8c82] mt-1">等待入池的 BNB</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-3 gap-2 home-chip-compact">
-                        <div class="life-chip"><span>🌱</span><span>税收自动进入金库，再慢慢长成 slisBNB 收益</span></div>
-                        <div class="life-chip"><span>🫧</span><span>把该来的回报，轻轻收进日常里</span></div>
-                        <div class="life-chip"><span>🔥</span><span>销毁不是冷数据，而是生活系统里的通缩呼吸</span></div>
+                        <div class="life-chip"><span>🌱</span><span>税收先汇入双池，再慢慢长成可见的收益回响</span></div>
+                        <div class="life-chip"><span>🫧</span><span>让双池各自发力，把该来的回报稳稳带回来</span></div>
+                        <div class="life-chip"><span>🔥</span><span>销毁不是冷数字，而是双池系统里的紧缩脉搏</span></div>
                     </div>
                 </div>
             </div>
@@ -1598,13 +1859,13 @@
             <div class="card life-burn-card p-5">
                 <div class="flex items-center justify-between mb-3">
                     <div>
-                        <div class="life-section-title">让供应慢慢变轻</div>
-                        <div class="text-xs text-[#8f7a70] mt-1">让价值更有呼吸感</div>
+                        <div class="life-section-title">让筹码慢慢变轻</div>
+                        <div class="text-xs text-[#8f7a70] mt-1">让双池的层次感逐步显出来</div>
                     </div>
                     <span class="life-mini-label"><span>🔥</span><span>链上实时</span></span>
                 </div>
                 <div class="text-3xl font-bold text-[#c45c6a] mb-1" id="totalBurnedAmount">--</div>
-                <div class="text-sm text-[#8f7a70]" id="burnDataLabel">累计销毁的生活琐碎</div>
+                <div class="text-sm text-[#8f7a70]" id="burnDataLabel">累计燃烧的筹码</div>
                 <div class="mt-3 progress-bar">
                     <div class="progress-fill gradient-pink" id="burnProgressBar" style="width: 0%"></div>
                 </div>
@@ -1617,18 +1878,18 @@
             <div class="card p-5 life-path-card">
                 <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h3 class="life-section-title">生活的收益路径</h3>
-                        <p class="text-xs text-[#7f8a80] mt-1">把收益走向，压成一条更好读的生活动线</p>
+                        <h3 class="life-section-title">双池的收益路径</h3>
+                        <p class="text-xs text-[#7f8a80] mt-1">把双池的回报路线，压成一条更清楚的增长动线</p>
                     </div>
-                    <span class="life-mini-label"><span>🪴</span><span>生活元素</span></span>
+                    <span class="life-mini-label"><span>🪴</span><span>双池核心</span></span>
                 </div>
 
                 <div class="space-y-3">
                     <div class="life-process-row life-process-row-compact">
                         <div class="life-process-dot" style="background:#4d9d71;"></div>
                         <div>
-                            <div class="text-sm font-semibold text-[#355643]">交易税 → 金库质押 → 生活工厂循环</div>
-                            <div class="text-xs text-[#7a8a7d] mt-1">税收中的大头先进入金库，让收益先长出来，再回到系统内部继续分配</div>
+                            <div class="text-sm font-semibold text-[#355643]">交易税 → 双池沉淀 → 金库增厚 → 收益回流</div>
+                            <div class="text-xs text-[#7a8a7d] mt-1">税收中的大头先进双池，先让收益长出来，再回到系统内部继续分配。</div>
                         </div>
                         <div class="text-lg font-bold text-[#3f8a63]">99%</div>
                     </div>
@@ -1663,7 +1924,7 @@
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 rounded-full bg-[#e5b35f]"></div>
-                                <span class="text-sm text-[#57685c] flex-1">持币分红（WBNB / slisBNB）</span>
+                                <span class="text-sm text-[#57685c] flex-1">持币池回礼（WBNB / slisBNB）</span>
                                 <span class="font-semibold text-[#c89337]">20%</span>
                             </div>
                         </div>
@@ -1679,10 +1940,10 @@
                 <div class="relative z-10 space-y-4">
                     <div class="flex items-start justify-between gap-4">
                         <div class="max-w-full sm:max-w-[78%]">
-                            <div class="life-section-badge mb-3"><span>🍃</span><span>收益页 · 我的生活账本</span></div>
-                            <h3 class="life-page-title">把每一类收益，
-都拆成清楚又温柔的日常记录</h3>
-                            <p class="mt-3 life-page-copy">把该来的回报，轻轻收进日常里。</p>
+                            <div class="life-section-badge mb-3"><span>🍃</span><span>收益页 · 我的双池账本</span></div>
+                            <h3 class="life-page-title">把四类真实收益，
+拆成清楚、直接、看得见的账本</h3>
+                            <p class="mt-3 life-page-copy">让双池各自发力，把该来的回报稳稳带回来。</p>
                         </div>
                         <div class="hidden sm:flex life-mini-label mt-1"><span>💧</span><span>四类收益可见</span></div>
                     </div>
@@ -1703,7 +1964,7 @@
                             <div class="mt-2 text-xs text-[#6f8576] reward-summary-sub">燃烧待领</div>
                         </div>
                         <div class="life-mini-kpi">
-                            <div class="life-mini-kpi-label">生活</div>
+                            <div class="life-mini-kpi-label">双池</div>
                             <div class="text-3xl font-bold text-[#58a774] reward-summary-value" id="rewardSummaryLife">--</div>
                             <div class="mt-2 text-xs text-[#6f8576] reward-summary-sub">邀请可领</div>
                         </div>
@@ -1716,15 +1977,15 @@
 
             <!-- ====== 四类奖励卡片：严格拆分展示 ====== -->
 
-            <!-- A + B. 持币分红合并展示：双重分红，分开领取 -->
+            <!-- A + B. 持币池回礼合并展示：双重分红，分开领取 -->
             <div class="card p-4 border-l-4 border-l-[#93bba0]">
                 <div class="flex items-center gap-2.5 mb-3">
                     <div class="w-8 h-8 rounded-xl bg-[#eef8f0] flex items-center justify-center shrink-0">
                         <svg class="w-4 h-4 text-[#4f8f67]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <div class="min-w-0">
-                        <div class="font-semibold text-sm text-gray-800">来自生活的双份惊喜</div>
-                        <div class="text-[11px] leading-4 text-gray-500">日子会回礼。</div>
+                        <div class="font-semibold text-sm text-gray-800">双池带来的双份回响</div>
+                        <div class="text-[11px] leading-4 text-gray-500">双池会持续回响。</div>
                     </div>
                 </div>
 
@@ -1733,7 +1994,7 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <div class="min-w-0">
                                 <div class="text-[13px] font-semibold text-amber-700">WBNB</div>
-                                <div class="text-[11px] text-amber-600 mt-0.5">官方分红</div>
+                                <div class="text-[11px] text-amber-600 mt-0.5">官方池回礼</div>
                             </div>
                             <span class="px-1.5 py-0.5 bg-white/80 text-amber-700 text-[10px] rounded-full font-medium border border-amber-100 shrink-0">双重分红</span>
                         </div>
@@ -1749,7 +2010,7 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <div class="min-w-0">
                                 <div class="text-[13px] font-semibold text-blue-700">slisBNB</div>
-                                <div class="text-[11px] text-blue-600 mt-0.5">持币分红</div>
+                                <div class="text-[11px] text-blue-600 mt-0.5">持币池回礼</div>
                             </div>
                             <span class="px-1.5 py-0.5 bg-white/80 text-blue-700 text-[10px] rounded-full font-medium border border-blue-100 shrink-0">双重分红</span>
                         </div>
@@ -1780,7 +2041,7 @@
                     </div>
                     <div>
                         <div class="font-semibold text-gray-800">燃烧奖励</div>
-                        <div class="text-xs text-gray-500">按销毁权重分配的 slisBNB 奖励</div>
+                        <div class="text-xs text-gray-500">按燃烧权重分到的 slisBNB 回响</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
@@ -1802,15 +2063,15 @@
                 </div>
             </div>
 
-            <!-- D. 邀请奖励（生活）— 绑定状态 + 待领邀请奖励 + claimInviteReward -->
+            <!-- D. 邀请奖励（双池为王）— 绑定状态 + 待领邀请奖励 + claimInviteReward -->
             <div class="card p-5">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-xl bg-mint-100 flex items-center justify-center">
                         <svg class="w-5 h-5 text-mint-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
                     <div>
-                        <div class="font-semibold text-gray-800">邀请奖励（生活）</div>
-                        <div class="text-xs text-gray-500">🎁 邀请奖励固定发放生活代币，无门槛绑定</div>
+                        <div class="font-semibold text-gray-800">邀请奖励（双池为王）</div>
+                        <div class="text-xs text-gray-500">🎁 邀请奖励固定发放双池为王代币，无门槛绑定</div>
                     </div>
                 </div>
 
@@ -1842,23 +2103,23 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <div class="text-2xl font-bold text-mint-600" id="inviteRewardAmount">--</div>
-                        <div class="text-xs text-gray-400">待领取邀请奖励（生活）</div>
+                        <div class="text-xs text-gray-400">待领取邀请奖励（双池为王）</div>
                     </div>
                     <button onclick="claimReward('invite', event)" class="btn-secondary px-5 py-2 text-sm">领取</button>
                 </div>
             </div>
         </div>
 
-        <!-- 销毁代币页 -->
+        <!-- 销毁双池为王页 -->
         <div id="page-burn" class="page space-y-4">
             <div class="life-page-hero burn-tone mt-4">
                 <div class="relative z-10 space-y-4">
                     <div class="flex items-start justify-between gap-4">
                         <div class="max-w-full sm:max-w-[78%]">
-                            <div class="life-section-badge mb-3"><span>🔥</span><span>销毁页 · 行动与呼吸</span></div>
+                            <div class="life-section-badge mb-3"><span>🔥</span><span>销毁页 · 收缩与抬升</span></div>
                             <h3 class="life-page-title">让每一次销毁，
-都像一次有仪式感的收缩</h3>
-                            <p class="mt-3 life-page-copy">轻轻收一寸，给未来多留一点空间。</p>
+都成为双池抬升的一次推力</h3>
+                            <p class="mt-3 life-page-copy">少一点流通，多一点稀缺，让双池把张力逐步养出来。</p>
                         </div>
                         <div class="hidden sm:flex life-mini-label mt-1"><span>🕯️</span><span>85% 真销毁</span></div>
                     </div>
@@ -1875,16 +2136,16 @@
                 </div>
             </div>
             <div class="card life-card-soft p-5">
-                <h3 class="font-semibold text-gray-800 mb-4">销毁代币</h3>
-                <div class="space-y-4">
+                <h3 class="font-semibold text-gray-800 mb-4">销毁双池为王</h3>
+                <div class="space-y-3">
                     <div>
                         <label class="text-sm text-gray-500 mb-2 block">销毁数量</label>
                         <div class="relative">
                             <input type="number" id="burnAmount" placeholder="0.00" class="input-field w-full px-4 py-4 text-lg font-semibold" oninput="updateBurnPreview()">
-                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">生活</span>
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">双池</span>
                         </div>
                         <div class="flex justify-between mt-2 text-xs text-gray-400">
-                            <span>余额: <span id="burnTokenBalance">--</span> 生活</span>
+                            <span>余额: <span id="burnTokenBalance">--</span> 双池</span>
                             <button class="text-pink-500 font-medium" onclick="setMaxBurn()">最大</button>
                         </div>
                     </div>
@@ -1895,28 +2156,7 @@
                         <p class="text-xs text-gray-400 mt-2" id="inviterHint">可填写其他邀请人地址；留空会自动走默认上级关系</p>
                     </div>
 
-                    <!-- 实时预览 -->
-                    <div class="rounded-xl p-4 space-y-3"
-                         style="background: rgba(255,255,255,0.5);">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">实际销毁</span>
-                            <span class="font-semibold" id="previewBurn">0 生活</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">L1 邀请返佣 (10%)</span>
-                            <span class="font-semibold text-mint-600" id="previewL1">0 生活</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">L2 邀请返佣 (5%)</span>
-                            <span class="font-semibold text-pink-600" id="previewL2">0 生活</span>
-                        </div>
-                        <div class="border-t border-gray-200 pt-3 flex justify-between">
-                            <span class="text-gray-500">销毁后预估权重提升</span>
-                            <span class="font-semibold gradient-green-text">+0.00%</span>
-                        </div>
-                    </div>
-
-                    <button onclick="executeBurn(event)" class="btn-primary w-full py-4 text-base">确认销毁</button>
+                    <button onclick="executeBurn(event)" class="btn-primary w-full py-4 text-base">确认燃烧</button>
                 </div>
             </div>
 
@@ -1925,12 +2165,12 @@
                 <h3 class="font-semibold text-gray-800 mb-4">我的销毁统计</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div class="bg-pink-50 rounded-xl p-4">
-                        <div class="text-xs text-gray-500 mb-1">累计销毁</div>
+                        <div class="text-xs text-gray-500 mb-1">累计燃烧</div>
                     <div class="text-xl font-bold text-pink-600" id="myCumulativeBurn">--</div>
-                    <div class="text-xs text-gray-400">生活</div>
+                    <div class="text-xs text-gray-400">双池</div>
                     </div>
                     <div class="bg-mint-50 rounded-xl p-4">
-                        <div class="text-xs text-gray-500 mb-1">销毁权重</div>
+                        <div class="text-xs text-gray-500 mb-1">燃烧权重</div>
                         <div class="text-xl font-bold text-mint-600" id="myBurnWeightPct">--</div>
                         <div class="text-xs text-gray-400" id="myBurnRankText">连接钱包查看</div>
                     </div>
@@ -1938,16 +2178,16 @@
             </div>
         </div>
 
-        <!-- 邀请系统页 -->
+        <!-- 双池双池邀请系统页 -->
         <div id="page-invite" class="page space-y-4">
             <div class="life-page-hero invite-tone mt-4">
                 <div class="relative z-10 space-y-4">
                     <div class="flex items-start justify-between gap-4">
                         <div class="max-w-full sm:max-w-[78%]">
-                            <div class="life-section-badge mb-3"><span>🌿</span><span>邀请页 · 关系与成长</span></div>
+                            <div class="life-section-badge mb-3"><span>🌿</span><span>邀请页 · 路径与放大</span></div>
                             <h3 class="life-page-title">把关系连成路径，
-让成长沿着上游慢慢传递</h3>
-                            <p class="mt-3 life-page-copy">把同行的人留在身边，路就会越走越宽。</p>
+让双池的放大效应顺着上游慢慢传递</h3>
+                            <p class="mt-3 life-page-copy">把同行的人留下来，双池的力量就会越滚越大。</p>
                         </div>
                         <div class="hidden sm:flex life-mini-label mt-1"><span>🌱</span><span>无门槛邀请</span></div>
                     </div>
@@ -1956,7 +2196,7 @@
             </div>
             <div class="card life-card-soft p-5">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-semibold text-gray-800">邀请系统</h3>
+                    <h3 class="font-semibold text-gray-800">双池双池邀请系统</h3>
                     <span class="px-3 py-1 bg-mint-100 text-mint-600 text-xs rounded-full font-medium">无门槛</span>
                 </div>
                 
@@ -1966,7 +2206,7 @@
                         <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                         <div class="text-sm text-amber-800">
                             <p class="font-medium mb-1">无门槛邀请</p>
-                            <p class="text-xs leading-relaxed">任何地址都能先绑定上级再参与返佣；奖励固定发放生活本代币。完成首次销毁后，关系会长期锁定。</p>
+                            <p class="text-xs leading-relaxed">任何地址都能先绑定上级再参与返佣；奖励固定发放双池代币。完成首次燃烧后，关系会长期锁定。</p>
                             <p class="text-xs mt-1 font-medium text-red-600">⚠️ 禁止自己绑自己、禁止二节点互绑、禁止上游环</p>
                         </div>
                     </div>
@@ -1988,7 +2228,7 @@
                             <button onclick="saveInviterAddress()" id="saveInviterBtn"
                                     class="btn-secondary px-3 py-2 text-sm whitespace-nowrap">保存</button>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1.5">⚠️ 成功销后代币后将终身绑定上级，不可更改</p>
+                        <p class="text-xs text-gray-400 mt-1.5">⚠️ 成功销毁后将终身绑定上级，不可更改</p>
                     </div>
                     <!-- 已燃烧/已绑定：只读显示 -->
                     <div id="inviterLocked" style="display:none;">
@@ -2001,9 +2241,9 @@
                     </div>
                 </div>
 
-                <!-- 我的邀请链接 -->
+                <!-- 我的双池邀请链接 -->
                 <div class="bg-pink-50 rounded-xl p-3 invite-link-card mb-4">
-                    <div class="text-sm text-gray-500 mb-2">我的邀请链接</div>
+                    <div class="text-sm text-gray-500 mb-2">我的双池邀请链接</div>
                     <div class="flex gap-2">
                         <input type="text" id="inviteLinkInput" readonly class="flex-1 bg-white border border-pink-200 rounded-lg px-3 py-2 text-sm">
                         <button onclick="copyInviteLink()" class="btn-secondary px-4 py-2 text-sm">复制</button>
@@ -2034,7 +2274,7 @@
                     </div>
                     <div class="flex items-center justify-between mt-1">
                         <div class="text-2xl font-bold gradient-green-text" id="invitePendingReward">--</div>
-                        <div class="text-xs text-gray-400">生活本代币 · 下级销毁产生</div>
+                        <div class="text-xs text-gray-400">双池为王代币 · 下级销毁产生</div>
                     </div>
                 </div>
 
@@ -2043,12 +2283,12 @@
                             <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-xs font-bold">L1</div>
                             <div>
                                 <div class="text-sm font-medium">直接邀请奖励</div>
-                                <div class="text-xs text-gray-400">10% 销毁金额（生活）</div>
+                                <div class="text-xs text-gray-400">10% 销毁金额（双池为王）</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-pink-600" id="l1RewardAmount">--</div>
-                            <div class="text-xs text-gray-400">生活</div>
+                            <div class="text-xs text-gray-400">双池</div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between p-3 glass-subtle rounded-xl">
@@ -2056,12 +2296,12 @@
                             <div class="w-8 h-8 rounded-full bg-mint-100 flex items-center justify-center text-mint-600 text-xs font-bold">L2</div>
                             <div>
                                 <div class="text-sm font-medium">间接邀请奖励</div>
-                                <div class="text-xs text-gray-400">5% 销毁金额（生活）</div>
+                                <div class="text-xs text-gray-400">5% 销毁金额（双池为王）</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-mint-600" id="l2RewardAmount">--</div>
-                            <div class="text-xs text-gray-400">生活</div>
+                            <div class="text-xs text-gray-400">双池</div>
                         </div>
                     </div>
                 </div>
@@ -2076,7 +2316,7 @@
                     <div class="bg-pink-50 rounded-xl p-4">
                         <div class="text-xs text-gray-500 mb-1">总销毁量</div>
                         <div class="text-lg font-bold text-pink-600" id="statsTotalBurn">--</div>
-                        <div class="text-xs text-gray-400">生活</div>
+                        <div class="text-xs text-gray-400">双池</div>
                         <div class="text-xs text-gray-500 mb-1">总奖励发放</div>
                         <div class="text-lg font-bold text-mint-600" id="statsTotalReward">--</div>
                         <div class="text-xs text-gray-400">slisBNB</div>
@@ -2107,16 +2347,16 @@
                 <div class="text-xs text-gray-400" id="statsMarketingAddr">营销钱包地址: --</div>
             </div>
 
-            <!-- 合约信息 + 金库状态 -->
+            <!-- 链上信息 + 金库状态 -->
             <div class="card p-5">
-                <h3 class="font-semibold text-gray-800 mb-4">合约信息</h3>
+                <h3 class="font-semibold text-gray-800 mb-4">链上信息</h3>
                 <div class="space-y-3 text-sm mb-5">
                     <div class="flex justify-between">
                         <span class="text-gray-500">Vault Proxy</span>
                         <span class="font-mono text-gray-700" id="contractVaultAddr">--</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-500">Token（生活）</span>
+                        <span class="text-gray-500">Token（双池为王）</span>
                         <span class="font-mono text-gray-700" id="contractTokenAddr">--</span>
                     </div>
                     <div class="flex justify-between">
@@ -2182,11 +2422,11 @@
                 <div class="relative z-10 space-y-4">
                     <div class="flex items-start justify-between gap-4">
                         <div class="max-w-full sm:max-w-[78%]">
-                            <div class="life-section-badge mb-3"><span>🫧</span><span>社区页 · 生态入口</span></div>
-                            <h3 class="life-page-title">把社区入口、数据和动态收进同一页</h3>
-                            <p class="mt-3 life-page-copy">先把要看的信息放顺手，后续再把内容慢慢补齐。</p>
+                            <div class="life-section-badge mb-3"><span>🫧</span><span>社区页 · 双池会客厅</span></div>
+                            <h3 class="life-page-title">把双池的入口、数据和动态收进同一页</h3>
+                            <p class="mt-3 life-page-copy">先把该看的信息摆顺手，后续再把内容一块块补齐。</p>
                         </div>
-                        <div class="hidden sm:flex life-mini-label mt-1"><span>🏠</span><span>社区入口</span></div>
+                        <div class="hidden sm:flex life-mini-label mt-1"><span>🏠</span><span>双池入口</span></div>
                     </div>
                     <div class="life-subgrid two">
                         <div class="life-mini-kpi">
@@ -2194,14 +2434,14 @@
                             <div class="life-mini-kpi-value">链上实时同步</div>
                         </div>
                         <div class="life-mini-kpi">
-                            <div class="life-mini-kpi-label">社区链接</div>
+                            <div class="life-mini-kpi-label">双池链接</div>
                             <div class="life-mini-kpi-value">将按官方入口逐步接入</div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="card life-card-soft p-5">
-                <h3 class="font-semibold text-gray-800 mb-4">社区动态</h3>
+                <h3 class="font-semibold text-gray-800 mb-4">双池近况</h3>
                 
                 <!-- 营销钱包监控 - 移到最上面 -->
                 <div class="card p-4 mb-5 bg-gradient-to-r from-pink-50 to-mint-50 border border-pink-100">
@@ -2239,39 +2479,39 @@
                     </div>
                 </div>
 
-                <!-- 机制说明 -->
+                <!-- 双池运作 -->
                 <div class="mechanism-card p-4 mb-5">
                     <h4 class="font-medium text-gray-800 text-sm mb-3 flex items-center gap-2">
                         <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        机制说明
+                        双池运作
                     </h4>
                     <div class="space-y-2 text-xs text-gray-600">
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">1.</span>
-                            <span><strong>税收自动质押：</strong>税代币产生的 BNB 自动质押到 Lista，获得 slisBNB 收益</span>
+                            <span><strong>双池自动质押：</strong>税收形成的 BNB 自动进入质押流程，换回 slisBNB 收益</span>
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">2.</span>
-                            <span><strong>收益三分：</strong>slisBNB 按 40% 营销 / 40% 销毁分红池 / 20% 持币分红 分配</span>
+                            <span><strong>收益三向分流：</strong>slisBNB 按 40% 营销 / 40% 销毁分红池 / 20% 持币池回礼 分配</span>
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">3.</span>
-                            <span><strong>四类收益独立：</strong>项目 slisBNB 持币分红、官方 WBNB/BNB 分红、燃烧奖励、邀请奖励（生活）严格分开</span>
+                            <span><strong>四类回报独立：</strong>项目 slisBNB 持币池回礼、官方 WBNB/BNB 分红、燃烧奖励、邀请奖励（双池为王）严格分开</span>
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">4.</span>
-                            <span><strong>燃烧返佣：</strong>销毁生活时，L1 邀请人得 10%，L2 得 5%（本代币），剩余 85% 真正销毁</span>
+                            <span><strong>燃烧返佣：</strong>燃烧双池时，L1 邀请人得 10%，L2 得 5%（本代币），剩余 85% 真正销毁</span>
                         </div>
                         <div class="flex items-start gap-2">
                             <span class="text-pink-500 font-bold">5.</span>
-                            <span><strong>邀请无门槛：</strong>所有用户均可绑定上级享受返佣。禁止自绑、互绑、环绑。</span>
+                            <span><strong>邀请无门槛：</strong>所有用户都可绑定上级享受返佣，禁止自绑、互绑、环绑。</span>
                         </div>
                     </div>
                 </div>
                 <div class="mb-5">
                     <div class="flex items-center justify-between mb-3">
-                        <h4 class="font-medium text-gray-700 text-sm">官方链接</h4>
-                        <span class="text-[11px] text-[#9a8e81]">入口将逐步接入</span>
+                        <h4 class="font-medium text-gray-700 text-sm">双池外部入口</h4>
+                        <span class="text-[11px] text-[#9a8e81]">入口将逐步补齐</span>
                     </div>
                     <div class="link-placeholder-grid">
                         <div class="link-placeholder-card glass-subtle rounded-xl life-empty-card">
@@ -2301,10 +2541,10 @@
                     </div>
                 </div>
 
-                <!-- 最新公告 -->
+                <!-- 最新动态 -->
                 <div>
                     <div class="flex items-center justify-between mb-3">
-                        <h4 class="font-medium text-gray-700 text-sm">最新公告</h4>
+                        <h4 class="font-medium text-gray-700 text-sm">最新动态</h4>
                         <span class="text-xs text-gray-400">自动触发</span>
                     </div>
                     <div id="announcementList" class="space-y-3">
@@ -2375,6 +2615,10 @@
         // 【代币替换标记 05 / 合约常量区】
         // 这里是整套前端最关键的替换入口。
         // 真正必须人工改的，通常只有 TOKEN 与 VAULT。
+        // ===== 正式切换包（双池为王）=====
+        // token_address: 0x01f5fe55128de55215313aac3adf2aa8a50d7777
+        // vault_address: 0x5d3d5Fd170d943d06baFfAa1272b9a874b3344e1
+        // default_referrer: 0x798be248a638287ed0a67a8aa40e7a3a714ca5bd
         const CONTRACTS = {
             // 【代币替换标记 06 / TOKEN 主配置】
             // 发新币时，优先改这里：
@@ -2384,9 +2628,9 @@
             // - decimals: 精度，非 18 时要联动检查 formatEther / parseEther
             // - abi: 新代币 ABI，至少要保留 balanceOf / symbol / approve / allowance / transfer / transferFrom
             TOKEN: {
-                address: "0x379f9E96BDC94572492e3BAC75A5122fFb7E7777",
-                symbol: "CLAIM",
-                name: "生活",
+                address: "0x01f5fe55128de55215313aac3adf2aa8a50d7777",
+                symbol: "双池",
+                name: "双池为王",
                 decimals: 18,
                 abi: [{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"dividendContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]
             },
@@ -2395,7 +2639,7 @@
             // 如果发新币但沿用同一 Vault 逻辑，只需替换 address + abi。
             // 其他地址（burnDistributor / oracle / slisBNB / marketingWallet / dividend）都从 Vault 动态发现。
             VAULT: {
-                address: "0xC09f04d1DDD278A8a9406CfB6E9C80f2719DB2b0",
+                address: "0x5d3d5Fd170d943d06baFfAa1272b9a874b3344e1",
                 abi: [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"AlreadyInitialized","type":"error"},{"inputs":[],"name":"Reentrancy","type":"error"},{"inputs":[],"name":"TransferFailed","type":"error"},{"inputs":[],"name":"Unauthorized","type":"error"},{"inputs":[{"internalType":"uint256","name":"chainId","type":"uint256"}],"name":"UnsupportedChain","type":"error"},{"inputs":[],"name":"ZeroAddress","type":"error"},{"inputs":[],"name":"ZeroAmount","type":"error"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newValue","type":"uint256"}],"name":"AutoStakeThresholdUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"holder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"HolderRewardClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newValue","type":"uint256"}],"name":"MarketingAutoSendThresholdUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"MarketingAutoSent","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"MarketingClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"oldWallet","type":"address"},{"indexed":false,"internalType":"address","name":"newWallet","type":"address"}],"name":"MarketingWalletUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"marketingSlis","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"burnPoolSlis","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"holderSlis","type":"uint256"}],"name":"StakeSplit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountBNB","type":"uint256"}],"name":"TaxReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amountBNB","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"slisReceived","type":"uint256"}],"name":"TaxStaked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":true,"internalType":"address","name":"inviter","type":"address"}],"name":"UserBurned","type":"event"},{"inputs":[],"name":"BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"BURN_POOL_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"HOLDER_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MARKETING_BPS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"autoStakeThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"burnDistributor","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"burnInfo","outputs":[{"internalType":"uint256","name":"rawBurned","type":"uint256"},{"internalType":"uint256","name":"weight","type":"uint256"},{"internalType":"address","name":"inviter","type":"address"},{"internalType":"bool","name":"hasInviter","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claim","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimBurnReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"holder","type":"address"}],"name":"claimFor","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimInviteReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"}],"name":"claimMarketing","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"holderEligibilityOracle","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"holderRewardTracker","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"components":[{"internalType":"address","name":"taxToken","type":"address"},{"internalType":"address","name":"listaStakeManager","type":"address"},{"internalType":"address","name":"slisBNB","type":"address"},{"internalType":"address","name":"marketingWallet","type":"address"},{"internalType":"uint256","name":"autoStakeThreshold","type":"uint256"},{"internalType":"uint256","name":"marketingAutoSendThreshold","type":"uint256"},{"internalType":"address","name":"burnDistributor","type":"address"},{"internalType":"address","name":"holderEligibilityOracle","type":"address"},{"internalType":"address","name":"holderRewardTracker","type":"address"}],"internalType":"struct MEYieldVault.InitParams","name":"p","type":"tuple"}],"name":"initialize","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"initialized","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"listaStakeManager","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"marketingAutoSendThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"marketingWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"overview","outputs":[{"internalType":"address","name":"_listaStakeManager","type":"address"},{"internalType":"uint16","name":"_marketingSharePercent","type":"uint16"},{"internalType":"uint16","name":"_holderSharePercent","type":"uint16"},{"internalType":"uint16","name":"_burnPoolSharePercent","type":"uint16"},{"internalType":"uint256","name":"_vaultBnbBalance","type":"uint256"},{"internalType":"uint256","name":"_totalStakedBnb","type":"uint256"},{"internalType":"uint256","name":"_vaultSlisBalance","type":"uint256"},{"internalType":"uint256","name":"_myPendingHolderDividend","type":"uint256"},{"internalType":"uint256","name":"_myPendingBurnDividend","type":"uint256"},{"internalType":"uint256","name":"_myPendingInviteReward","type":"uint256"},{"internalType":"uint256","name":"_myCumulativeBurned","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingBurnReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingClaim","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingInviteReward","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingMarketingSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingTaxBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newThreshold","type":"uint256"}],"name":"setAutoStakeThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"newThreshold","type":"uint256"}],"name":"setMarketingAutoSendThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newWallet","type":"address"}],"name":"setMarketingWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"slisBNB","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"stakePendingTax","outputs":[{"internalType":"bool","name":"ok","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"syncMyHolderAccount","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"taxToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalHolderAccumulativeSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalHolderClaimedSlis","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSlisReceived","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalStakedBNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"vaultUISchema","outputs":[{"components":[{"internalType":"string","name":"vaultType","type":"string"},{"internalType":"string","name":"description","type":"string"},{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"fieldType","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"}],"internalType":"struct FieldDescriptor[]","name":"inputs","type":"tuple[]"},{"components":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"fieldType","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"uint8","name":"decimals","type":"uint8"}],"internalType":"struct FieldDescriptor[]","name":"outputs","type":"tuple[]"},{"components":[{"internalType":"string","name":"tokenType","type":"string"},{"internalType":"string","name":"amountFieldName","type":"string"}],"internalType":"struct ApproveAction[]","name":"approvals","type":"tuple[]"},{"internalType":"bool","name":"isInputArray","type":"bool"},{"internalType":"bool","name":"isOutputArray","type":"bool"},{"internalType":"bool","name":"isWriteMethod","type":"bool"}],"internalType":"struct VaultMethodSchema[]","name":"methods","type":"tuple[]"}],"internalType":"struct VaultUISchema","name":"schema","type":"tuple"}],"stateMutability":"pure","type":"function"},{"stateMutability":"payable","type":"receive"}]
             },
             BURN_DISTRIBUTOR: {
@@ -2429,7 +2673,7 @@
         // 精简接口包为唯一 ABI 来源；Vault / BurnDistributor / Oracle / Dividend 读接口均来自 output.json 精确提取
         CONTRACTS.VAULT.abi = CONTRACTS.VAULT.abi;
         const WBNB_DIVIDEND_READ_ABI = CONTRACTS.DIVIDEND.abi;
-        // 说明：官方分红写接口未包含在当前精简接口包内；这里保留兼容写 ABI 仅用于“领取 WBNB”按钮。
+        // 说明：官方池回礼写接口未包含在当前精简接口包内；这里保留兼容写 ABI 仅用于“领取 WBNB”按钮。
         // 若后续你拿到官方 dividend 合约的精确写接口，请直接替换这里。
         const WBNB_DIVIDEND_CLAIM_COMPAT_ABI = [
             {"inputs":[],"name":"withdrawDividends","outputs":[],"stateMutability":"nonpayable","type":"function"},
@@ -2636,9 +2880,9 @@
         
         // ==================== 代币信息 ====================
         let tokenInfo = {
-            symbol: CONTRACTS.TOKEN.name || '生活',   // 前端展示简称
+            symbol: '双池',   // 前端展示简称
             chainSymbol: CONTRACTS.TOKEN.symbol || '', // 链上真实 symbol，仅作记录
-            name: CONTRACTS.TOKEN.name || '生活'
+            name: '双池为王'
         };
 
         // 从链上读取代币信息，但不再用链上 symbol 覆盖生活化品牌标题 / Logo
@@ -2660,27 +2904,27 @@
                 ]);
 
                 tokenInfo.chainSymbol = chainSymbol || CONTRACTS.TOKEN.symbol || '';
-                tokenInfo.name = chainName || CONTRACTS.TOKEN.name || '生活';
-                tokenInfo.symbol = CONTRACTS.TOKEN.name || '生活';
+                tokenInfo.name = chainName || CONTRACTS.TOKEN.name || '双池为王';
+                tokenInfo.symbol = '双池';
 
-                updateTokenSymbolDisplay(tokenInfo.symbol);
+                updateTokenSymbolDisplay('双池');
 
                 const logoSymbol = document.getElementById('tokenLogoSymbol');
                 const appTitle = document.getElementById('appTitle');
-                if (logoSymbol) logoSymbol.textContent = '生活';
-                if (appTitle) appTitle.textContent = '生活小院';
-                try { document.title = '生活小院'; } catch (_) {}
+                if (logoSymbol) logoSymbol.textContent = '双池';
+                if (appTitle) appTitle.textContent = '双池为王';
+                try { document.title = '双池为王'; } catch (_) {}
             } catch (e) {
                 console.error('加载代币信息失败:', e);
-                tokenInfo.symbol = CONTRACTS.TOKEN.name || '生活';
-                tokenInfo.name = CONTRACTS.TOKEN.name || '生活';
-                updateTokenSymbolDisplay(tokenInfo.symbol);
+                tokenInfo.symbol = '双池';
+                tokenInfo.name = '双池为王';
+                updateTokenSymbolDisplay('双池');
 
                 const logoSymbol = document.getElementById('tokenLogoSymbol');
                 const appTitle = document.getElementById('appTitle');
-                if (logoSymbol) logoSymbol.textContent = '生活';
-                if (appTitle) appTitle.textContent = '生活小院';
-                try { document.title = '生活小院'; } catch (_) {}
+                if (logoSymbol) logoSymbol.textContent = '双池';
+                if (appTitle) appTitle.textContent = '双池为王';
+                try { document.title = '双池为王'; } catch (_) {}
             }
         }
 
@@ -2688,15 +2932,15 @@
         // 【代币替换标记 10 / 全站 token-symbol 占位刷新】
         // 页面里凡是 class="token-symbol" 的位置，都会被这里统一替换。
         function updateTokenSymbolDisplay(symbol) {
-            const brandSymbol = '生活';
+            const brandSymbol = '双池';
             document.querySelectorAll('.token-symbol').forEach(el => {
                 el.textContent = brandSymbol;
             });
             const logoSymbol = document.getElementById('tokenLogoSymbol');
             const appTitle = document.getElementById('appTitle');
-            if (logoSymbol) logoSymbol.textContent = '生活';
-            if (appTitle) appTitle.textContent = '生活小院';
-            try { document.title = '生活小院'; } catch (_) {}
+            if (logoSymbol) logoSymbol.textContent = '双池';
+            if (appTitle) appTitle.textContent = '双池为王';
+            try { document.title = '双池为王'; } catch (_) {}
         }
 
 // ==================== 邀请链接处理 ====================
@@ -3129,8 +3373,8 @@
                 setText('slisRealisedAmount', formatEther(await vault.userClaimedHolderReward(userAddress).catch(() => 0), 4));
 
                 // 收益页顶部摘要按真实链上口径拆开：
-                // WBNB = 官方持币分红
-                // slisBNB(持币) = 项目持币分红
+                // WBNB = 官方持币池回礼
+                // slisBNB(持币) = 项目持币池回礼
                 // slisBNB(燃烧) = 燃烧奖励
                 // 生活 = 邀请奖励
                 setText('rewardSummaryWbnb', formatEther(officialDividendPending, 4));
@@ -3226,7 +3470,7 @@
                         inviterLabel.className = 'text-sm text-gray-500 mb-2 block';
                     }
                     if (inviterHint) {
-                        inviterHint.textContent = '填写邀请人可获得 生活 代币返佣奖励（L1:10% / L2:5%）';
+                        inviterHint.textContent = '填写邀请人可获得双池代币返佣奖励（L1:10% / L2:5%）';
                         inviterHint.className = 'text-xs text-gray-400 mt-2';
                     }
                     syncInviteBindStateToRewards();
@@ -3503,9 +3747,9 @@
         
         // 从事件日志加载排行榜（增强版：多范围查询 + 合约状态补充 + 缓存）
         let _leaderboardCache = null; // 缓存最近一次的排行数据
-        let _lastUserBurned = 0; // 记录用户上一次的累计销毁量
+        let _lastUserBurned = 0; // 记录用户上一次的累计燃烧量
 
-        // 燃烧排行榜（严格按累计销毁量排序）
+        // 燃烧排行榜（严格按累计燃烧量排序）
         async function loadBurnLeaderboard(distributor, totalBurned) {
             console.log('[燃烧排行榜] 开始加载，totalBurned:', totalBurned);
             const leaderboardEl = document.getElementById('burnLeaderboard');
@@ -3660,7 +3904,7 @@
                             <div class="w-8 h-8 rounded-full ${isFirst ? 'gradient-pink' : (isMe ? 'bg-pink-100' : 'bg-gray-100')} flex items-center justify-center ${isFirst ? 'text-white' : (isMe ? 'text-pink-600' : 'text-gray-500')} text-sm font-bold">${rankBadge || (i+1)}</div>
                             <div class="flex-1 min-w-0">
                                 <div class="font-medium text-sm truncate">${shortAddr} ${isMe ? '<span class="text-xs text-pink-500 ml-1">(我)</span>' : ''}</div>
-                                <div class="text-xs text-gray-500">累计销毁 ${amountStr}</div>
+                                <div class="text-xs text-gray-500">累计燃烧 ${amountStr}</div>
                             </div>
                             <div class="text-right flex-shrink-0">
                                 <div class="font-semibold ${isFirst ? 'text-pink-600' : (isMe ? 'text-green-600' : 'text-gray-700')}">${weightPct}%</div>
@@ -3739,18 +3983,18 @@
                         const rawVal = burnInfo.rawBurned;
                         console.log('[burn] rawBurned 原始值:', rawVal?.toString(), '类型:', typeof rawVal);
                         burnedNum = parseFloat(ethers.utils.formatUnits(rawVal.toString(), 18));
-                        console.log('[burn] 转换后累计销毁:', burnedNum);
+                        console.log('[burn] 转换后累计燃烧:', burnedNum);
 
                         // 安全校验：如果数值异常大（> 10亿），说明数据源有问题
                         if (!Number.isFinite(burnedNum) || burnedNum < 0 || burnedNum > 1e9) {
-                            console.warn('[burn] 累计销毁值异常:', burnedNum, '原始:', rawVal?.toString());
+                            console.warn('[burn] 累计燃烧值异常:', burnedNum, '原始:', rawVal?.toString());
                             burnedNum = 0;
                             userBurnedEl.textContent = '--';
                         } else {
                             userBurnedEl.textContent = formatCN(burnedNum, 1);
                         }
                     } catch (e) {
-                        console.error('[burn] 累计销毁转换失败:', e);
+                        console.error('[burn] 累计燃烧转换失败:', e);
                         userBurnedEl.textContent = '--';
                     }
                     // 注意：chainData.userBurned 保持为原始 BigNumber（供邀请页进度条等复用）
@@ -3771,7 +4015,7 @@
                 // 同步邀请绑定到收益页卡片
                 syncInviteBindStateToRewards();
 
-                // 销毁权重计算（同样用 formatUnits 确保一致）
+                // 燃烧权重计算（同样用 formatUnits 确保一致）
                 const burnWeightEl = document.querySelector('#page-burn .text-xl.font-bold.text-mint-600');
                 const burnRankEl = document.getElementById('myBurnRankText');
                 if (burnWeightEl && chainData.totalBurned > 0) {
@@ -4297,7 +4541,7 @@
                     refreshText.dataset.loading = '1';
                 } else {
                     if (refreshText.dataset.loading === '1') {
-                        refreshText.textContent = '轻轻更新';
+                        refreshText.textContent = '同步节奏';
                     }
                     delete refreshText.dataset.loading;
                 }
@@ -4578,8 +4822,8 @@
                 setText('slisRealisedAmount', formatEther(await vault.userClaimedHolderReward(userAddress).catch(() => 0), 4));
 
                 // 收益页顶部摘要按真实链上口径拆开：
-                // WBNB = 官方持币分红
-                // slisBNB(持币) = 项目持币分红
+                // WBNB = 官方持币池回礼
+                // slisBNB(持币) = 项目持币池回礼
                 // slisBNB(燃烧) = 燃烧奖励
                 // 生活 = 邀请奖励
                 setText('rewardSummaryWbnb', formatEther(officialDividendPending, 4));
@@ -4942,16 +5186,25 @@
         }
 
         function updateBurnPreview() {
-            const amount = parseFloat(document.getElementById('burnAmount').value) || 0;
+            const amountEl = document.getElementById('burnAmount');
+            const previewBurnEl = document.getElementById('previewBurn');
+            const previewL1El = document.getElementById('previewL1');
+            const previewL2El = document.getElementById('previewL2');
+
+            // 这版已经移除了销毁前预览卡片，所以页面初始化和输入联动时直接安全退出
+            if (!amountEl || (!previewBurnEl && !previewL1El && !previewL2El)) {
+                return;
+            }
+
+            const amount = parseFloat(amountEl.value) || 0;
             const l1 = amount * 0.10;
             const l2 = amount * 0.05;
             const burn = amount * 0.85;
+            const tokenLabel = (window.tokenInfo && (window.tokenInfo.name || window.tokenInfo.symbol)) || '双池为王';
 
-            // 【代币替换标记 13 / 销毁预览的品牌词】
-            // 这里目前仍写死了“生活”。下次复用模板时，建议统一换成 tokenInfo.name 或独立 BRAND.name。
-            document.getElementById('previewBurn').textContent = burn.toLocaleString() + ' 生活';
-            document.getElementById('previewL1').textContent = l1.toLocaleString() + ' 生活';
-            document.getElementById('previewL2').textContent = l2.toLocaleString() + ' 生活';
+            if (previewBurnEl) previewBurnEl.textContent = burn.toLocaleString() + ' ' + tokenLabel;
+            if (previewL1El) previewL1El.textContent = l1.toLocaleString() + ' ' + tokenLabel;
+            if (previewL2El) previewL2El.textContent = l2.toLocaleString() + ' ' + tokenLabel;
         }
 
         // 公告系统使用的全局变量（由 refreshAllData 更新）
@@ -4961,17 +5214,17 @@
         // 公告配置
         const ANNOUNCEMENTS = {
             milestones: [
-                { threshold: 1000000, title: "首个百万销毁", message: "社区共同达成首个100万生活销毁里程碑！" },
-                { threshold: 5000000, title: "五百万销毁", message: "销毁量突破500万生活，通缩效应显著增强！" },
-                { threshold: 10000000, title: "千万销毁", message: "历史性时刻！总销毁量突破1000万生活！" }
+                { threshold: 1000000, title: "首个百万销毁", message: "社区共同达成首个100万双池燃烧里程碑！" },
+                { threshold: 5000000, title: "五百万销毁", message: "销毁量突破500万双池，通缩效应显著增强！" },
+                { threshold: 10000000, title: "千万销毁", message: "历史性时刻！总销毁量突破1000万双池！" }
             ],
             dailyMilestones: [
-                { threshold: 10000, title: "日销毁破万", message: "今日销毁量突破10,000 生活" },
-                { threshold: 50000, title: "日销毁五万", message: "今日销毁量突破50,000 生活" },
-                { threshold: 100000, title: "日销毁十万", message: "今日销毁量突破100,000 生活" }
+                { threshold: 10000, title: "日销毁破万", message: "今日销毁量突破10,000 双池" },
+                { threshold: 50000, title: "日销毁五万", message: "今日销毁量突破50,000 双池" },
+                { threshold: 100000, title: "日销毁十万", message: "今日销毁量突破100,000 双池" }
             ],
             manual: [
-                { title: "欢迎来到生活", message: "这是基于 BSC 链的 DeFi 金库页面，提供项目 slisBNB 分红、官方 WBNB/BNB 分红、销毁奖励和邀请奖励。", date: "2026-04-21", isNew: true }
+                { title: "欢迎来到双池为王", message: "这是基于 BSC 链的 DeFi 金库页面，提供项目 slisBNB 分红、官方 WBNB/BNB 分红、销毁奖励和邀请奖励。", date: "2026-04-21", isNew: true }
             ]
         };
 
@@ -5064,7 +5317,7 @@
 
                 const addrMap = {
                     contractVaultAddr: CONTRACTS.VAULT.address,
-                    // 【代币替换标记 14 / 合约信息区里的 Token 地址】
+                    // 【代币替换标记 14 / 链上信息区里的 Token 地址】
                     // 这里用于页面底部核对当前前端是否已经连到新代币。
                     contractTokenAddr: CONTRACTS.TOKEN.address,
                     contractDividendAddr: CONTRACTS.DIVIDEND.address || '--',
@@ -5400,7 +5653,7 @@
                         '⚠️ 当前没有可用的上级地址。\n\n这次销毁将不会产生邀请返佣。\n\n是否继续销毁？'
                     );
                     if (!confirmContinue) {
-                        btn.textContent = '确认销毁'; btn.disabled = false; return;
+                        btn.textContent = '确认燃烧'; btn.disabled = false; return;
                     }
                 }
 
@@ -5454,7 +5707,7 @@
 
                 showToast(msg, 'error', 3800);
             } finally {
-                btn.textContent = '确认销毁';
+                btn.textContent = '确认燃烧';
                 btn.disabled = false;
             }
         }
@@ -5474,18 +5727,18 @@
 
             try {
                 if (type === 'holder') {
-                    // 持币分红（最终到账 WBNB/BNB）
+                    // 持币池回礼（最终到账 WBNB/BNB）
                     const vault = new ethers.Contract(CONTRACTS.VAULT.address, CONTRACTS.VAULT.abi, signer);
                     const pending = await vault.pendingClaim(userAddress);
                     console.log("[holder] pending =", pending.toString());
                     if (pending.isZero()) throw new Error("NoReward");
                     const tx = await vault.claim();
                     showToast('交易提交中...', 'info', 1500); await tx.wait();
-                    showToast('持币分红领取成功！✅', 'success');
+                    showToast('持币池回礼领取成功！✅', 'success');
                 }
 
                 else if (type === 'holderWbnb') {
-                    // WBNB 持币分红：读取严格使用精简接口包中的只读 ABI；写入使用兼容 ABI 单独发起。
+                    // WBNB 持币池回礼：读取严格使用精简接口包中的只读 ABI；写入使用兼容 ABI 单独发起。
                     const divAddr = await resolveDividendAddress(signer);
                     console.log("[holderWbnb] dividend addr =", divAddr);
                     if (!divAddr || divAddr === ethers.constants.AddressZero) throw new Error("NoDividendContract");
@@ -5503,7 +5756,7 @@
                         throw new Error("ClaimMethodUnknown");
                     }
                     showToast('交易提交中...', 'info', 1500); await tx.wait();
-                    showToast('WBNB 持币分红领取成功！✅', 'success');
+                    showToast('WBNB 持币池回礼领取成功！✅', 'success');
                 }
 
                 else if (type === 'burn') {
@@ -5596,6 +5849,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             try {
                 updateBurnPreview();
+                console.log('[init] 销毁预览已移除，updateBurnPreview 安全跳过');
                 generateAnnouncements();
                 checkStakeThreshold();
 
@@ -5622,12 +5876,12 @@
                     // 【代币替换标记 15 / 页面初始化时同步 token 信息】
                     // 如果你不想顶部标题被链上 symbol 改写，可从这里调整调用方式。
                     loadTokenInfo();
-                    updateTokenSymbolDisplay('生活');
+                    updateTokenSymbolDisplay('双池');
                     refreshAllData();
                 } else {
                     ensureReadOnlyProvider();
                     loadTokenInfo();
-                    updateTokenSymbolDisplay('生活');
+                    updateTokenSymbolDisplay('双池');
                     refreshAllData();
                 }
             } catch (error) {
